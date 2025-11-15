@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlay, faGolfBall, faChartLine, faTrophy, faCalendar, faMapMarkerAlt, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { auth } from '@/lib/firebase/config';
 import { roundService } from '@/lib/services/roundService';
 import { userService } from '@/lib/services/userService';
@@ -173,7 +175,7 @@ export default function HomeTab() {
           onClick={handleStartRound}
           className="w-full bg-green-600 text-white py-4 rounded-lg font-semibold text-lg hover:bg-green-700 flex items-center justify-center gap-2"
         >
-          <span className="text-2xl">+</span>
+          <FontAwesomeIcon icon={faPlus} className="text-2xl" />
           {t('startNewRound')}
         </button>
 
@@ -208,7 +210,7 @@ function ActiveRoundsSection({
     <div className="space-y-3">
       <div className="bg-green-50 border border-green-200 rounded-lg p-4">
         <div className="flex items-center gap-3">
-          <span className="text-2xl">▶</span>
+          <FontAwesomeIcon icon={faPlay} className="text-2xl text-green-700" />
           <div className="flex-1">
             <h2 className="text-lg font-bold text-green-700">{t('activeRounds')}</h2>
             <p className="text-sm text-green-600">{t('roundsInProgress', { count: rounds.length })}</p>
@@ -243,24 +245,24 @@ function QuickStatsSummary({ stats }: { stats: RoundStatistics }) {
     <div className="bg-white border border-gray-200 rounded-lg p-4">
       <h3 className="text-lg font-bold mb-4">{t('summary')}</h3>
       <div className="space-y-3">
-        <StatRow icon="⛳" label={t('totalRounds')} value={stats.totalRounds.toString()} />
+        <StatRow icon={faGolfBall} label={t('totalRounds')} value={stats.totalRounds.toString()} />
         {stats.totalRounds > 0 && (
           <>
             <StatRow
-              icon="📈"
+              icon={faChartLine}
               label={t('averageScore')}
               value={stats.averageScore > 0 ? stats.averageScore.toFixed(1) : t('dash')}
             />
             {stats.bestScore !== 0 && (
               <StatRow
-                icon="🏆"
+                icon={faTrophy}
                 label={t('bestScore')}
                 value={formatBestScore(stats.bestTotalScore, stats.bestScore)}
               />
             )}
-            <StatRow icon="📅" label={t('thisMonth')} value={stats.roundsThisMonth.toString()} />
+            <StatRow icon={faCalendar} label={t('thisMonth')} value={stats.roundsThisMonth.toString()} />
             {stats.mostPlayedCourse && (
-              <StatRow icon="📍" label={t('courses')} value={stats.mostPlayedCourse} />
+              <StatRow icon={faMapMarkerAlt} label={t('courses')} value={stats.mostPlayedCourse} />
             )}
           </>
         )}
@@ -269,10 +271,10 @@ function QuickStatsSummary({ stats }: { stats: RoundStatistics }) {
   );
 }
 
-function StatRow({ icon, label, value }: { icon: string; label: string; value: string }) {
+function StatRow({ icon, label, value }: { icon: any; label: string; value: string }) {
   return (
     <div className="flex items-center gap-3">
-      <span className="text-xl">{icon}</span>
+      <FontAwesomeIcon icon={icon} className="text-xl" />
       <span className="flex-1 text-gray-700">{label}</span>
       <span className="font-bold text-gray-900">{value}</span>
     </div>
@@ -287,25 +289,25 @@ function StatisticsSection({ stats }: { stats: RoundStatistics }) {
       <h3 className="text-lg font-bold">{t('statistics')}</h3>
       <div className="grid grid-cols-2 gap-3">
         <StatCard
-          icon="⛳"
+          icon={faGolfBall}
           label={t('totalRounds')}
           value={stats.totalRounds.toString()}
           color="blue"
         />
         <StatCard
-          icon="📈"
+          icon={faChartLine}
           label={t('averageScore')}
           value={stats.averageScore > 0 ? stats.averageScore.toFixed(1) : t('dash')}
           color="green"
         />
         <StatCard
-          icon="🏆"
+          icon={faTrophy}
           label={t('bestScore')}
           value={stats.bestScore !== 0 ? formatBestScore(stats.bestTotalScore, stats.bestScore) : t('dash')}
           color="amber"
         />
         <StatCard
-          icon="📅"
+          icon={faCalendar}
           label={t('thisMonth')}
           value={stats.roundsThisMonth.toString()}
           color="purple"
@@ -321,14 +323,14 @@ function StatCard({
   value,
   color,
 }: {
-  icon: string;
+  icon: any;
   label: string;
   value: string;
   color: string;
 }) {
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-4 flex flex-col items-center">
-      <span className="text-3xl mb-2">{icon}</span>
+      <FontAwesomeIcon icon={icon} className="text-3xl mb-2" />
       <span className="text-2xl font-bold mb-1">{value}</span>
       <span className="text-xs text-gray-600 text-center">{label}</span>
     </div>

@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBullseye, faArrowUp, faArrowDown, faArrowLeft, faArrowRight, faMinus, faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { HoleStats, holeStatsCopyWith } from '@/lib/models/round';
 
 interface ScoreEditDialogProps {
@@ -102,7 +104,7 @@ export default function ScoreEditDialog({
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 text-2xl leading-none"
           >
-            ×
+            <FontAwesomeIcon icon={faTimes} />
           </button>
         </div>
 
@@ -114,14 +116,14 @@ export default function ScoreEditDialog({
               onClick={() => setScore(Math.max(1, (score || parValue) - 1))}
               className="text-blue-600 hover:text-blue-700 text-3xl"
             >
-              −
+              <FontAwesomeIcon icon={faMinus} />
             </button>
             <div className="text-6xl font-bold w-32 text-center">{score || parValue}</div>
             <button
               onClick={() => setScore((score || parValue) + 1)}
               className="text-blue-600 hover:text-blue-700 text-3xl"
             >
-              +
+              <FontAwesomeIcon icon={faPlus} />
             </button>
           </div>
 
@@ -184,14 +186,14 @@ export default function ScoreEditDialog({
                     </label>
                     <div className="flex justify-center space-x-2">
                       <FairwayButton
-                        icon="🎯"
+                        icon={faBullseye}
                         tooltip={t('hit') || 'Hit'}
                         value="hit"
                         selected={stats.fairway === 'hit'}
                         onClick={() => setStats(holeStatsCopyWith(stats, { fairway: 'hit' }))}
                       />
                       <FairwayButton
-                        icon="⬆️"
+                        icon={faArrowUp}
                         tooltip={t('missShort') || 'Miss Short'}
                         value="miss_short"
                         selected={stats.fairway === 'miss_short'}
@@ -200,7 +202,7 @@ export default function ScoreEditDialog({
                         }
                       />
                       <FairwayButton
-                        icon="⬇️"
+                        icon={faArrowDown}
                         tooltip={t('missLong') || 'Miss Long'}
                         value="miss_long"
                         selected={stats.fairway === 'miss_long'}
@@ -209,7 +211,7 @@ export default function ScoreEditDialog({
                         }
                       />
                       <FairwayButton
-                        icon="⬅️"
+                        icon={faArrowLeft}
                         tooltip={t('missLeft') || 'Miss Left'}
                         value="miss_left"
                         selected={stats.fairway === 'miss_left'}
@@ -218,7 +220,7 @@ export default function ScoreEditDialog({
                         }
                       />
                       <FairwayButton
-                        icon="➡️"
+                        icon={faArrowRight}
                         tooltip={t('missRight') || 'Miss Right'}
                         value="miss_right"
                         selected={stats.fairway === 'miss_right'}
@@ -244,7 +246,7 @@ export default function ScoreEditDialog({
                       }
                       className="text-blue-600 hover:text-blue-700 text-2xl"
                     >
-                      −
+                      <FontAwesomeIcon icon={faMinus} />
                     </button>
                     <span className="text-xl font-bold w-12 text-center">
                       {stats.putts?.toString() || '-'}
@@ -259,7 +261,7 @@ export default function ScoreEditDialog({
                       }
                       className="text-blue-600 hover:text-blue-700 text-2xl"
                     >
-                      +
+                      <FontAwesomeIcon icon={faPlus} />
                     </button>
                   </div>
                 </div>
@@ -278,7 +280,7 @@ export default function ScoreEditDialog({
                       }
                       className="text-blue-600 hover:text-blue-700 text-2xl"
                     >
-                      −
+                      <FontAwesomeIcon icon={faMinus} />
                     </button>
                     <span className="text-xl font-bold w-12 text-center">
                       {stats.bunker?.toString() || '-'}
@@ -293,7 +295,7 @@ export default function ScoreEditDialog({
                       }
                       className="text-blue-600 hover:text-blue-700 text-2xl"
                     >
-                      +
+                      <FontAwesomeIcon icon={faPlus} />
                     </button>
                   </div>
                 </div>
@@ -313,7 +315,7 @@ export default function ScoreEditDialog({
                       }
                       className="text-blue-600 hover:text-blue-700 text-2xl"
                     >
-                      −
+                      <FontAwesomeIcon icon={faMinus} />
                     </button>
                     <span className="text-xl font-bold w-12 text-center">
                       {stats.hazard?.toString() || '-'}
@@ -328,7 +330,7 @@ export default function ScoreEditDialog({
                       }
                       className="text-blue-600 hover:text-blue-700 text-2xl"
                     >
-                      +
+                      <FontAwesomeIcon icon={faPlus} />
                     </button>
                   </div>
                 </div>
@@ -348,7 +350,7 @@ function FairwayButton({
   selected,
   onClick,
 }: {
-  icon: string;
+  icon: any;
   tooltip: string;
   value: string;
   selected: boolean;
@@ -364,7 +366,7 @@ function FairwayButton({
           : 'border-gray-300 bg-white hover:bg-gray-50'
       }`}
     >
-      {icon}
+      <FontAwesomeIcon icon={icon} />
     </button>
   );
 }

@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { auth } from '@/lib/firebase/config';
 import { friendService, FriendOverview, FriendshipWithUser } from '@/lib/services/friendService';
 import { AppUser } from '@/lib/models/appUser';
@@ -263,11 +265,11 @@ export default function FriendsTab() {
                 }}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
               >
-                ×
+                <FontAwesomeIcon icon={faTimes} />
               </button>
             ) : (
               <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                🔍
+                <FontAwesomeIcon icon={faSearch} />
               </span>
             )}
           </div>

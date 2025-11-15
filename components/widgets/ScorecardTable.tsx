@@ -12,6 +12,7 @@ interface ScorecardTableProps {
   round: Round;
   users: Record<string, AppUser>;
   currentUserId: string;
+  currentUser?: AppUser;
   isAdmin: boolean;
   isMember: boolean;
 }
@@ -20,6 +21,7 @@ export default function ScorecardTable({
   round,
   users,
   currentUserId,
+  currentUser,
   isAdmin,
   isMember,
 }: ScorecardTableProps) {
@@ -179,8 +181,36 @@ export default function ScorecardTable({
     setDialogState(null);
   };
 
-  const handleNameClick = (memberId: string, e: React.MouseEvent) => {
+  const handleNameClick = async (memberId: string, e: React.MouseEvent) => {
     e.stopPropagation();
+    
+    const member = users[memberId];
+    if (!member) return;
+
+    // Check if clicked user is a guest
+    const isGuest = member.role === 'guest' || member.registered === false;
+    
+    // Check if current user can replace the guest
+    const currentUserNotInRound = !round.memberIds.includes(currentUserId);
+    const currentUserRoleValid = currentUser && (currentUser.role === 'member' || currentUser.role === 'temporary');
+
+    if (isGuest && currentUserNotInRound && currentUserRoleValid && currentUserId) {
+      // Show confirmation dialog
+      const guestName = member.name.replace(/\s*\(Guest\)$/i, '') || member.name;
+      const confirmMessage = t('replaceGuestConfirm', { name: guestName });
+      
+      if (confirm(confirmMessage)) {
+        try {
+          await roundService.replaceGuest(round.id, memberId, currentUserId);
+          alert(t('guestReplaced', { name: guestName }));
+        } catch (error) {
+          alert(t('failedToReplaceGuest', { error: String(error) }));
+        }
+      }
+      return;
+    }
+
+    // Default behavior: navigate to profile
     router.push(`/${locale}/profile/${memberId}`);
   };
 

@@ -69,14 +69,20 @@ export default function AdminCoursesScreen() {
                 <p className="text-gray-600">No scorecards found.</p>
               ) : (
                 <div className="space-y-2">
-                  {bundle.scorecards.map((scorecard) => (
-                    <div key={scorecard.id} className="border-t border-gray-200 pt-2">
-                      <p className="font-medium">{scorecard.name || 'Scorecard'}</p>
-                      <p className="text-sm text-gray-600">
-                        {scorecard.allTeeboxes.length} teeboxes
-                      </p>
-                    </div>
-                  ))}
+                  {bundle.scorecards.map((scorecard) => {
+                    const allTeeboxes = [
+                      ...(scorecard.backTeeboxes?.teeboxes || []),
+                      ...(scorecard.forwardTeeboxes?.teeboxes || []),
+                    ];
+                    return (
+                      <div key={scorecard.id} className="border-t border-gray-200 pt-2">
+                        <p className="font-medium">{scorecard.name || 'Scorecard'}</p>
+                        <p className="text-sm text-gray-600">
+                          {allTeeboxes.length} teeboxes
+                        </p>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>

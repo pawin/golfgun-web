@@ -23,7 +23,7 @@ export default function AdminRoundsScreen() {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await adminService.getRecentRounds({ limit: 20 });
+      const data = await adminService.getRecentRounds(20);
       setRounds(data);
     } catch (e) {
       setError((e as Error).toString());

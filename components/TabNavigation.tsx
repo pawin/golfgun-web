@@ -2,6 +2,8 @@
 
 import { useState, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHome, faClipboardList, faChartBar, faUsers, faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
 import HomeTab from './tabs/HomeTab';
 import RoundsTab from './tabs/RoundsTab';
 import StatsTab from './tabs/StatsTab';
@@ -15,11 +17,11 @@ export default function TabNavigation() {
   // Memoize tab components with key to force remount when tab changes
   // This ensures useEffect hooks run when switching tabs
   const tabs = useMemo(() => [
-    { component: <HomeTab key="home" />, icon: '🏠', label: t('home') },
-    { component: <RoundsTab key="rounds" />, icon: '📋', label: t('rounds') },
-    { component: <StatsTab key="stats" />, icon: '📊', label: t('stats') },
-    { component: <FriendsTab key="friends" />, icon: '👥', label: t('friends') },
-    { component: <MoreTab key="more" />, icon: '⋮', label: t('more') },
+    { component: <HomeTab key="home" />, icon: faHome, label: t('home') },
+    { component: <RoundsTab key="rounds" />, icon: faClipboardList, label: t('rounds') },
+    { component: <StatsTab key="stats" />, icon: faChartBar, label: t('stats') },
+    { component: <FriendsTab key="friends" />, icon: faUsers, label: t('friends') },
+    { component: <MoreTab key="more" />, icon: faEllipsisVertical, label: t('more') },
   ], [t]);
 
   return (
@@ -39,7 +41,7 @@ export default function TabNavigation() {
                   : 'text-gray-600'
               }`}
             >
-              <span className="text-xl">{tab.icon}</span>
+              <FontAwesomeIcon icon={tab.icon} className="text-xl" />
               <span className="text-xs mt-1">{tab.label}</span>
             </button>
           ))}

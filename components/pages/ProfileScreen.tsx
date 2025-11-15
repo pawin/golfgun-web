@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
 import { auth } from '@/lib/firebase/config';
 import { userService } from '@/lib/services/userService';
 import { roundService } from '@/lib/services/roundService';
@@ -228,7 +230,7 @@ export default function ProfileScreen() {
             className="text-gray-600 text-sm"
             title={t('friendsActionRemove')}
           >
-            ⋮
+            <FontAwesomeIcon icon={faEllipsisVertical} />
           </button>
         )}
       </div>

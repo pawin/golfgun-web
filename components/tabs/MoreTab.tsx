@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faExclamationTriangle, faLink, faMap, faCog, faGlobe, faInfoCircle, faMobileAlt, faSignOutAlt, faEye, faEyeSlash, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { linkWithCredential, EmailAuthProvider, type User } from 'firebase/auth';
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase/config';
@@ -140,21 +142,22 @@ export default function MoreTab() {
                   {appUser.email || t('noEmailLinked')}
                 </p>
               </div>
-              <span className="text-gray-400">›</span>
+              <FontAwesomeIcon icon={faChevronRight} className="text-gray-400" />
             </div>
 
             {/* Link Account Warning */}
             {!isRegistered && (
               <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
                 <div className="flex items-start gap-3 mb-3">
-                  <span className="text-amber-600 text-xl">⚠️</span>
+                  <FontAwesomeIcon icon={faExclamationTriangle} className="text-amber-600 text-xl" />
                   <p className="flex-1 text-amber-900 text-sm">{t('linkAccountWarning')}</p>
                 </div>
                 <button
                   onClick={() => setShowLinkDialog(true)}
-                  className="w-full px-4 py-2 border border-amber-700 text-amber-900 rounded-lg font-medium hover:bg-amber-100"
+                  className="w-full px-4 py-2 border border-amber-700 text-amber-900 rounded-lg font-medium hover:bg-amber-100 flex items-center justify-center gap-2"
                 >
-                  🔗 {t('linkAccount')}
+                  <FontAwesomeIcon icon={faLink} />
+                  {t('linkAccount')}
                 </button>
               </div>
             )}
@@ -167,10 +170,10 @@ export default function MoreTab() {
           className="bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50"
         >
           <div className="flex items-center gap-3">
-            <span className="text-xl">🗺️</span>
+            <FontAwesomeIcon icon={faMap} className="text-xl" />
             <span className="font-medium">{t('courses')}</span>
           </div>
-          <span className="text-gray-400">›</span>
+          <FontAwesomeIcon icon={faChevronRight} className="text-gray-400" />
         </div>
 
         {/* Admin Section */}
@@ -181,20 +184,20 @@ export default function MoreTab() {
               className="bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50"
             >
               <div className="flex items-center gap-3">
-                <span className="text-xl">⚙️</span>
+                <FontAwesomeIcon icon={faCog} className="text-xl" />
                 <span className="font-medium">Admin • Courses</span>
               </div>
-              <span className="text-gray-400">›</span>
+              <FontAwesomeIcon icon={faChevronRight} className="text-gray-400" />
             </div>
             <div
               onClick={() => router.push(`/${locale}/admin/rounds`)}
               className="bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50"
             >
               <div className="flex items-center gap-3">
-                <span className="text-xl">⚙️</span>
+                <FontAwesomeIcon icon={faCog} className="text-xl" />
                 <span className="font-medium">Admin • Rounds</span>
               </div>
-              <span className="text-gray-400">›</span>
+              <FontAwesomeIcon icon={faChevronRight} className="text-gray-400" />
             </div>
           </>
         )}
@@ -203,7 +206,7 @@ export default function MoreTab() {
         <div className="bg-white border border-gray-200 rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <span className="text-xl">🌐</span>
+              <FontAwesomeIcon icon={faGlobe} className="text-xl" />
               <span className="font-medium">{t('settingsLanguage')}</span>
             </div>
             <select
@@ -226,14 +229,14 @@ export default function MoreTab() {
         <div className="bg-white border border-gray-200 rounded-lg divide-y">
           <div className="p-4">
             <div className="flex items-center gap-3 mb-2">
-              <span className="text-xl">ℹ️</span>
+              <FontAwesomeIcon icon={faInfoCircle} className="text-xl" />
               <span className="font-medium">{t('about')}</span>
             </div>
             <p className="text-sm text-gray-600 ml-8">{t('aboutSubtitle')}</p>
           </div>
           <div className="p-4">
             <div className="flex items-center gap-3">
-              <span className="text-xl">📱</span>
+              <FontAwesomeIcon icon={faMobileAlt} className="text-xl" />
               <div>
                 <span className="font-medium">{t('version')}</span>
                 <span className="text-sm text-gray-600 ml-2">1.0.0</span>
@@ -247,7 +250,7 @@ export default function MoreTab() {
           onClick={() => setShowSignOutDialog(true)}
           className="w-full bg-white border border-red-200 rounded-lg p-4 flex items-center gap-3 text-red-600 font-medium hover:bg-red-50"
         >
-          <span className="text-xl">🚪</span>
+          <FontAwesomeIcon icon={faSignOutAlt} className="text-xl" />
           {t('signOut')}
         </button>
       </div>
@@ -284,7 +287,7 @@ export default function MoreTab() {
                     onClick={() => setObscurePassword(!obscurePassword)}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                   >
-                    {obscurePassword ? '👁️' : '👁️‍🗨️'}
+                    <FontAwesomeIcon icon={obscurePassword ? faEye : faEyeSlash} />
                   </button>
                 </div>
               </div>
@@ -327,7 +330,7 @@ export default function MoreTab() {
             {!isRegistered ? (
               <div className="space-y-3 mb-6">
                 <div className="flex items-start gap-2">
-                  <span className="text-amber-600">⚠️</span>
+                  <FontAwesomeIcon icon={faExclamationTriangle} className="text-amber-600" />
                   <p className="text-amber-900 font-bold">{t('accountNotLinked')}</p>
                 </div>
                 <p className="text-gray-800">{t('signOutWarningMessage')}</p>

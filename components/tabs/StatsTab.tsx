@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGolfBall, faChartLine, faTrophy, faCalendar, faMapMarkerAlt, faBullseye, faWater, faChartBar, faSync, faRedo } from '@fortawesome/free-solid-svg-icons';
 import { auth } from '@/lib/firebase/config';
 import { roundService } from '@/lib/services/roundService';
 import { Round, calculateGir, roundScorecardBridge, roundIsFinished } from '@/lib/models/round';
@@ -101,7 +103,7 @@ export default function StatsTab() {
           className="text-green-600 hover:text-green-700 text-sm font-medium"
           disabled={isLoading}
         >
-          {isLoading ? '⟳' : '↻'}
+          <FontAwesomeIcon icon={isLoading ? faSync : faRedo} className={isLoading ? 'animate-spin' : ''} />
         </button>
       </div>
 
@@ -136,24 +138,24 @@ function SummarySection({ stats }: { stats: RoundStatistics }) {
     <div className="bg-white border border-gray-200 rounded-lg p-4">
       <h2 className="text-lg font-bold mb-4">{t('summary')}</h2>
       <div className="space-y-3">
-        <StatRow icon="⛳" label={t('totalRounds')} value={stats.totalRounds.toString()} />
+        <StatRow icon={faGolfBall} label={t('totalRounds')} value={stats.totalRounds.toString()} />
         {stats.totalRounds > 0 && (
           <>
             <StatRow
-              icon="📈"
+              icon={faChartLine}
               label={t('averageScore')}
               value={stats.averageScore > 0 ? stats.averageScore.toFixed(1) : t('dash')}
             />
             {stats.bestScore !== 0 && (
               <StatRow
-                icon="🏆"
+                icon={faTrophy}
                 label={t('bestScore')}
                 value={formatBestScore(stats.bestTotalScore, stats.bestScore)}
               />
             )}
-            <StatRow icon="📅" label={t('thisMonth')} value={stats.roundsThisMonth.toString()} />
+            <StatRow icon={faCalendar} label={t('thisMonth')} value={stats.roundsThisMonth.toString()} />
             {stats.mostPlayedCourse && (
-              <StatRow icon="📍" label={t('courses')} value={stats.mostPlayedCourse} />
+              <StatRow icon={faMapMarkerAlt} label={t('courses')} value={stats.mostPlayedCourse} />
             )}
           </>
         )}
@@ -162,10 +164,10 @@ function SummarySection({ stats }: { stats: RoundStatistics }) {
   );
 }
 
-function StatRow({ icon, label, value }: { icon: string; label: string; value: string }) {
+function StatRow({ icon, label, value }: { icon: any; label: string; value: string }) {
   return (
     <div className="flex items-center gap-3">
-      <span className="text-xl">{icon}</span>
+      <FontAwesomeIcon icon={icon} className="text-xl" />
       <span className="flex-1 text-gray-700">{label}</span>
       <span className="font-bold text-gray-900">{value}</span>
     </div>
@@ -179,7 +181,7 @@ function PerformanceStatsSection({ stats }: { stats: PerformanceStats }) {
     return (
       <div className="bg-white border border-gray-200 rounded-lg p-8">
         <div className="text-center">
-          <span className="text-5xl text-gray-400">📊</span>
+          <FontAwesomeIcon icon={faChartBar} className="text-5xl text-gray-400" />
           <h3 className="text-lg font-bold mt-4 mb-2">{t('noPerformanceData')}</h3>
           <p className="text-gray-600">{t('startTrackingStats')}</p>
         </div>
@@ -192,25 +194,25 @@ function PerformanceStatsSection({ stats }: { stats: PerformanceStats }) {
       <h2 className="text-lg font-bold">{t('performanceStatistics')}</h2>
       <div className="grid grid-cols-2 gap-3">
         <PerformanceCard
-          icon="🎯"
+          icon={faBullseye}
           label={t('fairwayHitPercentLabel')}
           value={stats.fairwayHitPercent != null ? `${stats.fairwayHitPercent.toFixed(1)}%` : t('dash')}
           color="blue"
         />
         <PerformanceCard
-          icon="⛳"
+          icon={faGolfBall}
           label={t('girPercentLabel')}
           value={stats.girPercent != null ? `${stats.girPercent.toFixed(1)}%` : t('dash')}
           color="green"
         />
         <PerformanceCard
-          icon="🏌️"
+          icon={faGolfBall}
           label={t('avgPuttsPerHoleLabel')}
           value={stats.averagePutts != null ? stats.averagePutts.toFixed(1) : t('dash')}
           color="orange"
         />
         <PerformanceCard
-          icon="🌊"
+          icon={faWater}
           label={t('bunkersHazardsLabel')}
           value={`${stats.totalBunkers}/${stats.totalHazards}`}
           color="brown"
@@ -226,14 +228,14 @@ function PerformanceCard({
   value,
   color,
 }: {
-  icon: string;
+  icon: any;
   label: string;
   value: string;
   color: string;
 }) {
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-4 flex flex-col items-center">
-      <span className="text-3xl mb-2">{icon}</span>
+      <FontAwesomeIcon icon={icon} className="text-3xl mb-2" />
       <span className="text-xl font-bold mb-1">{value}</span>
       <span className="text-xs text-gray-600 text-center">{label}</span>
     </div>
@@ -247,7 +249,7 @@ function ScoringBreakdownSection({ stats }: { stats: ScoringBreakdownStats }) {
     return (
       <div className="bg-white border border-gray-200 rounded-lg p-8">
         <div className="text-center">
-          <span className="text-5xl text-gray-400">📊</span>
+          <FontAwesomeIcon icon={faChartBar} className="text-5xl text-gray-400" />
           <h3 className="text-lg font-bold mt-4 mb-2">{t('noScoringData')}</h3>
           <p className="text-gray-600">{t('playRoundsForScoringBreakdown')}</p>
         </div>
@@ -284,17 +286,17 @@ function ScoringBreakdownSection({ stats }: { stats: ScoringBreakdownStats }) {
         <h3 className="text-md font-bold mb-4">{t('averageScoreByPar')}</h3>
         <div className="space-y-3">
           <StatRow
-            icon="🏌️"
+            icon={faGolfBall}
             label={t('par3s')}
             value={stats.averagePar3 != null ? stats.averagePar3.toFixed(2) : t('dash')}
           />
           <StatRow
-            icon="🏌️"
+            icon={faGolfBall}
             label={t('par4s')}
             value={stats.averagePar4 != null ? stats.averagePar4.toFixed(2) : t('dash')}
           />
           <StatRow
-            icon="🏌️"
+            icon={faGolfBall}
             label={t('par5s')}
             value={stats.averagePar5 != null ? stats.averagePar5.toFixed(2) : t('dash')}
           />

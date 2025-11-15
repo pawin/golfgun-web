@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCog } from '@fortawesome/free-solid-svg-icons';
 import { auth } from '@/lib/firebase/config';
 import { roundService } from '@/lib/services/roundService';
 import { userService } from '@/lib/services/userService';
@@ -25,6 +27,7 @@ export default function RoundDetailScreen() {
   const [user, loading] = useAuthState(auth);
   const [round, setRound] = useState<Round | null>(null);
   const [users, setUsers] = useState<Record<string, AppUser>>({});
+  const [currentUserData, setCurrentUserData] = useState<AppUser | null>(null);
   const [loadingRound, setLoadingRound] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showTeeboxDialog, setShowTeeboxDialog] = useState(false);
@@ -78,6 +81,20 @@ export default function RoundDetailScreen() {
 
     return () => unsubscribe();
   }, [roundId, user?.uid, teeboxDialogShown]);
+
+  // Fetch current user data
+  useEffect(() => {
+    if (!user?.uid) {
+      setCurrentUserData(null);
+      return;
+    }
+
+    userService.getUsersByIds([user.uid]).then((fetchedUsers) => {
+      if (fetchedUsers[user.uid]) {
+        setCurrentUserData(fetchedUsers[user.uid]);
+      }
+    });
+  }, [user?.uid]);
 
   if (loading || loadingRound) {
     return (
@@ -155,7 +172,7 @@ export default function RoundDetailScreen() {
               className="text-gray-600 hover:text-gray-900"
               title={t('settings') || 'Settings'}
             >
-              ⚙️
+              <FontAwesomeIcon icon={faCog} />
             </button>
           )}
         </div>
@@ -183,6 +200,7 @@ export default function RoundDetailScreen() {
           round={round}
           users={users}
           currentUserId={user?.uid || ''}
+          currentUser={currentUserData || undefined}
           isAdmin={isAdmin}
           isMember={isMember}
         />

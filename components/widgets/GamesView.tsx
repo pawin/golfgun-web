@@ -1,6 +1,8 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPause, faCheck, faTimes, faPlus, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { Round, RoundGame, roundIsMember, roundColorForPlayer, roundColorForTeam } from '@/lib/models/round';
 import { AppUser } from '@/lib/models/appUser';
 import {
@@ -87,9 +89,7 @@ export default function GamesView({
             onClick={onAddGame}
             className="w-11 h-8 bg-green-600 text-white rounded flex items-center justify-center hover:bg-green-700"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
+            <FontAwesomeIcon icon={faPlus} className="w-4 h-4" />
           </button>
         )}
       </div>
@@ -323,31 +323,29 @@ function HorseSegmentCell({ segment }: { segment?: HorseSegmentScore }) {
 
   let textColor = '#000000';
   let iconColor = '#3b82f6';
-  let icon = '⏸';
+  let icon = faPause;
 
   switch (segment.outcome) {
     case HorseOutcome.pending:
       textColor = '#000000';
       iconColor = '#3b82f6';
-      icon = '⏸';
+      icon = faPause;
       break;
     case HorseOutcome.win:
       textColor = '#16a34a';
       iconColor = '#16a34a';
-      icon = '✓';
+      icon = faCheck;
       break;
     case HorseOutcome.lose:
       textColor = '#dc2626';
       iconColor = '#dc2626';
-      icon = '✕';
+      icon = faTimes;
       break;
   }
 
   return (
     <div className="h-12 flex flex-col items-center justify-center">
-      <span className="text-base mb-1" style={{ color: iconColor }}>
-        {icon}
-      </span>
+      <FontAwesomeIcon icon={icon} className="text-base mb-1" style={{ color: iconColor }} />
       <span className="text-xs font-semibold" style={{ color: textColor }}>
         {segment.stroke}/{segment.target}
       </span>
@@ -453,9 +451,7 @@ function DefaultGameDisplay({
           {playerCount} {t('players').toLowerCase()}
         </div>
       </div>
-      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-      </svg>
+      <FontAwesomeIcon icon={faChevronRight} className="w-5 h-5 text-gray-400" />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { Round } from '@/lib/models/round';
 import { AppUser } from '@/lib/models/appUser';
@@ -32,7 +32,7 @@ export default function AddPlayersDialog({
   const [isInviting, setIsInviting] = useState(false);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
-  const existingMemberIds = new Set(round.memberIds);
+  const existingMemberIds = useMemo(() => new Set(round.memberIds), [round.memberIds]);
 
   useEffect(() => {
     if (debounceRef.current) {

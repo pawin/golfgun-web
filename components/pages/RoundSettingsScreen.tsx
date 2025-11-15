@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser, faUsers, faHorse, faTrophy, faStar, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { auth } from '@/lib/firebase/config';
 import { roundService } from '@/lib/services/roundService';
 import { spinnerService } from '@/lib/services/spinnerService';
@@ -317,11 +319,11 @@ function GameTypeDialog({
   const t = useTranslations();
 
   const gameTypes = [
-    { type: '1v1', title: t('gameType1v1') || '1v1', icon: '👤' },
-    { type: 'teamvs', title: t('gameTypeTeamVs') || 'Team vs Team', icon: '👥' },
-    { type: 'horse', title: t('gameTypeHorse') || 'Horse', icon: '🐎' },
-    { type: 'skins', title: t('gameTypeSkins') || 'Skins', icon: '🏆' },
-    { type: 'olympic', title: t('gameTypeOlympic') || 'Olympic', icon: '⭐' },
+    { type: '1v1', title: t('gameType1v1') || '1v1', icon: faUser },
+    { type: 'teamvs', title: t('gameTypeTeamVs') || 'Team vs Team', icon: faUsers },
+    { type: 'horse', title: t('gameTypeHorse') || 'Horse', icon: faHorse },
+    { type: 'skins', title: t('gameTypeSkins') || 'Skins', icon: faTrophy },
+    { type: 'olympic', title: t('gameTypeOlympic') || 'Olympic', icon: faStar },
   ];
 
   return (
@@ -330,7 +332,7 @@ function GameTypeDialog({
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <h2 className="text-xl font-semibold">{t('selectGameType') || 'Select Game Type'}</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl">
-            ×
+            <FontAwesomeIcon icon={faTimes} />
           </button>
         </div>
         <div className="p-4">
@@ -341,7 +343,7 @@ function GameTypeDialog({
                 onClick={() => onSelect(gameType.type)}
                 className="w-full p-4 border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center gap-3 text-left"
               >
-                <span className="text-2xl">{gameType.icon}</span>
+                <FontAwesomeIcon icon={gameType.icon} className="text-2xl" />
                 <span className="font-medium">{gameType.title}</span>
               </button>
             ))}
