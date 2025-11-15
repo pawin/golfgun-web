@@ -52,6 +52,9 @@ export class AdminService {
   }
 
   async updateCourseName({ courseId, name }: { courseId: string; name: string }): Promise<void> {
+    if (typeof window === 'undefined') {
+      throw new Error('AdminService can only be used on the client side');
+    }
     const trimmed = name.trim();
     if (trimmed.length === 0) {
       throw new Error('Course name cannot be empty');
@@ -62,6 +65,9 @@ export class AdminService {
   }
 
   async getRecentRounds(limitCount: number = 20): Promise<Round[]> {
+    if (typeof window === 'undefined') {
+      throw new Error('AdminService can only be used on the client side');
+    }
     const col = collection(db, 'rounds');
     const q = query(
       col,

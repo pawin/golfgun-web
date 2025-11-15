@@ -150,7 +150,7 @@ export default function TeeboxSelector({
       onClose();
     } catch (e) {
       console.error('Failed to save teebox selection:', e);
-      alert('Failed to save teebox selection');
+      alert(t('failedToSaveTeeboxSelection'));
     }
   };
 

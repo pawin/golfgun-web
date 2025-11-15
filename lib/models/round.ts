@@ -95,7 +95,6 @@ export interface Round {
   selectedScoreCardIds: string[];
   partyGameEnabled?: boolean;
   spinnerOptions: string[];
-  isFinished: boolean;
 }
 
 // Helper functions
@@ -259,34 +258,6 @@ export function roundFromFirestore(m: any, id: string): Round {
   const endedAt = toTimestamp(m?.endedAt);
   const scorecard = roundScorecardFromMap(asMap(m?.scorecard));
   const memberIds = Array.isArray(m?.memberIds) ? m.memberIds.map((e: any) => e.toString()) : [];
-  
-  // Calculate isFinished
-  let isFinished = false;
-  if (endedAt) {
-    isFinished = true;
-  } else {
-    const now = new Date();
-    if (now.getTime() - createdAt.getTime() >= 24 * 60 * 60 * 1000) {
-      isFinished = true;
-    } else {
-      // Check if all holes are scored by all members
-      const totalHoles = scorecard.par.filter((p: any) => p.kind === 'hole').length;
-      let allScored = true;
-      for (const memberId of memberIds) {
-        for (let i = 1; i <= totalHoles; i++) {
-          const holeKey = String(i);
-          const holeScores = parsedScore[holeKey];
-          const value = holeScores?.[memberId] ?? 0;
-          if (value === 0) {
-            allScored = false;
-            break;
-          }
-        }
-        if (!allScored) break;
-      }
-      isFinished = allScored;
-    }
-  }
 
   const round: Round = {
     id,
@@ -310,7 +281,6 @@ export function roundFromFirestore(m: any, id: string): Round {
       : [],
     partyGameEnabled: m?.partyGameEnabled !== undefined ? (typeof m.partyGameEnabled === 'boolean' ? m.partyGameEnabled : undefined) : undefined,
     spinnerOptions: Array.isArray(m?.spinnerOptions) ? m.spinnerOptions.map((e: any) => e.toString()) : [],
-    isFinished,
   };
 
   return round;
@@ -729,6 +699,36 @@ export function roundIsRoundCompleteWithAllScores(round: Round, userId: string):
   return true;
 }
 
+export function roundIsFinished(round: Round): boolean {
+  // If round has endedAt, it's finished
+  if (round.endedAt) {
+    return true;
+  }
+
+  const now = new Date();
+  // If round is older than 24 hours, consider it finished
+  if (now.getTime() - round.createdAt.getTime() >= 24 * 60 * 60 * 1000) {
+    return true;
+  }
+
+  // Check if all holes are scored by all members
+  const scorecard = roundScorecardBridge(round);
+  const totalHoles = scorecard.par.filter((p: any) => p.kind === 'hole').length;
+  
+  for (const memberId of round.memberIds) {
+    for (let i = 1; i <= totalHoles; i++) {
+      const holeKey = String(i);
+      const holeScores = round.score[holeKey];
+      const value = holeScores?.[memberId] ?? 0;
+      if (value === 0) {
+        return false;
+      }
+    }
+  }
+  
+  return true;
+}
+
 export function roundColorForTeam(index: number): string {
   const colors = [
     '#DC143C', // Crimson Red
@@ -814,7 +814,6 @@ export function roundCopyWith(round: Round, updates: Partial<Round>): Round {
     selectedScoreCardIds: updates.selectedScoreCardIds ?? round.selectedScoreCardIds,
     partyGameEnabled: updates.partyGameEnabled ?? round.partyGameEnabled,
     spinnerOptions: updates.spinnerOptions ?? round.spinnerOptions,
-    isFinished: updates.isFinished ?? round.isFinished,
   };
 }
 

@@ -13,6 +13,9 @@ import { AppUser, appUserFromFirestore, appUserToFirestore, appUserToMap } from 
 
 export class UserService {
   async signOut(): Promise<void> {
+    if (typeof window === 'undefined') {
+      throw new Error('UserService can only be used on the client side');
+    }
     await firebaseSignOut(auth);
   }
 
@@ -27,6 +30,9 @@ export class UserService {
     isLogin: boolean;
     language?: string;
   }): Promise<void> {
+    if (typeof window === 'undefined') {
+      throw new Error('UserService can only be used on the client side');
+    }
     let userCredential;
     if (isLogin) {
       userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -49,6 +55,9 @@ export class UserService {
   }
 
   private async createIfMissing(user: AppUser): Promise<void> {
+    if (typeof window === 'undefined') {
+      throw new Error('UserService can only be used on the client side');
+    }
     const ref = doc(db, 'users', user.id);
     const snap = await getDoc(ref);
     if (!snap.exists()) {
@@ -79,6 +88,9 @@ export class UserService {
   }
 
   async createGuest(name: string): Promise<string | null> {
+    if (typeof window === 'undefined') {
+      throw new Error('UserService can only be used on the client side');
+    }
     const id = `guest_${doc(collection(db, 'users')).id}`;
     const ref = doc(db, 'users', id);
     const snap = await getDoc(ref);
@@ -99,6 +111,9 @@ export class UserService {
   }
 
   private async updateLastLogin(userId: string): Promise<void> {
+    if (typeof window === 'undefined') {
+      throw new Error('UserService can only be used on the client side');
+    }
     await setDoc(doc(db, 'users', userId), { lastLoginAt: serverTimestamp() }, { merge: true });
   }
 
@@ -128,6 +143,9 @@ export class UserService {
     imageBytes?: Uint8Array;
     language?: string;
   }): Promise<void> {
+    if (typeof window === 'undefined') {
+      throw new Error('UserService can only be used on the client side');
+    }
     const user = auth.currentUser;
     if (!user) throw new Error('Not signed in');
 
@@ -178,12 +196,18 @@ export class UserService {
   }
 
   async ensureAnonymousSignIn(): Promise<void> {
+    if (typeof window === 'undefined') {
+      throw new Error('UserService can only be used on the client side');
+    }
     if (!auth.currentUser) {
       await signInAnonymously(auth);
     }
   }
 
   async getUserById(userId: string): Promise<AppUser | null> {
+    if (typeof window === 'undefined') {
+      throw new Error('UserService can only be used on the client side');
+    }
     if (!userId) return null;
     const snap = await getDoc(doc(db, 'users', userId));
     if (!snap.exists()) return null;
@@ -191,6 +215,9 @@ export class UserService {
   }
 
   async getUsersByIds(userIds: string[]): Promise<Record<string, AppUser>> {
+    if (typeof window === 'undefined') {
+      throw new Error('UserService can only be used on the client side');
+    }
     if (userIds.length === 0) return {};
     const uniqueIds = Array.from(new Set(userIds));
     const result: Record<string, AppUser> = {};

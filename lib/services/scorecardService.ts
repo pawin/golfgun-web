@@ -20,7 +20,12 @@ export interface TeeboxUpdatePayload {
 }
 
 export class ScorecardService {
-  private collection = collection(db, 'scorecards');
+  private get collection() {
+    if (typeof window === 'undefined') {
+      throw new Error('ScorecardService can only be used on the client side');
+    }
+    return collection(db, 'scorecards');
+  }
 
   async getByCourseId(courseId: string): Promise<Scorecard[]> {
     const q = query(this.collection, where('courseId', '==', courseId));
@@ -37,6 +42,9 @@ export class ScorecardService {
   }
 
   watchByCourseId(courseId: string, callback: (scorecards: Scorecard[]) => void): () => void {
+    if (typeof window === 'undefined') {
+      throw new Error('ScorecardService can only be used on the client side');
+    }
     const q = query(this.collection, where('courseId', '==', courseId));
 
     return onSnapshot(q, (querySnapshot) => {
@@ -49,6 +57,9 @@ export class ScorecardService {
   }
 
   async getById(id: string): Promise<Scorecard | null> {
+    if (typeof window === 'undefined') {
+      throw new Error('ScorecardService can only be used on the client side');
+    }
     const docRef = doc(db, 'scorecards', id);
     const docSnap = await getDoc(docRef);
     if (!docSnap.exists()) return null;
@@ -64,6 +75,9 @@ export class ScorecardService {
     scorecardId: string,
     updates: TeeboxUpdatePayload[]
   ): Promise<void> {
+    if (typeof window === 'undefined') {
+      throw new Error('ScorecardService can only be used on the client side');
+    }
     if (updates.length === 0) return;
 
     const docRef = doc(db, 'scorecards', scorecardId);

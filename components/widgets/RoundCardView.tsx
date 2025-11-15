@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
-import { Round } from '@/lib/models/round';
+import { Round, roundIsFinished } from '@/lib/models/round';
 import { AppUser } from '@/lib/models/appUser';
 import { DateFormatter, AppDateFormatStyle } from '@/lib/utils/dateFormatter';
 import { getInitials, colorFromName } from '@/lib/utils/validator';
@@ -61,7 +61,7 @@ function SubtitleLine({ round, thru }: { round: Round; thru: number }) {
   // Map app locale to Intl locale format (e.g., 'en' -> 'en-US', 'th' -> 'th-TH')
   const intlLocale = locale === 'th' ? 'th-TH' : locale === 'en' ? 'en-US' : undefined;
 
-  if (round.isFinished) {
+  if (roundIsFinished(round)) {
     return (
       <p className="text-sm text-gray-600">
         {DateFormatter.format(round.createdAt, AppDateFormatStyle.medium, intlLocale)}

@@ -19,7 +19,12 @@ import { userService } from './userService';
 import { orderBy, limit, startAt, endAt } from 'firebase/firestore';
 
 export class FriendService {
-  private collection = collection(db, 'friendships');
+  private get collection() {
+    if (typeof window === 'undefined') {
+      throw new Error('FriendService can only be used on the client side');
+    }
+    return collection(db, 'friendships');
+  }
 
   private docId(userId1: string, userId2: string): string {
     const sorted = [userId1, userId2].sort();
@@ -27,6 +32,9 @@ export class FriendService {
   }
 
   async getFriendship(userId: string, otherUserId: string): Promise<Friendship | null> {
+    if (typeof window === 'undefined') {
+      throw new Error('FriendService can only be used on the client side');
+    }
     if (!userId || !otherUserId || userId === otherUserId) return null;
     const docId = this.docId(userId, otherUserId);
     const docRef = doc(db, 'friendships', docId);
@@ -42,6 +50,9 @@ export class FriendService {
     fromUserId: string;
     toUserId: string;
   }): Promise<Friendship> {
+    if (typeof window === 'undefined') {
+      throw new Error('FriendService can only be used on the client side');
+    }
     if (!fromUserId || !toUserId) {
       throw new Error('Invalid user ids');
     }
@@ -111,6 +122,9 @@ export class FriendService {
     fromUserId: string;
     toUserId: string;
   }): Promise<void> {
+    if (typeof window === 'undefined') {
+      throw new Error('FriendService can only be used on the client side');
+    }
     const friendship = await this.getFriendship(fromUserId, toUserId);
     if (!friendship) return;
     if (!friendship.isOutgoing(fromUserId)) {
@@ -127,6 +141,9 @@ export class FriendService {
     currentUserId: string;
     otherUserId: string;
   }): Promise<void> {
+    if (typeof window === 'undefined') {
+      throw new Error('FriendService can only be used on the client side');
+    }
     const docId = this.docId(currentUserId, otherUserId);
     const docRef = doc(db, 'friendships', docId);
 
@@ -163,6 +180,9 @@ export class FriendService {
     currentUserId: string;
     otherUserId: string;
   }): Promise<void> {
+    if (typeof window === 'undefined') {
+      throw new Error('FriendService can only be used on the client side');
+    }
     const friendship = await this.getFriendship(currentUserId, otherUserId);
     if (!friendship) return;
     if (!friendship.isIncoming(currentUserId)) {
@@ -179,18 +199,27 @@ export class FriendService {
     userId1: string;
     userId2: string;
   }): Promise<void> {
+    if (typeof window === 'undefined') {
+      throw new Error('FriendService can only be used on the client side');
+    }
     const docId = this.docId(userId1, userId2);
     const docRef = doc(db, 'friendships', docId);
     await deleteDoc(docRef);
   }
 
   async getFriendshipsForUser(userId: string): Promise<Friendship[]> {
+    if (typeof window === 'undefined') {
+      throw new Error('FriendService can only be used on the client side');
+    }
     const q = query(this.collection, where('userIds', 'array-contains', userId));
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map((docSnap) => friendshipFromFirestore(docSnap as DocumentSnapshot));
   }
 
   async loadOverview(userId: string): Promise<FriendOverview> {
+    if (typeof window === 'undefined') {
+      throw new Error('FriendService can only be used on the client side');
+    }
     if (!userId) {
       return {
         friends: [],
@@ -258,6 +287,9 @@ export class FriendService {
     excludeUserId: string;
     limitCount?: number;
   }): Promise<Record<string, AppUser>> {
+    if (typeof window === 'undefined') {
+      throw new Error('FriendService can only be used on the client side');
+    }
     const trimmed = searchQuery.trim().toLowerCase();
     if (!trimmed) return {};
 

@@ -44,16 +44,16 @@ export default function AdminRoundsScreen() {
     return (
       <div className="min-h-screen bg-white p-4">
         <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3">
-          <h1 className="text-xl font-semibold">Admin • Recent Rounds</h1>
+          <h1 className="text-xl font-semibold">{t('adminRecentRounds')}</h1>
         </div>
         <div className="p-4 text-red-600">
-          <p>Failed to load rounds.</p>
+          <p>{t('adminFailedToLoadRounds')}</p>
           <p className="text-sm">{error}</p>
           <button
             onClick={loadRounds}
             className="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg"
           >
-            Retry
+            {t('adminRetry')}
           </button>
         </div>
       </div>
@@ -69,12 +69,12 @@ export default function AdminRoundsScreen() {
         <button onClick={() => router.back()} className="text-gray-600">
           ←
         </button>
-        <h1 className="text-xl font-semibold flex-1">Admin • Recent Rounds</h1>
+        <h1 className="text-xl font-semibold flex-1">{t('adminRecentRounds')}</h1>
       </div>
 
       <div className="p-4 space-y-3">
         {rounds.length === 0 ? (
-          <p className="text-gray-600 text-center py-8">No recent rounds found.</p>
+          <p className="text-gray-600 text-center py-8">{t('adminNoRecentRounds')}</p>
         ) : (
           rounds.map((round) => {
             const courseName = round.course.name;
@@ -93,15 +93,15 @@ export default function AdminRoundsScreen() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold truncate">
-                      {courseName || 'Unknown course'}
+                      {courseName || t('adminUnknownCourse')}
                     </h3>
-                    <p className="text-sm text-gray-600">{memberCount} players</p>
+                    <p className="text-sm text-gray-600">{memberCount} {t('adminPlayers')}</p>
                     <p className="text-sm text-gray-600">
                       {DateFormatter.format(round.createdAt, AppDateFormatStyle.medium, intlLocale)}
                     </p>
                     <div className="mt-2 space-y-1">
-                      <p className="text-xs text-gray-500">Round ID: {round.id}</p>
-                      <p className="text-xs text-gray-500">Admin ID: {round.adminId}</p>
+                      <p className="text-xs text-gray-500">{t('adminRoundId')}: {round.id}</p>
+                      <p className="text-xs text-gray-500">{t('adminAdminId')}: {round.adminId}</p>
                     </div>
                   </div>
                 </div>

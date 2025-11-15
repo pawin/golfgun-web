@@ -10,7 +10,7 @@ import { roundService } from '@/lib/services/roundService';
 import { friendService, FriendshipWithUser } from '@/lib/services/friendService';
 import { HeadToHeadService, HeadToHeadStats, hasHeadToHeadData } from '@/lib/services/headToHeadService';
 import { AppUser } from '@/lib/models/appUser';
-import { Round } from '@/lib/models/round';
+import { Round, roundIsFinished } from '@/lib/models/round';
 import { Friendship, FriendshipStatus } from '@/lib/models/friendship';
 import { getInitials, colorFromName } from '@/lib/utils/validator';
 import RoundCardView from '@/components/widgets/RoundCardView';
@@ -23,6 +23,7 @@ export default function ProfileScreen() {
   const [user, loading] = useAuthState(auth);
   const [profileUser, setProfileUser] = useState<AppUser | null>(null);
   const [rounds, setRounds] = useState<Round[]>([]);
+  const [users, setUsers] = useState<Record<string, AppUser>>({});
   const [friendship, setFriendship] = useState<Friendship | null>(null);
   const [headToHead, setHeadToHead] = useState<HeadToHeadStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -59,34 +60,42 @@ export default function ProfileScreen() {
           .filter(
             (r) =>
               !r.deletedAt &&
-              r.isFinished &&
+              roundIsFinished(r) &&
               (r.memberIds.includes(userId) || r.adminId === userId)
           )
           .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
         setRounds(userRounds);
 
-        if (user.uid !== userId) {
-          // Fetch all users for head-to-head calculation
-          const allUserIds = new Set<string>();
-          allRounds.forEach((r) => {
-            allUserIds.add(r.adminId);
-            r.memberIds.forEach((id) => allUserIds.add(id));
-          });
+        // Fetch all users for rounds display and head-to-head calculation
+        const allUserIds = new Set<string>();
+        allRounds.forEach((r) => {
+          allUserIds.add(r.adminId);
+          r.memberIds.forEach((id) => allUserIds.add(id));
+        });
+
+        if (allUserIds.size > 0) {
           const usersMap = await userService.getUsersByIds(Array.from(allUserIds));
-          const usersMapForService = new Map<string, AppUser>();
-          Object.entries(usersMap).forEach(([id, user]) => {
-            usersMapForService.set(id, user);
-          });
+          setUsers(usersMap);
 
-          const stats = HeadToHeadService.calculate({
-            rounds: allRounds,
-            currentUserId: user.uid,
-            otherUserId: userId,
-            users: usersMapForService,
-          });
-          setHeadToHead(stats);
+          if (user.uid !== userId) {
+            const usersMapForService = new Map<string, AppUser>();
+            Object.entries(usersMap).forEach(([id, user]) => {
+              usersMapForService.set(id, user);
+            });
 
+            const stats = HeadToHeadService.calculate({
+              rounds: allRounds,
+              currentUserId: user.uid,
+              otherUserId: userId,
+              users: usersMapForService,
+            });
+            setHeadToHead(stats);
+
+            const friendshipData = await friendService.getFriendship(user.uid, userId);
+            setFriendship(friendshipData);
+          }
+        } else if (user.uid !== userId) {
           const friendshipData = await friendService.getFriendship(user.uid, userId);
           setFriendship(friendshipData);
         }
@@ -317,7 +326,7 @@ export default function ProfileScreen() {
                     key={round.id}
                     round={round}
                     currentUserId={currentUserId}
-                    users={{}}
+                    users={users}
                   />
                 ))}
               </div>

@@ -1,4 +1,4 @@
-import { Round, RoundGame } from '../models/round';
+import { Round, RoundGame, roundIsFinished } from '../models/round';
 import { AppUser } from '../models/appUser';
 import {
   GameStatsService,
@@ -65,7 +65,7 @@ export class HeadToHeadService {
 
     for (const round of rounds) {
       if (round.deletedAt) continue;
-      if (!round.isFinished) continue;
+      if (!roundIsFinished(round)) continue;
       if (!round.memberIds.includes(currentUserId)) continue;
       if (!round.memberIds.includes(otherUserId)) continue;
 

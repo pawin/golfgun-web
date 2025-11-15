@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/lib/firebase/config';
 import { roundService } from '@/lib/services/roundService';
-import { Round, calculateGir, roundScorecardBridge } from '@/lib/models/round';
+import { Round, calculateGir, roundScorecardBridge, roundIsFinished } from '@/lib/models/round';
 import { HoleStats } from '@/lib/models/round';
 
 interface RoundStatistics {
@@ -61,7 +61,7 @@ export default function StatsTab() {
 
     try {
       const rounds = await roundService.getAllRounds(user.uid);
-      const finishedRounds = rounds.filter((r) => !r.deletedAt && r.isFinished);
+      const finishedRounds = rounds.filter((r) => !r.deletedAt && roundIsFinished(r));
 
       // Filter to only include rounds where every hole has a score > 0
       const validRounds = finishedRounds.filter((r) => isRoundCompleteWithAllScores(r, user.uid));

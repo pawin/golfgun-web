@@ -7,7 +7,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/lib/firebase/config';
 import { roundService } from '@/lib/services/roundService';
 import { userService } from '@/lib/services/userService';
-import { Round } from '@/lib/models/round';
+import { Round, roundIsFinished } from '@/lib/models/round';
 import { AppUser } from '@/lib/models/appUser';
 import RoundCardView from '@/components/widgets/RoundCardView';
 
@@ -54,7 +54,7 @@ export default function HomeTab() {
       console.log('Rounds data:', allRounds.map(r => ({
         id: r.id,
         deletedAt: r.deletedAt,
-        isFinished: r.isFinished,
+        isFinished: roundIsFinished(r),
         memberIds: r.memberIds,
         adminId: r.adminId,
         userId: user.uid,
@@ -66,7 +66,7 @@ export default function HomeTab() {
         .filter((r) => {
           const isMember = r.memberIds.includes(user.uid) || r.adminId === user.uid;
           const notDeleted = !r.deletedAt;
-          const notFinished = !r.isFinished;
+          const notFinished = !roundIsFinished(r);
           return isMember && notDeleted && notFinished;
         })
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
@@ -100,7 +100,7 @@ export default function HomeTab() {
 
     try {
       const allRounds = await roundService.getAllRounds(user.uid);
-      const finishedRounds = allRounds.filter((r) => !r.deletedAt && r.isFinished);
+      const finishedRounds = allRounds.filter((r) => !r.deletedAt && roundIsFinished(r));
 
       // Filter to only include rounds where every hole has a score > 0
       const validRounds = finishedRounds.filter((r) => isRoundCompleteWithAllScores(r, user.uid));

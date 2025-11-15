@@ -6,7 +6,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/lib/firebase/config';
 import { roundService } from '@/lib/services/roundService';
 import { userService } from '@/lib/services/userService';
-import { Round } from '@/lib/models/round';
+import { Round, roundIsFinished } from '@/lib/models/round';
 import { AppUser } from '@/lib/models/appUser';
 import RoundCardView from '@/components/widgets/RoundCardView';
 
@@ -35,7 +35,7 @@ export default function MyRoundsScreen() {
       
       // Filter finished rounds and sort by date
       const finishedRounds = allRounds
-        .filter((r) => !r.deletedAt && r.isFinished)
+        .filter((r) => !r.deletedAt && roundIsFinished(r))
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
       setRounds(finishedRounds);

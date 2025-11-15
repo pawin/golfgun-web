@@ -7,7 +7,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/lib/firebase/config';
 import { roundService } from '@/lib/services/roundService';
 import { userService } from '@/lib/services/userService';
-import { Round } from '@/lib/models/round';
+import { Round, roundIsFinished } from '@/lib/models/round';
 import { AppUser } from '@/lib/models/appUser';
 import { DateFormatter, AppDateFormatStyle } from '@/lib/utils/dateFormatter';
 import ScorecardTable from '@/components/widgets/ScorecardTable';
@@ -182,7 +182,7 @@ export default function RoundDetailScreen() {
           {teeboxInfo && (
             <p className="text-sm text-gray-600 mt-1">{teeboxInfo}</p>
           )}
-          {round.isFinished && (
+          {roundIsFinished(round) && (
             <p className="text-sm text-gray-600 mt-1">
               {DateFormatter.format(round.createdAt, AppDateFormatStyle.medium, locale === 'th' ? 'th-TH' : locale === 'en' ? 'en-US' : undefined)}
             </p>

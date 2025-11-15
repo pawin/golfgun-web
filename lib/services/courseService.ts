@@ -4,12 +4,18 @@ import { Course, courseFromFirestore } from '../models/course';
 
 export class CourseService {
   async getAllCoursesOrderByName(): Promise<Course[]> {
+    if (typeof window === 'undefined') {
+      throw new Error('CourseService can only be used on the client side');
+    }
     const q = query(collection(db, 'courses'), orderBy('name'));
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map((doc) => courseFromFirestore(doc.data(), doc.id));
   }
 
   async getCourse(id: string): Promise<Course | null> {
+    if (typeof window === 'undefined') {
+      throw new Error('CourseService can only be used on the client side');
+    }
     const docRef = doc(db, 'courses', id);
     const docSnap = await getDoc(docRef);
     if (!docSnap.exists()) return null;
