@@ -1,0 +1,94 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useTranslations, useLocale } from 'next-intl';
+import { adminService, AdminCourseBundle } from '@/lib/services/adminService';
+import { Scorecard } from '@/lib/models/scorecard';
+
+export default function AdminCoursesScreen() {
+  const t = useTranslations();
+  const router = useRouter();
+  const locale = useLocale();
+  const [bundles, setBundles] = useState<AdminCourseBundle[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadCourses();
+  }, []);
+
+  const loadCourses = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const data = await adminService.getCoursesWithScorecards();
+      setBundles(data);
+    } catch (e) {
+      setError((e as Error).toString());
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-white p-4">
+        <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3">
+          <h1 className="text-xl font-semibold">Admin • Courses</h1>
+        </div>
+        <div className="p-4 text-red-600">
+          <p>Failed to load admin data.</p>
+          <p className="text-sm">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 pb-20">
+      <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3">
+        <button onClick={() => router.back()} className="text-gray-600">
+          ←
+        </button>
+        <h1 className="text-xl font-semibold flex-1">Admin • Courses</h1>
+      </div>
+
+      <div className="p-4 space-y-6">
+        {bundles.length === 0 ? (
+          <p className="text-gray-600 text-center py-8">No courses available.</p>
+        ) : (
+          bundles.map((bundle) => (
+            <div key={bundle.course.id} className="bg-white border border-gray-200 rounded-lg p-4">
+              <h2 className="text-lg font-bold mb-2">{bundle.course.name}</h2>
+              <p className="text-sm text-gray-600 mb-4">Course ID: {bundle.course.id}</p>
+              {bundle.scorecards.length === 0 ? (
+                <p className="text-gray-600">No scorecards found.</p>
+              ) : (
+                <div className="space-y-2">
+                  {bundle.scorecards.map((scorecard) => (
+                    <div key={scorecard.id} className="border-t border-gray-200 pt-2">
+                      <p className="font-medium">{scorecard.name || 'Scorecard'}</p>
+                      <p className="text-sm text-gray-600">
+                        {scorecard.allTeeboxes.length} teeboxes
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+

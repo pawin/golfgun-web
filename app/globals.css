@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-green: #1B5E20;
+  --primary-green-light: #2E7D32;
+  --primary-green-dark: #0D2818;
+  --accent-gold: #B8860B;
+  --error-red: #B71C1C;
+  --warning-orange: #E65100;
+  --info-blue: #0D47A1;
+  --neutral-gray: #424242;
+  --neutral-gray-light: #E0E0E0;
+  --text-primary: #000000;
+  --text-secondary: #424242;
+  --background-light: #FFFFFF;
+  --surface-gray: #F5F5F5;
+}
+
+body {
+  color: var(--text-primary);
+  background: var(--background-light);
+  font-family: 'IBM Plex Sans Thai', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
