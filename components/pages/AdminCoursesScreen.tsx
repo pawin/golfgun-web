@@ -1,14 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import { adminService, AdminCourseBundle } from '@/lib/services/adminService';
 import { Scorecard } from '@/lib/models/scorecard';
 
 export default function AdminCoursesScreen() {
   const t = useTranslations();
-  const router = useRouter();
   const locale = useLocale();
   const [bundles, setBundles] = useState<AdminCourseBundle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -55,11 +53,8 @@ export default function AdminCoursesScreen() {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
-      <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3">
-        <button onClick={() => router.back()} className="text-gray-600">
-          ←
-        </button>
-        <h1 className="text-xl font-semibold flex-1">Admin • Courses</h1>
+      <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3">
+        <h1 className="text-xl font-semibold">Admin • Courses</h1>
       </div>
 
       <div className="p-4 space-y-6">

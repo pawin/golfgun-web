@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/lib/firebase/config';
@@ -17,7 +17,6 @@ import RoundCardView from '@/components/widgets/RoundCardView';
 
 export default function ProfileScreen() {
   const t = useTranslations();
-  const router = useRouter();
   const locale = useLocale();
   const params = useParams();
   const [user, loading] = useAuthState(auth);
@@ -221,11 +220,8 @@ export default function ProfileScreen() {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
-      <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3">
-        <button onClick={() => router.back()} className="text-gray-600">
-          ←
-        </button>
-        <h1 className="text-xl font-semibold flex-1">{profileUser.name}</h1>
+      <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+        <h1 className="text-xl font-semibold">{profileUser.name}</h1>
         {!isOwnProfile && friendship && friendship.status === FriendshipStatus.accepted && (
           <button
             onClick={handleRemoveFriend}

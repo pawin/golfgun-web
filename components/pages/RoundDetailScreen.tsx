@@ -91,12 +91,7 @@ export default function RoundDetailScreen() {
     return (
       <div className="min-h-screen bg-white">
         <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3">
-          <button
-            onClick={() => router.back()}
-            className="text-gray-600 hover:text-gray-900"
-          >
-            ← Back
-          </button>
+          <h1 className="text-xl font-semibold">{t('round')}</h1>
         </div>
         <div className="flex items-center justify-center py-20">
           <p className="text-red-600">{error || t('roundNotFound')}</p>
@@ -144,12 +139,6 @@ export default function RoundDetailScreen() {
   return (
     <div className="min-h-screen bg-white">
       <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between z-10">
-        <button
-          onClick={() => router.back()}
-          className="text-gray-600 hover:text-gray-900"
-        >
-          ← Back
-        </button>
         <h1 className="text-lg font-semibold">{t('round')}</h1>
         <div className="flex items-center gap-2">
           <AddPlayerMenu

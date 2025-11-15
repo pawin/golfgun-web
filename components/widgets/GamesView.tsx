@@ -247,7 +247,7 @@ function TeamVsGameDisplay({
             +
           </span>
         </div>
-        <div className="text-xs text-gray-600">{t('bestScoreCount').replace('{count}', stats.scoreCountMode?.toString() || '1')}</div>
+        <div className="text-xs text-gray-600">{t('bestScoreCount', { count: stats.scoreCountMode?.toString() || '1' })}</div>
       </div>
       <div className="flex-1 text-right">
         {stats.bluePlayers.map((player, idx) => (
