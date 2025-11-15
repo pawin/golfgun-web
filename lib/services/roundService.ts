@@ -43,11 +43,6 @@ export class RoundService {
     for (const docSnap of querySnapshot.docs) {
       const data = docSnap.data();
       const round = roundFromFirestore(data, docSnap.id);
-
-      // Fetch missing users
-      const allUserIds = [...round.memberIds, round.adminId];
-      await userService.getUsersByIds(allUserIds);
-
       rounds.push(round);
     }
 
@@ -65,9 +60,11 @@ export class RoundService {
       const data = snapshot.data();
       const round = roundFromFirestore(data, snapshot.id);
 
-      // Fetch missing users
+      // Prefetch users in background (non-blocking)
       const allUserIds = [...round.memberIds, round.adminId];
-      await userService.getUsersByIds(allUserIds);
+      userService.getUsersByIds(allUserIds).catch(() => {
+        // Silently handle errors - components will fetch users when needed
+      });
 
       callback(round);
     }, (error) => {
@@ -102,8 +99,11 @@ export class RoundService {
       }
 
       const round = roundFromFirestore(docSnap.data(), docSnap.id);
+      // Prefetch users in background (non-blocking)
       const ids = [...round.memberIds, round.adminId];
-      await userService.getUsersByIds(ids);
+      userService.getUsersByIds(ids).catch(() => {
+        // Silently handle errors - components will fetch users when needed
+      });
       return round;
     } catch (e) {
       throw new Error(`Failed to start round: ${e}`);

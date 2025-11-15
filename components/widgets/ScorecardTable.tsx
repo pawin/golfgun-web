@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { useTranslations, useLocale } from 'next-intl';
 import { Round, roundScorecardBridge, roundColorForPlayer, HoleStats } from '@/lib/models/round';
 import { AppUser } from '@/lib/models/appUser';
 import { roundService } from '@/lib/services/roundService';
@@ -23,6 +24,8 @@ export default function ScorecardTable({
   isMember,
 }: ScorecardTableProps) {
   const t = useTranslations();
+  const router = useRouter();
+  const locale = useLocale();
   const scorecard = roundScorecardBridge(round);
   const holes = scorecard.holes;
   const par = scorecard.par;
@@ -176,6 +179,11 @@ export default function ScorecardTable({
     setDialogState(null);
   };
 
+  const handleNameClick = (memberId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    router.push(`/${locale}/profile/${memberId}`);
+  };
+
   return (
     <div className="border border-gray-200 rounded-lg overflow-hidden">
       <div className="relative overflow-x-auto">
@@ -257,7 +265,8 @@ export default function ScorecardTable({
                 <tr key={memberId} className="hover:bg-gray-50">
                   {/* Sticky player name cell */}
                   <td
-                    className="w-20 h-10 px-2 py-2 text-xs font-semibold sticky left-0 bg-white z-20 border-r border-gray-200 text-center"
+                    onClick={(e) => handleNameClick(memberId, e)}
+                    className="w-20 h-10 px-2 py-2 text-xs font-semibold sticky left-0 bg-white z-20 border-r border-gray-200 text-center cursor-pointer hover:underline"
                     style={{
                       color: roundColorForPlayer(round, memberId),
                     }}

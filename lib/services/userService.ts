@@ -12,10 +12,15 @@ import { db, auth, storage } from '../firebase/config';
 import { AppUser, appUserFromFirestore, appUserToFirestore, appUserToMap } from '../models/appUser';
 
 export class UserService {
+  // In-memory cache for fetched users during the session
+  private userCache: Record<string, AppUser> = {};
+
   async signOut(): Promise<void> {
     if (typeof window === 'undefined') {
       throw new Error('UserService can only be used on the client side');
     }
+    // Clear user cache on sign out
+    this.userCache = {};
     await firebaseSignOut(auth);
   }
 
@@ -209,9 +214,18 @@ export class UserService {
       throw new Error('UserService can only be used on the client side');
     }
     if (!userId) return null;
+    
+    // Check cache first
+    if (this.userCache[userId]) {
+      return this.userCache[userId];
+    }
+    
     const snap = await getDoc(doc(db, 'users', userId));
     if (!snap.exists()) return null;
-    return appUserFromFirestore(snap.data(), snap.id);
+    const user = appUserFromFirestore(snap.data(), snap.id);
+    // Update cache
+    this.userCache[userId] = user;
+    return user;
   }
 
   async getUsersByIds(userIds: string[]): Promise<Record<string, AppUser>> {
@@ -219,19 +233,36 @@ export class UserService {
       throw new Error('UserService can only be used on the client side');
     }
     if (userIds.length === 0) return {};
+    
     const uniqueIds = Array.from(new Set(userIds));
     const result: Record<string, AppUser> = {};
-    const chunkSize = 10;
+    const missingIds: string[] = [];
 
-    for (let i = 0; i < uniqueIds.length; i += chunkSize) {
-      const chunk = uniqueIds.slice(i, i + chunkSize);
-      const q = query(collection(db, 'users'), where('__name__', 'in', chunk));
-      const querySnapshot = await getDocs(q);
-      querySnapshot.forEach((doc) => {
-        const user = appUserFromFirestore(doc.data(), doc.id);
-        result[doc.id] = user;
-      });
+    // Check cache first
+    for (const id of uniqueIds) {
+      if (this.userCache[id]) {
+        result[id] = this.userCache[id];
+      } else {
+        missingIds.push(id);
+      }
     }
+
+    // Fetch missing users
+    if (missingIds.length > 0) {
+      const chunkSize = 10;
+      for (let i = 0; i < missingIds.length; i += chunkSize) {
+        const chunk = missingIds.slice(i, i + chunkSize);
+        const q = query(collection(db, 'users'), where('__name__', 'in', chunk));
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+          const user = appUserFromFirestore(doc.data(), doc.id);
+          result[doc.id] = user;
+          // Update cache
+          this.userCache[doc.id] = user;
+        });
+      }
+    }
+
     return result;
   }
 }
