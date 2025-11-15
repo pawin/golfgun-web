@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Round } from '@/lib/models/round';
 import { AppUser } from '@/lib/models/appUser';
 import { DateFormatter, AppDateFormatStyle } from '@/lib/utils/dateFormatter';
@@ -57,11 +57,14 @@ export default function RoundCardView({
 
 function SubtitleLine({ round, thru }: { round: Round; thru: number }) {
   const t = useTranslations();
+  const locale = useLocale();
+  // Map app locale to Intl locale format (e.g., 'en' -> 'en-US', 'th' -> 'th-TH')
+  const intlLocale = locale === 'th' ? 'th-TH' : locale === 'en' ? 'en-US' : undefined;
 
   if (round.isFinished) {
     return (
       <p className="text-sm text-gray-600">
-        {DateFormatter.format(round.createdAt, AppDateFormatStyle.medium)}
+        {DateFormatter.format(round.createdAt, AppDateFormatStyle.medium, intlLocale)}
       </p>
     );
   }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import HomeTab from './tabs/HomeTab';
 import RoundsTab from './tabs/RoundsTab';
@@ -12,17 +12,19 @@ export default function TabNavigation() {
   const t = useTranslations();
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const tabs = [
-    { component: <HomeTab />, icon: '🏠', label: t('home') },
-    { component: <RoundsTab />, icon: '📋', label: t('rounds') },
-    { component: <StatsTab />, icon: '📊', label: t('stats') },
-    { component: <FriendsTab />, icon: '👥', label: t('friends') },
-    { component: <MoreTab />, icon: '⋮', label: t('more') },
-  ];
+  // Memoize tab components with key to force remount when tab changes
+  // This ensures useEffect hooks run when switching tabs
+  const tabs = useMemo(() => [
+    { component: <HomeTab key="home" />, icon: '🏠', label: t('home') },
+    { component: <RoundsTab key="rounds" />, icon: '📋', label: t('rounds') },
+    { component: <StatsTab key="stats" />, icon: '📊', label: t('stats') },
+    { component: <FriendsTab key="friends" />, icon: '👥', label: t('friends') },
+    { component: <MoreTab key="more" />, icon: '⋮', label: t('more') },
+  ], [t]);
 
   return (
     <div className="flex flex-col h-screen">
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto" key={currentIndex}>
         {tabs[currentIndex].component}
       </main>
       <nav className="border-t border-gray-200 bg-white">

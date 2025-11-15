@@ -194,7 +194,7 @@ export function scorecardToMap(scorecard: Scorecard): any {
 function scoreCellToMap(cell: ScoreCell): any {
   return {
     kind: cell.kind,
-    ...(cell.value && { value: cell.value }),
+    value: cell.value ?? '', // Always include value, default to empty string if null/undefined
     ...(cell.yards !== undefined && { yards: cell.yards }),
   };
 }

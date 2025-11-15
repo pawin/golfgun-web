@@ -18,6 +18,9 @@ export class SpinnerService {
   private readonly optionsDocId = '_options';
 
   private collection(roundId: string) {
+    if (typeof window === 'undefined') {
+      throw new Error('SpinnerService can only be used on the client side');
+    }
     return collection(db, 'rounds', roundId, 'spinner');
   }
 
@@ -26,6 +29,9 @@ export class SpinnerService {
   }
 
   private legacyOptionsDoc(roundId: string) {
+    if (typeof window === 'undefined') {
+      throw new Error('SpinnerService can only be used on the client side');
+    }
     return doc(collection(db, 'rounds', roundId, 'spinnerConfig'), 'options');
   }
 

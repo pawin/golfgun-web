@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '@/lib/firebase/config';
 import { Round, roundIsMember } from '@/lib/models/round';
@@ -19,6 +19,8 @@ interface PartyGameSectionProps {
 
 export default function PartyGameSection({ round, currentUserId }: PartyGameSectionProps) {
   const t = useTranslations();
+  const locale = useLocale();
+  const intlLocale = locale === "th" ? "th-TH" : locale === "en" ? "en-US" : undefined;
   const [user] = useAuthState(auth);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isSpinning, setIsSpinning] = useState(false);
@@ -164,7 +166,7 @@ export default function PartyGameSection({ round, currentUserId }: PartyGameSect
 
   const latest = entries.length > 0 ? entries[0] : null;
   const latestDetail = latest?.createdAt
-    ? `${DateFormatter.format(latest.createdAt, AppDateFormatStyle.short)} ${DateFormatter.format(latest.createdAt, AppDateFormatStyle.time)}`
+    ? `${DateFormatter.format(latest.createdAt, AppDateFormatStyle.short, intlLocale)} ${DateFormatter.format(latest.createdAt, AppDateFormatStyle.time, intlLocale)}`
     : '';
   const latestOption = latest?.option.trim() || '';
   const hasResult = latestOption.length > 0;
@@ -425,7 +427,7 @@ function SpinnerModal({
                   const bgColor = colorFromName(displayName);
                   const timestamp = entry.createdAt;
                   const subtitle = timestamp
-                    ? `${entry.userName} · ${DateFormatter.format(timestamp, AppDateFormatStyle.short)} ${DateFormatter.format(timestamp, AppDateFormatStyle.time)}`
+                    ? `${entry.userName} · ${DateFormatter.format(timestamp, AppDateFormatStyle.short, intlLocale)} ${DateFormatter.format(timestamp, AppDateFormatStyle.time, intlLocale)}`
                     : entry.userName;
                   const opacity = index === 0 ? 1.0 : 0.5;
 

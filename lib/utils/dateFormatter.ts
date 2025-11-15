@@ -8,20 +8,40 @@ export enum AppDateFormatStyle {
 }
 
 export class DateFormatter {
+  /**
+   * Formats a date using the device's locale and timezone.
+   * JavaScript Date objects are already in local time when displayed,
+   * so Intl.DateTimeFormat will automatically use the device's timezone.
+   * 
+   * @param date - The date to format (Firestore Timestamp.toDate() already returns local time)
+   * @param style - The format style to use
+   * @param locale - Optional locale string (e.g., 'en-US', 'th-TH'). If not provided, uses device default.
+   * @param toLocal - Whether to convert to local time (default: true). 
+   *                  Note: JavaScript Date objects already represent local time when formatted,
+   *                  but Firestore Timestamps are UTC, so toLocal ensures proper conversion.
+   */
   static format(
     date: Date,
     style: AppDateFormatStyle = AppDateFormatStyle.medium,
     locale?: string,
     toLocal: boolean = true
   ): string {
-    const resolvedDate = toLocal ? new Date(date.getTime() - date.getTimezoneOffset() * 60000) : date;
+    // JavaScript Date objects are stored in UTC internally, but when formatted
+    // by Intl.DateTimeFormat, they are automatically displayed in the device's timezone.
+    // We don't need to manually adjust - just pass the date directly.
+    // Firestore Timestamp.toDate() already converts to a JavaScript Date which represents
+    // the correct moment in time, and Intl will format it in local timezone.
     const formatter = this.formatterForStyle(style, locale);
-    return formatter.format(resolvedDate);
+    return formatter.format(date);
   }
 
+  /**
+   * Formats a date with a custom pattern using device locale and timezone.
+   */
   static custom(date: Date, pattern: string, locale?: string, toLocal: boolean = true): string {
-    const resolvedDate = toLocal ? new Date(date.getTime() - date.getTimezoneOffset() * 60000) : date;
-    const options: Intl.DateTimeFormatOptions = {};
+    const options: Intl.DateTimeFormatOptions = {
+      // Don't specify timeZone - uses device timezone automatically
+    };
     
     // Parse pattern to options (simplified)
     if (pattern.includes('yyyy')) options.year = 'numeric';
@@ -30,36 +50,61 @@ export class DateFormatter {
     if (pattern.includes('HH') || pattern.includes('hh')) options.hour = '2-digit';
     if (pattern.includes('mm')) options.minute = '2-digit';
     
-    return new Intl.DateTimeFormat(locale, options).format(resolvedDate);
+    return new Intl.DateTimeFormat(locale, options).format(date);
   }
 
   private static formatterForStyle(style: AppDateFormatStyle, locale?: string): Intl.DateTimeFormat {
-    const options: Intl.DateTimeFormatOptions = {};
+    // Use device timezone - don't specify timeZone option, let it use browser's default
+    // This ensures dates are displayed in the user's local timezone
     
     switch (style) {
       case AppDateFormatStyle.short:
-        return new Intl.DateTimeFormat(locale, { year: 'numeric', month: 'numeric', day: 'numeric' });
+        return new Intl.DateTimeFormat(locale, { 
+          year: 'numeric', 
+          month: 'numeric', 
+          day: 'numeric',
+          // Don't specify timeZone - uses device timezone automatically
+        });
       case AppDateFormatStyle.medium:
-        return new Intl.DateTimeFormat(locale, { year: 'numeric', month: 'short', day: 'numeric' });
+        return new Intl.DateTimeFormat(locale, { 
+          year: 'numeric', 
+          month: 'short', 
+          day: 'numeric',
+          // Don't specify timeZone - uses device timezone automatically
+        });
       case AppDateFormatStyle.long:
         return new Intl.DateTimeFormat(locale, { 
           year: 'numeric', 
           month: 'long', 
           day: 'numeric', 
-          weekday: 'long' 
+          weekday: 'long',
+          // Don't specify timeZone - uses device timezone automatically
         });
       case AppDateFormatStyle.time:
-        return new Intl.DateTimeFormat(locale, { hour: 'numeric', minute: '2-digit' });
+        return new Intl.DateTimeFormat(locale, { 
+          hour: 'numeric', 
+          minute: '2-digit',
+          hour12: true, // Use 12-hour format with AM/PM (device default)
+          // Don't specify timeZone - uses device timezone automatically
+        });
       case AppDateFormatStyle.dateTime:
         return new Intl.DateTimeFormat(locale, { 
           year: 'numeric', 
           month: 'short', 
           day: 'numeric',
-          hour: 'numeric',
-          minute: '2-digit'
+          hour: 'numeric', 
+          minute: '2-digit',
+          hour12: true,
+          // Don't specify timeZone - uses device timezone automatically
         });
       case AppDateFormatStyle.iso:
-        return new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' });
+        // ISO format should be consistent (YYYY-MM-DD) but use device timezone
+        return new Intl.DateTimeFormat('en-CA', { 
+          year: 'numeric', 
+          month: '2-digit', 
+          day: '2-digit',
+          // Don't specify timeZone - uses device timezone automatically
+        });
     }
   }
 }

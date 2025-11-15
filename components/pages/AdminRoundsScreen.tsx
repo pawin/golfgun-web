@@ -60,7 +60,8 @@ export default function AdminRoundsScreen() {
     );
   }
 
-  const formatter = new DateFormatter(AppDateFormatStyle.medium);
+  // Map app locale to Intl locale format (e.g., 'en' -> 'en-US', 'th' -> 'th-TH')
+  const intlLocale = locale === 'th' ? 'th-TH' : locale === 'en' ? 'en-US' : undefined;
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
@@ -96,7 +97,7 @@ export default function AdminRoundsScreen() {
                     </h3>
                     <p className="text-sm text-gray-600">{memberCount} players</p>
                     <p className="text-sm text-gray-600">
-                      {formatter.format(round.createdAt)}
+                      {DateFormatter.format(round.createdAt, AppDateFormatStyle.medium, intlLocale)}
                     </p>
                     <div className="mt-2 space-y-1">
                       <p className="text-xs text-gray-500">Round ID: {round.id}</p>

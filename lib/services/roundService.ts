@@ -13,6 +13,7 @@ import {
   setDoc,
   addDoc,
   Timestamp,
+  limit,
 } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { Round, roundFromFirestore, RoundGame } from '../models/round';
@@ -22,7 +23,12 @@ import { AppUser } from '../models/appUser';
 import { userService } from './userService';
 
 export class RoundService {
-  private collection = collection(db, 'rounds');
+  private get collection() {
+    if (typeof window === 'undefined') {
+      throw new Error('RoundService can only be used on the client side');
+    }
+    return collection(db, 'rounds');
+  }
 
   async getAllRounds(memberId: string): Promise<Round[]> {
     const q = query(
@@ -290,6 +296,138 @@ export class RoundService {
 
     await updateDoc(roundRef, {
       deletedAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+  }
+
+  /**
+   * Replaces a guest user ID with a new user ID in a round (for user migration)
+   * @param roundId - The round ID
+   * @param guestId - The guest user ID to replace
+   * @param userId - The new user ID
+   */
+  async replaceGuest(
+    roundId: string,
+    guestId: string,
+    userId: string
+  ): Promise<void> {
+    const roundRef = doc(db, 'rounds', roundId);
+    const snap = await getDoc(roundRef);
+    if (!snap.exists()) throw new Error('Round not found');
+
+    const data = snap.data();
+    const round = roundFromFirestore(data, snap.id);
+
+    if (!round.memberIds.includes(guestId)) {
+      throw new Error('Guest not found in this round');
+    }
+
+    // Verify new user exists
+    const userDoc = await getDoc(doc(db, 'users', userId));
+    if (!userDoc.exists()) {
+      throw new Error('User not found');
+    }
+
+    // Helper to replace and deduplicate IDs
+    const replaceAndDedupIds = (ids: string[]): string[] => {
+      const seen = new Set<string>();
+      const result: string[] = [];
+      for (const id of ids) {
+        const replacement = id === guestId ? userId : id;
+        if (!seen.has(replacement)) {
+          seen.add(replacement);
+          result.push(replacement);
+        }
+      }
+      return result;
+    };
+
+    // Replace in memberIds
+    const memberIds = replaceAndDedupIds(round.memberIds);
+
+    // Replace in games (including handicapStrokes and horseSettings)
+    const updatedGames = round.games.map((game) => {
+      // Replace in handicapStrokes
+      const updatedHandicapStrokes: Record<string, any> = {};
+      for (const [hole, holeData] of Object.entries(game.handicapStrokes || {})) {
+        const updatedHoleData: Record<string, any> = { ...holeData };
+        if (updatedHoleData[guestId] !== undefined) {
+          updatedHoleData[userId] = updatedHoleData[guestId];
+          delete updatedHoleData[guestId];
+        }
+        updatedHandicapStrokes[hole] = updatedHoleData;
+      }
+
+      // Replace in horseSettings
+      const updatedHorseSettings: Record<string, Record<string, number>> = {};
+      for (const [segment, playerValues] of Object.entries(game.horseSettings || {})) {
+        const updatedSegment: Record<string, number> = { ...playerValues };
+        if (updatedSegment[guestId] !== undefined) {
+          updatedSegment[userId] = updatedSegment[guestId];
+          delete updatedSegment[guestId];
+        }
+        updatedHorseSettings[segment] = updatedSegment;
+      }
+
+      return {
+        ...game,
+        playerIds: replaceAndDedupIds(game.playerIds),
+        redTeamIds: replaceAndDedupIds(game.redTeamIds),
+        blueTeamIds: replaceAndDedupIds(game.blueTeamIds),
+        handicapStrokes: updatedHandicapStrokes,
+        horseSettings: updatedHorseSettings,
+      };
+    });
+
+    // Replace in score and stats
+    const updatedScore: Record<string, Record<string, number | null>> = {};
+    for (const [hole, userScores] of Object.entries(round.score)) {
+      updatedScore[hole] = {};
+      for (const [uid, score] of Object.entries(userScores)) {
+        updatedScore[hole][uid === guestId ? userId : uid] = score;
+      }
+    }
+
+    const updatedStats: Record<string, Record<string, any>> = {};
+    for (const [hole, userStats] of Object.entries(round.stats || {})) {
+      updatedStats[hole] = {};
+      for (const [uid, stats] of Object.entries(userStats)) {
+        updatedStats[hole][uid === guestId ? userId : uid] = stats;
+      }
+    }
+
+    // Replace in olympic if exists
+    const updatedOlympic: Record<string, Record<string, any>> | undefined =
+      round.olympic
+        ? (() => {
+            const result: Record<string, Record<string, any>> = {};
+            for (const [hole, userOlympic] of Object.entries(round.olympic!)) {
+              result[hole] = {};
+              for (const [uid, olympic] of Object.entries(userOlympic)) {
+                result[hole][uid === guestId ? userId : uid] = olympic;
+              }
+            }
+            return result;
+          })()
+        : undefined;
+
+    // Replace in userTeeboxes if exists
+    const updatedUserTeeboxes: Record<string, any> = {};
+    for (const [uid, teebox] of Object.entries(round.userTeeboxes || {})) {
+      updatedUserTeeboxes[uid === guestId ? userId : uid] = teebox;
+    }
+
+    // Replace adminId if guest was admin
+    const updatedAdminId = round.adminId === guestId ? userId : round.adminId;
+
+    await updateDoc(roundRef, {
+      adminId: updatedAdminId,
+      memberIds,
+      games: updatedGames,
+      score: updatedScore,
+      stats: updatedStats,
+      ...(updatedOlympic && { olympic: updatedOlympic }),
+      userTeeboxes: updatedUserTeeboxes,
       updatedAt: serverTimestamp(),
     });
   }

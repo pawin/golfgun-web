@@ -145,26 +145,31 @@ export default function TeeboxSelector({
       teeboxIds.push(selectedBackTeeboxId);
     }
 
-    await roundService.updateUserTeebox(round.id, currentUserId, teeboxIds);
-    onClose();
+    try {
+      await roundService.updateUserTeebox(round.id, currentUserId, teeboxIds);
+      onClose();
+    } catch (e) {
+      console.error('Failed to save teebox selection:', e);
+      alert('Failed to save teebox selection');
+    }
   };
 
-  const teeTile = (sc: Scorecard, t: TeeboxRow, isFrontNine: boolean) => {
-    const yards = totalYards(t);
-    const rating = t.rating?.toFixed(1) ?? '-';
-    const slope = t.slope?.toString() ?? '-';
-    const badgeColorStr = colorFromName(t.color);
+  const teeTile = (sc: Scorecard, teebox: TeeboxRow, isFrontNine: boolean) => {
+    const yards = totalYards(teebox);
+    const rating = teebox.rating?.toFixed(1) ?? '-';
+    const slope = teebox.slope?.toString() ?? '-';
+    const badgeColorStr = colorFromName(teebox.color);
     const badgeColor = parseColor(badgeColorStr);
     const luminance = getLuminance(badgeColor);
     const fg = luminance < 0.5 ? '#ffffff' : '#000000';
     const isSelected = isFrontNine
-      ? selectedFrontTeeboxId === t.rowId
-      : selectedBackTeeboxId === t.rowId;
+      ? selectedFrontTeeboxId === teebox.rowId
+      : selectedBackTeeboxId === teebox.rowId;
 
     return (
       <div
-        key={t.rowId}
-        onClick={() => updateTeeboxSelection(t.rowId, isFrontNine)}
+        key={teebox.rowId}
+        onClick={() => updateTeeboxSelection(teebox.rowId, isFrontNine)}
         className="flex items-center gap-2 p-3 cursor-pointer hover:bg-gray-50 rounded"
       >
         <div
@@ -177,7 +182,7 @@ export default function TeeboxSelector({
         </div>
         <div className="flex-1 min-w-0">
           <div className="text-sm font-medium">
-            {t.name} ({t.color})
+            {teebox.name} ({teebox.color})
           </div>
           <div className="text-xs text-gray-600">
             {t('yards')}: {yards} • {rating} / {slope}
@@ -248,9 +253,9 @@ export default function TeeboxSelector({
         </button>
         {shouldBeExpanded && (
           <div className="p-2">
-            {allTeeboxes.map((t, idx) => (
-              <div key={t.rowId}>
-                {teeTile(sc, t, isFrontNine)}
+            {allTeeboxes.map((teebox, idx) => (
+              <div key={teebox.rowId}>
+                {teeTile(sc, teebox, isFrontNine)}
                 {idx < allTeeboxes.length - 1 && (
                   <div className="h-px bg-gray-200 my-1" />
                 )}

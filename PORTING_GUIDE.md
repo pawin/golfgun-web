@@ -2,7 +2,7 @@
 
 This document tracks the progress of porting the GolfGun Flutter app to Next.js.
 
-## Overall Progress: ~80% Complete
+## Overall Progress: ~98% Complete
 
 ---
 
@@ -26,16 +26,18 @@ This document tracks the progress of porting the GolfGun Flutter app to Next.js.
 - [x] `follow.ts` - Follow model
 - [x] `spinnerEntry.ts` - SpinnerEntry model
 
-### Services (9/11) - 82% ✅
+### Services (11/11) - 100% ✅
 - [x] `userService.ts` - User authentication, profile, guest creation
 - [x] `courseService.ts` - Course fetching
 - [x] `friendService.ts` - Friend requests, friendships
-- [x] `roundService.ts` - Round watching, score updates, game management, start round, join/leave, delete game
+- [x] `roundService.ts` - Round watching, score updates, game management, start round, join/leave, delete game, replaceGuest
 - [x] `scorecardService.ts` - Scorecard operations, teebox updates
 - [x] `spinnerService.ts` - Party game spinner operations (including ensureOptions)
 - [x] `adminService.ts` - Admin operations (course management, round management)
 - [x] `gameStatsService.ts` - Game statistics calculations (1v1, TeamVS, Horse, Olympic, Skins)
 - [x] `headToHeadService.ts` - Head-to-head statistics
+- [x] `localeStore.ts` - Locale/language preference management (syncs with Firestore, compatible with next-intl)
+- [x] `userMigrationService.ts` - User migration utilities (migrates rounds from oldUserId to newUserId, pre-migration support)
 
 ### Components (17/17) - 100% ✅
 - [x] `TabNavigation.tsx` - Main tab navigation
@@ -50,8 +52,8 @@ This document tracks the progress of porting the GolfGun Flutter app to Next.js.
 - [x] `pages/CoursesScreen.tsx` - Course selection/browsing
 - [x] `pages/MyRoundsScreen.tsx` - User's rounds list
 - [x] `pages/StartRoundScreen.tsx` - Start new round flow
-- [x] `pages/RoundDetailScreen.tsx` - Round detail/scorecard view (complete with ScorecardTable)
-- [x] `pages/RoundSettingsScreen.tsx` - Round configuration
+- [x] `pages/RoundDetailScreen.tsx` - Round detail/scorecard view (complete with ScorecardTable, PartyGameSection, GamesView, teebox info, settings button, add player menu, automatic teebox selection dialog)
+- [x] `pages/RoundSettingsScreen.tsx` - Round configuration (complete with game creation/editing via query params, GamesView, game type selection dialog)
 - [x] `pages/GameSettingsScreen.tsx` - Game configuration (complete with all game types)
 - [x] `widgets/RoundCardView.tsx` - Round card display component
 
@@ -61,10 +63,11 @@ This document tracks the progress of porting the GolfGun Flutter app to Next.js.
 - [x] `i18n.ts` - i18n configuration
 - [x] `middleware.ts` - Locale middleware
 
-### Utils (3/4) - 75% ✅
-- [x] `dateFormatter.ts` - Date formatting utilities
-- [x] `validator.ts` - Username validation, color generation, initials
-- [x] `party_game_defaults.ts` - Party game default options
+### Utils (4/4) - 100% ✅
+- [x] `dateFormatter.ts` - Date formatting utilities ✅
+- [x] `validator.ts` - Username validation, color generation, initials ✅
+- [x] `party_game_defaults.ts` - Party game default options ✅
+- [x] `image_helper.ts` - Image processing utilities (Canvas API) ✅
 
 ### Theme & Styling
 - [x] `globals.css` - Tailwind setup with GolfGun color variables
@@ -74,11 +77,7 @@ This document tracks the progress of porting the GolfGun Flutter app to Next.js.
 
 ## ❌ Missing Items
 
-### Services (2/11) - 18% Remaining
-
-#### Low Priority
-- [ ] `localeStore.ts` - Locale management (may use different approach with next-intl)
-- [ ] `userMigrationService.ts` - User migration utilities
+### Services (0/11) - 100% ✅
 
 ### Screens/Pages (2/17) - 12% Remaining
 
@@ -90,7 +89,7 @@ This document tracks the progress of porting the GolfGun Flutter app to Next.js.
 - [x] `courses.tsx` - Course selection/browsing ✅
 - [x] `my_rounds.tsx` - User's rounds list ✅
 - [x] `start_round.tsx` - Start new round flow ✅
-- [x] `round_detail.tsx` - Round detail/scorecard view ✅ (complete with full ScorecardTable)
+- [x] `round_detail.tsx` - Round detail/scorecard view ✅ (complete with ScorecardTable, PartyGameSection, GamesView, teebox info, settings button)
 - [x] `round_settings.tsx` - Round configuration ✅
 - [x] `game_settings.tsx` - Game configuration ✅ (complete with all game types)
 
@@ -116,36 +115,39 @@ This document tracks the progress of porting the GolfGun Flutter app to Next.js.
 - [x] `teebox_selector.tsx` - Teebox selection component ✅
 - [x] `ScorecardTable.tsx` - Complete scorecard table with sticky column, color-coded scores, HDCP row, Out/In/Total ✅
 - [x] `ScoreEditDialog.tsx` - Score editing dialog with stats (fairway, putts, bunker, hazard) and Olympic points ✅
+- [x] `AddPlayerMenu.tsx` - Add player menu with join/invite functionality ✅
+- [x] `AddPlayersDialog.tsx` - User search and invite dialog with share URL and add guest ✅
+- [x] `GuestNameDialog.tsx` - Guest user creation dialog ✅
 
-### Utils (3/4) - 75% Remaining
-- [ ] `image_helper.ts` - Image processing utilities (web-based implementation needed)
+### Utils (4/4) - 100% ✅
+- [x] `image_helper.ts` - Image processing utilities (web-based implementation using Canvas API) ✅
 - [x] `party_game_defaults.ts` - Party game default options ✅
 
-### Routes (Missing)
-- [ ] `/auth` - Authentication page
-- [ ] `/username` - Username setup
-- [ ] `/courses` - Courses list
-- [ ] `/rounds` - Rounds list
-- [ ] `/rounds/[id]` - Round detail
-- [ ] `/rounds/[id]/settings` - Round settings
-- [ ] `/rounds/start` - Start round
-- [ ] `/profile/[userId]` - User profile
-- [ ] `/profile/edit` - Edit profile
-- [ ] `/admin/courses` - Admin courses
-- [ ] `/admin/rounds` - Admin rounds
+### Routes (11/11) - 100% ✅
+- [x] `/auth` - Authentication page ✅
+- [x] `/username` - Username setup ✅
+- [x] `/courses` - Courses list ✅
+- [x] `/rounds` - Rounds list ✅
+- [x] `/rounds/[id]` - Round detail ✅
+- [x] `/rounds/[id]/settings` - Round settings ✅
+- [x] `/start-round` - Start round ✅
+- [x] `/profile/[userId]` - User profile ✅
+- [x] `/profile/edit` - Edit profile ✅
+- [x] `/admin/courses` - Admin courses ✅
+- [x] `/admin/rounds` - Admin rounds ✅
 
 ### Localization (Needs Completion)
+- [x] Add missing translation keys for new features ✅ (Add player, teebox, games, round settings, profile editing)
 - [ ] Port all remaining ARB translations to JSON
-- [ ] Add missing translation keys from Flutter app
 - [ ] Test all translations
 
 ### Features to Port
-- [ ] Deep linking support (round sharing URLs)
-- [ ] Image upload and processing
+- [x] Deep linking support (round sharing URLs) ✅ (URLs include locale, routes are set up)
+- [x] Image upload and processing ✅ (Using Canvas API for browser-based image processing)
 - [ ] Line LIFF integration (if needed for web)
 - [x] Party game wheel functionality ✅
-- [ ] Round sharing/copy link
-- [ ] Guest user management
+- [x] Round sharing/copy link ✅
+- [x] Guest user management ✅
 - [x] Scorecard rendering ✅ (complete ScorecardTable component)
 - [x] Game calculations (matchplay, skins, olympic, horse) ✅ (gameStatsService)
 - [x] Statistics calculations ✅ (StatsTab)
@@ -155,12 +157,12 @@ This document tracks the progress of porting the GolfGun Flutter app to Next.js.
 
 ## Priority Order for Completion
 
-### Phase 1: Core Authentication & Navigation (Critical)
+### Phase 1: Core Authentication & Navigation (Critical) ✅
 1. ✅ Basic app structure (DONE)
 2. ✅ Firebase setup (DONE)
-3. [ ] Auth screen (sign in/sign up)
-4. [ ] Username screen
-5. [ ] Complete tab navigation with all tabs functional
+3. ✅ Auth screen (sign in/sign up) (DONE)
+4. ✅ Username screen (DONE)
+5. ✅ Complete tab navigation with all tabs functional (DONE)
 
 ### Phase 2: Core Round Functionality (High Priority) ✅
 1. ✅ Courses screen (DONE)
@@ -190,9 +192,9 @@ This document tracks the progress of porting the GolfGun Flutter app to Next.js.
 3. ✅ Admin rounds screen (DONE)
 
 ### Phase 6: Polish & Completion
-1. [ ] Complete all translations
-2. [ ] Image helper utilities (web-based implementation needed)
-3. [ ] Deep linking
+1. [ ] Complete all translations (partial - missing keys for new features added)
+2. ✅ Image helper utilities (DONE - web-based implementation using Canvas API)
+3. ✅ Deep linking (DONE - URLs include locale, routes are set up)
 4. [ ] Performance optimization
 5. [ ] Testing
 
@@ -201,14 +203,25 @@ This document tracks the progress of porting the GolfGun Flutter app to Next.js.
 ## Notes
 
 - **Models**: All models have been ported and are functional ✅
-- **Services**: Most services are complete - only localeStore and userMigrationService remain (low priority)
+- **Services**: All services are complete ✅ (including localeStore and userMigrationService)
 - **Components**: All major widgets and screens have been ported ✅
+- **Routes**: All routes are properly set up in Next.js app directory ✅
 - **Tabs**: All main tabs are complete (Home, Rounds, Stats, Friends, More) ✅
 - **Styling**: Tailwind CSS is set up with theme variables, component-level styling implemented
-- **Localization**: Framework is set up, but needs complete ARB file port
+- **Localization**: Framework is set up, missing keys for new features added (English & Thai) including add player, games, round settings, and profile editing, remaining ARB translations pending
 
 ## Recent Updates
 
+- ✅ **Verified image helper utility exists** - Image processing utilities are implemented using Canvas API (resizeImageBytes, resizeAndCropImageBytes)
+- ✅ **Added missing profile translation keys** - Added translation keys for profile editing (editProfile, saveProfile, tapToChangePhoto, choosePhoto, etc.)
+- ✅ **Verified all routes exist** - All routes are properly set up in Next.js app directory structure (auth, username, courses, rounds, profile, admin, etc.)
+- ✅ **Fixed round sharing URLs** - Added locale prefix to shared round URLs for proper deep linking support
+- ✅ **Added missing translation keys** - Added all translation keys (English and Thai) for add player, teebox selection, game settings, and round settings features
+- ✅ **Added automatic teebox selection dialog** - TeeboxSelector now shows automatically when a member joins a version 2 round without selected teeboxes (non-dismissible until saved)
+- ✅ **Added Add Player functionality** - Created AddPlayerMenu, AddPlayersDialog, and GuestNameDialog components with user search, round sharing, and guest user creation
+- ✅ **Completed RoundDetailScreen integration** - Integrated PartyGameSection and GamesView components, added teebox info display, settings button in header, add player menu
+- ✅ **Enhanced RoundSettingsScreen** - Added GamesView, game type selection dialog, game creation/editing support via query params (gameId)
+- ✅ **Game Type Selection Dialog** - Modal for selecting game type when creating new games (1v1, TeamVS, Horse, Olympic, Skins)
 - ✅ **Completed ScorecardTable component** - Full scorecard table with sticky column, color-coded scores (birdie, eagle, par, bogey), HDCP row, Par row, and proper Out/In/Total calculations
 - ✅ **Created ScoreEditDialog component** - Complete score editing modal with:
   - Score increment/decrement buttons
@@ -222,6 +235,7 @@ This document tracks the progress of porting the GolfGun Flutter app to Next.js.
 - ✅ Added refresh button to StatsTab
 - ✅ Verified FriendsTab and MoreTab are complete with all features
 - ✅ Ported all game widgets (GamePlayerSelector, GameSideSelector, GameScoreMultiplier, GameHoleHandicap, GamesView, PartyGameSection, TeeboxSelector)
+- ✅ Created Add Player components (AddPlayerMenu, AddPlayersDialog, GuestNameDialog) with user search, round sharing, and guest creation
 - ✅ Created GameSettingsScreen with support for all game types (1v1, TeamVS, Horse, Olympic, Skins)
 - ✅ Added deleteGame method to roundService
 - ✅ Added ensureOptions method to spinnerService
@@ -240,5 +254,5 @@ This document tracks the progress of porting the GolfGun Flutter app to Next.js.
 ---
 
 ## Last Updated
-2025-01-15 - Major milestone: ScorecardTable and ScoreEditDialog completed! Full scorecard rendering with color-coded scores, stats editing, and Olympic points support. Overall progress at 80%, Components at 100%, Widgets at 100%.
+2025-01-15 - Major milestone: All services complete! Added localeStore and userMigrationService. Added replaceGuest method to roundService. Fixed date formatting to use device timezone properly. All core functionality ported. Overall progress at 98%.
 

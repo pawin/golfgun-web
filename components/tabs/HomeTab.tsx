@@ -40,6 +40,7 @@ export default function HomeTab() {
     }
   }, [user, loading]);
 
+
   const loadRounds = async () => {
     if (!user) return;
 
@@ -49,10 +50,28 @@ export default function HomeTab() {
     try {
       const allRounds = await roundService.getAllRounds(user.uid);
       
+      console.log('All rounds loaded:', allRounds.length);
+      console.log('Rounds data:', allRounds.map(r => ({
+        id: r.id,
+        deletedAt: r.deletedAt,
+        isFinished: r.isFinished,
+        memberIds: r.memberIds,
+        adminId: r.adminId,
+        userId: user.uid,
+      })));
+      
       // Filter active rounds (not finished, not deleted)
+      // Include rounds where the user is a member or the admin
       const active = allRounds
-        .filter((r) => !r.deletedAt && !r.isFinished)
+        .filter((r) => {
+          const isMember = r.memberIds.includes(user.uid) || r.adminId === user.uid;
+          const notDeleted = !r.deletedAt;
+          const notFinished = !r.isFinished;
+          return isMember && notDeleted && notFinished;
+        })
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+      console.log('Active rounds after filtering:', active.length, active.map(r => r.id));
 
       setActiveRounds(active);
 
@@ -127,10 +146,27 @@ export default function HomeTab() {
           </h1>
         </div>
 
-        {/* Active Rounds Section */}
-        {activeRounds.length > 0 && (
-          <ActiveRoundsSection rounds={activeRounds} users={users} currentUserId={user.uid} />
+        {/* Error Display */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <p className="text-red-700 text-sm">{error}</p>
+            <button
+              onClick={loadRounds}
+              className="mt-2 text-red-600 underline text-sm"
+            >
+              {t('retry')}
+            </button>
+          </div>
         )}
+
+        {/* Active Rounds Section */}
+        {activeRounds.length > 0 ? (
+          <ActiveRoundsSection rounds={activeRounds} users={users} currentUserId={user.uid} />
+        ) : !loadingRounds && !error ? (
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center text-gray-600">
+            <p>{t('noActiveRounds')}</p>
+          </div>
+        ) : null}
 
         {/* Start New Round Button */}
         <button

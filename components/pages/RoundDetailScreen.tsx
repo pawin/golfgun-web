@@ -13,17 +13,22 @@ import { DateFormatter, AppDateFormatStyle } from '@/lib/utils/dateFormatter';
 import ScorecardTable from '@/components/widgets/ScorecardTable';
 import PartyGameSection from '@/components/widgets/PartyGameSection';
 import GamesView from '@/components/widgets/GamesView';
+import AddPlayerMenu from '@/components/widgets/AddPlayerMenu';
+import TeeboxSelector from '@/components/widgets/TeeboxSelector';
 import { useLocale } from 'next-intl';
 
 export default function RoundDetailScreen() {
   const t = useTranslations();
   const router = useRouter();
+  const locale = useLocale(); // Must be called at top level, before any conditional returns
   const params = useParams();
   const [user, loading] = useAuthState(auth);
   const [round, setRound] = useState<Round | null>(null);
   const [users, setUsers] = useState<Record<string, AppUser>>({});
   const [loadingRound, setLoadingRound] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showTeeboxDialog, setShowTeeboxDialog] = useState(false);
+  const [teeboxDialogShown, setTeeboxDialogShown] = useState(false);
 
   const [roundId, setRoundId] = useState<string | null>(null);
 
@@ -57,10 +62,22 @@ export default function RoundDetailScreen() {
           setUsers(fetchedUsers);
         });
       }
+
+      // Check if teebox dialog should be shown
+      if (
+        updatedRound.version === '2' &&
+        !teeboxDialogShown &&
+        user?.uid &&
+        updatedRound.memberIds.includes(user.uid) &&
+        (!updatedRound.userTeeboxes[user.uid] || updatedRound.userTeeboxes[user.uid].length === 0)
+      ) {
+        setShowTeeboxDialog(true);
+        setTeeboxDialogShown(true);
+      }
     });
 
     return () => unsubscribe();
-  }, [roundId]);
+  }, [roundId, user?.uid, teeboxDialogShown]);
 
   if (loading || loadingRound) {
     return (
@@ -90,7 +107,6 @@ export default function RoundDetailScreen() {
 
   const isAdmin = round.adminId === user?.uid;
   const isMember = round.memberIds.includes(user?.uid || '');
-  const locale = useLocale();
 
   // Calculate teebox info if available
   const getTeeboxInfo = () => {
@@ -136,6 +152,14 @@ export default function RoundDetailScreen() {
         </button>
         <h1 className="text-lg font-semibold">{t('round')}</h1>
         <div className="flex items-center gap-2">
+          <AddPlayerMenu
+            roundId={round.id}
+            round={round}
+            currentUserId={user?.uid || ''}
+            onUpdate={() => {
+              // Round will update automatically via watchRound
+            }}
+          />
           {isMember && (
             <button
               onClick={() => router.push(`/${locale}/rounds/${round.id}/settings`)}
@@ -160,7 +184,7 @@ export default function RoundDetailScreen() {
           )}
           {round.isFinished && (
             <p className="text-sm text-gray-600 mt-1">
-              {DateFormatter.format(round.createdAt, AppDateFormatStyle.medium)}
+              {DateFormatter.format(round.createdAt, AppDateFormatStyle.medium, locale === 'th' ? 'th-TH' : locale === 'en' ? 'en-US' : undefined)}
             </p>
           )}
         </div>
@@ -196,6 +220,15 @@ export default function RoundDetailScreen() {
           />
         </div>
       </div>
+
+      {/* Teebox Selection Dialog */}
+      {showTeeboxDialog && round && user?.uid && (
+        <TeeboxSelector
+          round={round}
+          currentUserId={user.uid}
+          onClose={() => setShowTeeboxDialog(false)}
+        />
+      )}
     </div>
   );
 }
