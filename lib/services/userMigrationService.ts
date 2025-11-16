@@ -14,6 +14,7 @@ import {
   setDoc,
   serverTimestamp,
   SetOptions,
+  deleteField,
 } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { roundService } from './roundService';

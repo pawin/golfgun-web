@@ -9,7 +9,7 @@ import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { auth } from '@/lib/firebase/config';
 import { friendService, FriendOverview, FriendshipWithUser } from '@/lib/services/friendService';
 import { AppUser } from '@/lib/models/appUser';
-import { getInitials } from '@/lib/utils/validator';
+import { colorFromName, getInitials } from '@/lib/utils/validator';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useLocale } from 'next-intl';
 
@@ -369,7 +369,7 @@ function SearchResultTile({
   onAction: (action: string) => void;
 }) {
   const t = useTranslations();
-  const bgColor = colorVarFromName(entry.user.name);
+  const bgColor = colorFromName(entry.user.name);
   const initials = getInitials(entry.user.name);
 
   const renderAction = () => {
@@ -518,7 +518,7 @@ function FriendListTile({
   onTap: () => void;
 }) {
   const t = useTranslations();
-  const bgColor = colorVarFromName(user.name);
+  const bgColor = colorFromName(user.name);
   const initials = getInitials(user.name);
 
   const renderActions = () => {
@@ -579,25 +579,4 @@ function FriendListTile({
       {renderActions()}
     </div>
   );
-}
-
-// Use chart color tokens to avoid hex colors for avatars
-function colorVarFromName(name: string): string {
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = (hash << 5) - hash + name.charCodeAt(i);
-    hash |= 0;
-  }
-  const index = Math.abs(hash) % 8; // chart-1..chart-8
-  const vars = [
-    'var(--color-chart-1)',
-    'var(--color-chart-2)',
-    'var(--color-chart-3)',
-    'var(--color-chart-4)',
-    'var(--color-chart-5)',
-    'var(--color-chart-6)',
-    'var(--color-chart-7)',
-    'var(--color-chart-8)',
-  ];
-  return vars[index];
 }

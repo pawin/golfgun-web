@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGolfBall, faChartLine, faTrophy, faCalendar, faMapMarkerAlt, faBullseye, faWater, faChartBar, faSync, faRedo } from '@fortawesome/free-solid-svg-icons';
+import { faGolfBall, faChartLine, faTrophy, faCalendar, faMapMarkerAlt, faBullseye, faWater, faChartBar, faSync, faRedo, faFlag } from '@fortawesome/free-solid-svg-icons';
 import { auth } from '@/lib/firebase/config';
 import { roundService } from '@/lib/services/roundService';
 import { Round, calculateGir, roundScorecardBridge, roundIsFinished } from '@/lib/models/round';
@@ -138,24 +138,26 @@ function SummarySection({ stats }: { stats: RoundStatistics }) {
     <div className="bg-white border border-gray-200 rounded-lg p-4">
       <h2 className="text-lg font-bold mb-4">{t('summary')}</h2>
       <div className="space-y-3">
-        <StatRow icon={faGolfBall} label={t('totalRounds')} value={stats.totalRounds.toString()} />
+        <StatRow icon={faGolfBall} label={t('totalRounds')} value={stats.totalRounds.toString()} iconColorClass="text-green-600" />
         {stats.totalRounds > 0 && (
           <>
             <StatRow
               icon={faChartLine}
               label={t('averageScore')}
               value={stats.averageScore > 0 ? stats.averageScore.toFixed(1) : t('dash')}
+              iconColorClass="text-green-600"
             />
             {stats.bestScore !== 0 && (
               <StatRow
                 icon={faTrophy}
                 label={t('bestScore')}
                 value={formatBestScore(stats.bestTotalScore, stats.bestScore)}
+                iconColorClass="text-green-600"
               />
             )}
-            <StatRow icon={faCalendar} label={t('thisMonth')} value={stats.roundsThisMonth.toString()} />
+            <StatRow icon={faCalendar} label={t('thisMonth')} value={stats.roundsThisMonth.toString()} iconColorClass="text-green-600" />
             {stats.mostPlayedCourse && (
-              <StatRow icon={faMapMarkerAlt} label={t('courses')} value={stats.mostPlayedCourse} />
+              <StatRow icon={faMapMarkerAlt} label={t('courses')} value={stats.mostPlayedCourse} iconColorClass="text-green-600" />
             )}
           </>
         )}
@@ -164,10 +166,20 @@ function SummarySection({ stats }: { stats: RoundStatistics }) {
   );
 }
 
-function StatRow({ icon, label, value }: { icon: any; label: string; value: string }) {
+function StatRow({
+  icon,
+  label,
+  value,
+  iconColorClass,
+}: {
+  icon: any;
+  label: string;
+  value: string;
+  iconColorClass?: string;
+}) {
   return (
     <div className="flex items-center gap-3">
-      <FontAwesomeIcon icon={icon} className="text-xl" />
+      <FontAwesomeIcon icon={icon} className={`text-xl ${iconColorClass ?? ''}`} />
       <span className="flex-1 text-gray-700">{label}</span>
       <span className="font-bold text-gray-900">{value}</span>
     </div>
@@ -197,25 +209,25 @@ function PerformanceStatsSection({ stats }: { stats: PerformanceStats }) {
           icon={faBullseye}
           label={t('fairwayHitPercentLabel')}
           value={stats.fairwayHitPercent != null ? `${stats.fairwayHitPercent.toFixed(1)}%` : t('dash')}
-          color="blue"
+          iconColorClass="text-red-600"
         />
         <PerformanceCard
-          icon={faGolfBall}
+          icon={faFlag}
           label={t('girPercentLabel')}
           value={stats.girPercent != null ? `${stats.girPercent.toFixed(1)}%` : t('dash')}
-          color="green"
+          iconColorClass="text-emerald-600"
         />
         <PerformanceCard
           icon={faGolfBall}
           label={t('avgPuttsPerHoleLabel')}
           value={stats.averagePutts != null ? stats.averagePutts.toFixed(1) : t('dash')}
-          color="orange"
+          iconColorClass="text-sky-600"
         />
         <PerformanceCard
           icon={faWater}
           label={t('bunkersHazardsLabel')}
           value={`${stats.totalBunkers}/${stats.totalHazards}`}
-          color="brown"
+          iconColorClass="text-amber-600"
         />
       </div>
     </div>
@@ -226,16 +238,16 @@ function PerformanceCard({
   icon,
   label,
   value,
-  color,
+  iconColorClass,
 }: {
   icon: any;
   label: string;
   value: string;
-  color: string;
+  iconColorClass?: string;
 }) {
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-4 flex flex-col items-center">
-      <FontAwesomeIcon icon={icon} className="text-3xl mb-2" />
+      <FontAwesomeIcon icon={icon} className={`text-3xl mb-2 ${iconColorClass ?? ''}`} />
       <span className="text-xl font-bold mb-1">{value}</span>
       <span className="text-xs text-gray-600 text-center">{label}</span>
     </div>
@@ -286,19 +298,22 @@ function ScoringBreakdownSection({ stats }: { stats: ScoringBreakdownStats }) {
         <h3 className="text-md font-bold mb-4">{t('averageScoreByPar')}</h3>
         <div className="space-y-3">
           <StatRow
-            icon={faGolfBall}
+            icon={faFlag}
             label={t('par3s')}
             value={stats.averagePar3 != null ? stats.averagePar3.toFixed(2) : t('dash')}
+            iconColorClass="text-emerald-600"
           />
           <StatRow
-            icon={faGolfBall}
+            icon={faFlag}
             label={t('par4s')}
             value={stats.averagePar4 != null ? stats.averagePar4.toFixed(2) : t('dash')}
+            iconColorClass="text-sky-600"
           />
           <StatRow
-            icon={faGolfBall}
+            icon={faFlag}
             label={t('par5s')}
             value={stats.averagePar5 != null ? stats.averagePar5.toFixed(2) : t('dash')}
+            iconColorClass="text-amber-600"
           />
         </div>
       </div>
