@@ -5,7 +5,7 @@ import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
+import { faPenToSquare, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { auth } from '@/lib/firebase/config';
 import { roundService } from '@/lib/services/roundService';
 import { spinnerService } from '@/lib/services/spinnerService';
@@ -96,7 +96,7 @@ export default function RoundSettingsScreen() {
     try {
       await roundService.deleteRound(roundId, user.uid);
       alert(t('roundDeleted'));
-      router.push(`/${locale}/rounds`);
+      router.push(`/${locale}`);
     } catch (e) {
       alert(t('failedToDeleteRound', { error: (e as Error).toString() }));
     } finally {
@@ -291,7 +291,13 @@ export default function RoundSettingsScreen() {
           game={game}
           users={users}
           currentUserId={user.uid}
-          onClose={() => router.back()}
+          onClose={() => {
+            if (roundId) {
+              router.push(`/${locale}/rounds/${roundId}`);
+            } else {
+              router.back();
+            }
+          }}
         />
       );
     }
@@ -300,7 +306,22 @@ export default function RoundSettingsScreen() {
   return (
     <div className="min-h-screen bg-subtle pb-20">
       <div className="sticky top-0 bg-background border-b border-border px-4 py-3">
-        <h1 className="text-xl font-semibold">{t('roundSettings')}</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-xl font-semibold">{t('roundSettings')}</h1>
+          <button
+            aria-label="Close"
+            onClick={() => {
+              if (roundId) {
+                router.push(`/${locale}/rounds/${roundId}`);
+              } else {
+                router.back();
+              }
+            }}
+            className="inline-flex items-center justify-center w-9 h-9 rounded-md hover:bg-accent/20"
+          >
+            <FontAwesomeIcon icon={faXmark} className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
       <div className="p-4 space-y-4">

@@ -317,8 +317,11 @@ export default function GameSettingsScreen({
 
       alert(t('gameSettingsSaved'));
       if (popAfterSave) {
-        onClose?.();
-        router.back();
+        if (onClose) {
+          onClose();
+        } else {
+          router.back();
+        }
       }
     } catch (e) {
       alert(t('failedToSaveGame').replace('{error}', String(e)));
@@ -336,8 +339,11 @@ export default function GameSettingsScreen({
     try {
       await roundService.deleteGame({ roundId: round.id, gameId: game.id });
       alert(t('gameDeleted'));
-      onClose?.();
-      router.back();
+      if (onClose) {
+        onClose();
+      } else {
+        router.back();
+      }
     } catch (e) {
       alert(t('failedToDeleteGame').replace('{error}', String(e)));
     } finally {
