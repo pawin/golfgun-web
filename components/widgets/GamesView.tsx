@@ -16,6 +16,7 @@ import {
   HorseSegmentScore,
 } from '@/lib/services/gameStatsService';
 import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
 
 interface GamesViewProps {
   round: Round | null;
@@ -85,27 +86,24 @@ export default function GamesView({
       <div className="flex items-center justify-between mb-2">
         <h2 className="text-xl font-semibold">{t('gamesTitle')}</h2>
             {isMember && onAddGame && (
-          <button
-            onClick={onAddGame}
-            className="w-11 h-8 bg-green-600 text-white rounded flex items-center justify-center hover:bg-green-700"
-          >
+          <Button onClick={onAddGame} size="icon" aria-label={t('add') || 'Add'}>
             <FontAwesomeIcon icon={faPlus} className="w-4 h-4" />
-          </button>
+          </Button>
         )}
       </div>
 
       {games.length > 0 && (
         <div className="space-y-2">
           {sortedTypes.map(([gameType, gamesOfType]) => (
-            <div key={gameType} className="bg-white border border-gray-200 rounded-lg p-4">
+            <div key={gameType} className="bg-card border border-border rounded-lg p-4">
               <h3 className="text-lg font-bold mb-3">{getGameTypeTitle(gameType)}</h3>
-              <div className="h-px bg-gray-200 mb-3" />
+              <div className="h-px bg-border mb-3" />
               <div className="space-y-0">
                 {gamesOfType.map((game, index) => (
                   <div key={game.id}>
                     <div
                       onClick={() => isMember && onGameTap?.(game)}
-                      className={`py-3 px-2 ${isMember ? 'cursor-pointer hover:bg-gray-50 rounded' : ''}`}
+                      className={`py-3 px-2 ${isMember ? 'cursor-pointer hover:bg-accent/20 rounded' : ''}`}
                     >
                       {gameType.toLowerCase() === '1v1' && (
                         <OneVOneGameDisplay round={round} game={game} usersMap={usersMap} />
@@ -126,7 +124,7 @@ export default function GamesView({
                         <DefaultGameDisplay round={round} game={game} usersMap={usersMap} />
                       )}
                     </div>
-                    {index < gamesOfType.length - 1 && <div className="h-px bg-gray-200" />}
+                    {index < gamesOfType.length - 1 && <div className="h-px bg-border" />}
                   </div>
                 ))}
               </div>
@@ -177,7 +175,7 @@ function OneVOneGameDisplay({
           +
         </span>
         <div
-          className="min-w-[40px] min-h-[40px] px-2 py-2 rounded flex items-center justify-center text-white text-base font-medium"
+          className="min-w-[40px] min-h-[40px] px-2 py-2 rounded flex items-center justify-center text-base font-medium text-primary-foreground"
           style={{ backgroundColor: color }}
         >
           {scoreText}
@@ -247,7 +245,7 @@ function TeamVsGameDisplay({
             +
           </span>
         </div>
-        <div className="text-xs text-gray-600">{t('bestScoreCount', { count: stats.scoreCountMode?.toString() || '1' })}</div>
+        <div className="text-xs text-muted-foreground">{t('bestScoreCount', { count: stats.scoreCountMode?.toString() || '1' })}</div>
       </div>
       <div className="flex-1 text-right">
         {stats.bluePlayers.map((player, idx) => (
@@ -447,11 +445,11 @@ function DefaultGameDisplay({
         <div className="text-base font-semibold">
           {t('gamesTitle')} {game.id}
         </div>
-        <div className="text-xs text-gray-500">
+        <div className="text-xs text-muted-foreground">
           {playerCount} {t('players').toLowerCase()}
         </div>
       </div>
-      <FontAwesomeIcon icon={faChevronRight} className="w-5 h-5 text-gray-400" />
+      <FontAwesomeIcon icon={faChevronRight} className="w-5 h-5 text-muted-foreground" />
     </div>
   );
 }

@@ -75,39 +75,47 @@ export default function ScorecardTable({
     return parseInt(parValue?.toString() ?? '4') || 4;
   };
 
-  const getCellStyle = (score: number, parValue: number): { shape: 'circle' | 'square'; bgColor: string; textColor: string } => {
+  const getCellStyle = (score: number, parValue: number): { shape: 'circle' | 'square'; className: string } => {
     if (score <= 0) {
-      return { shape: 'circle', bgColor: 'transparent', textColor: '#000000' };
+      return { shape: 'circle', className: '' };
     }
 
     const diff = score - parValue;
 
     if (score === 1) {
-      return { shape: 'circle', bgColor: '#9932CC', textColor: '#FFFFFF' }; // Purple (Hole in One)
+      // Hole in One - celebrate with primary
+      return { shape: 'circle', className: 'bg-primary text-primary-foreground' };
     }
     if (diff === -3) {
-      return { shape: 'circle', bgColor: '#FF69B4', textColor: '#FFFFFF' }; // Pink (Albatross)
+      // Albatross - primary as well
+      return { shape: 'circle', className: 'bg-primary text-primary-foreground' };
     }
     if (diff === -2) {
-      return { shape: 'circle', bgColor: '#FF8C00', textColor: '#FFFFFF' }; // Orange (Eagle)
+      // Eagle - accent
+      return { shape: 'circle', className: 'bg-accent text-accent-foreground' };
     }
     if (diff === -1) {
-      return { shape: 'circle', bgColor: '#DC143C', textColor: '#FFFFFF' }; // Red (Birdie)
+      // Birdie - secondary
+      return { shape: 'circle', className: 'bg-secondary text-secondary-foreground' };
     }
     if (diff === 0) {
-      return { shape: 'circle', bgColor: '#1E90FF', textColor: '#FFFFFF' }; // Blue (Par)
+      // Par - muted
+      return { shape: 'circle', className: 'bg-muted text-foreground' };
     }
     if (diff === 1) {
-      return { shape: 'circle', bgColor: '#32CD32', textColor: '#FFFFFF' }; // Green (Bogey)
+      // Bogey - outline/neutral
+      return { shape: 'circle', className: 'bg-muted text-muted-foreground' };
     }
     if (diff === 2) {
-      return { shape: 'square', bgColor: '#808080', textColor: '#FFFFFF' }; // Grey (Double Bogey)
+      // Double Bogey - destructive (square)
+      return { shape: 'square', className: 'bg-destructive text-white' };
     }
     if (diff >= 3) {
-      return { shape: 'square', bgColor: '#000000', textColor: '#FFFFFF' }; // Black (Triple or worse)
+      // Triple or worse - destructive (square)
+      return { shape: 'square', className: 'bg-destructive text-white' };
     }
 
-    return { shape: 'circle', bgColor: 'transparent', textColor: '#000000' };
+    return { shape: 'circle', className: '' };
   };
 
   const getStrokeLabel = (score: number, parValue: number): string => {
@@ -215,14 +223,14 @@ export default function ScorecardTable({
   };
 
   return (
-    <div className="border border-gray-200 rounded-lg overflow-hidden">
+    <div className="border border-border rounded-lg overflow-hidden bg-card">
       <div className="relative overflow-x-auto">
         {/* Scrollable table */}
-        <table className="min-w-full divide-y divide-gray-200">
+        <table className="min-w-full divide-y divide-border">
           <thead>
             {/* Header row (Holes) */}
-            <tr className="bg-green-600 text-white">
-              <th className="w-20 h-10 px-2 py-2 text-xs font-bold sticky left-0 bg-green-600 z-20">
+            <tr className="bg-accent text-accent-foreground">
+              <th className="w-20 h-10 px-2 py-2 text-xs font-bold sticky left-0 bg-accent z-20">
                 {t('hole')}
               </th>
               {holes.map((hole, idx) => {
@@ -232,7 +240,7 @@ export default function ScorecardTable({
                   <th
                     key={idx}
                     className={`h-10 px-2 py-2 text-xs font-bold text-center ${
-                      isSummary ? 'w-16 bg-green-500' : 'w-10'
+                      isSummary ? 'w-16 bg-accent/80' : 'w-10'
                     }`}
                   >
                     {hole.value?.toString() || ''}
@@ -241,8 +249,8 @@ export default function ScorecardTable({
               })}
             </tr>
             {/* HDCP row */}
-            <tr className="bg-green-50">
-              <th className="w-20 h-10 px-2 py-2 text-xs font-bold sticky left-0 bg-green-50 z-20 border-r border-gray-200">
+            <tr className="bg-muted">
+              <th className="w-20 h-10 px-2 py-2 text-xs font-bold sticky left-0 bg-muted z-20 border-r border-border">
                 {t('handicapShort') || 'HDCP'}
               </th>
               {handicaps.map((hdcp, idx) => {
@@ -261,8 +269,8 @@ export default function ScorecardTable({
               })}
             </tr>
             {/* Par row */}
-            <tr className="bg-green-600 text-white">
-              <th className="w-20 h-10 px-2 py-2 text-xs font-bold sticky left-0 bg-green-600 z-20 border-r border-green-500">
+            <tr className="bg-accent text-accent-foreground">
+              <th className="w-20 h-10 px-2 py-2 text-xs font-bold sticky left-0 bg-accent z-20 border-r border-border">
                 {t('par')}
               </th>
               {holes.map((hole, idx) => {
@@ -273,7 +281,7 @@ export default function ScorecardTable({
                   <td
                     key={idx}
                     className={`h-10 px-2 py-2 text-xs font-bold text-center ${
-                      isSummary ? 'w-16 bg-green-500' : 'w-10'
+                      isSummary ? 'w-16 bg-accent/80' : 'w-10'
                     }`}
                   >
                     {parValue?.toString() || ''}
@@ -282,7 +290,7 @@ export default function ScorecardTable({
               })}
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-card divide-y divide-border">
             {round.memberIds.map((memberId) => {
               const member = users[memberId];
               if (!member) return null;
@@ -292,11 +300,11 @@ export default function ScorecardTable({
               let inPhase = startsWithIn;
 
               return (
-                <tr key={memberId} className="hover:bg-gray-50">
+                <tr key={memberId} className="hover:bg-accent/20">
                   {/* Sticky player name cell */}
                   <td
                     onClick={(e) => handleNameClick(memberId, e)}
-                    className="w-20 h-10 px-2 py-2 text-xs font-semibold sticky left-0 bg-white z-20 border-r border-gray-200 text-center cursor-pointer hover:underline"
+                    className="w-20 h-10 px-2 py-2 text-xs font-semibold sticky left-0 bg-card z-20 border-r border-border text-center cursor-pointer hover:underline"
                     style={{
                       color: roundColorForPlayer(round, memberId),
                     }}
@@ -326,7 +334,7 @@ export default function ScorecardTable({
                       return (
                         <td
                           key={idx}
-                          className="w-16 h-10 px-2 py-2 text-sm font-bold text-center bg-gray-50"
+                          className="w-16 h-10 px-2 py-2 text-sm font-bold text-center bg-muted"
                         >
                           {displayValue}
                         </td>
@@ -378,17 +386,13 @@ export default function ScorecardTable({
                           <div
                             className={`absolute inset-0 flex items-center justify-center ${
                               style.shape === 'circle' ? 'rounded-full' : 'rounded'
-                            }`}
-                            style={{
-                              backgroundColor: style.bgColor,
-                              color: style.textColor,
-                            }}
+                            } ${style.className}`}
                           >
                             {holeScoreText}
                           </div>
                         )}
                         {holeScore === 0 && holeScoreText && (
-                          <span className="text-gray-500">{holeScoreText}</span>
+                          <span className="text-muted-foreground">{holeScoreText}</span>
                         )}
                       </td>
                     );

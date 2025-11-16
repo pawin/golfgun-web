@@ -170,7 +170,7 @@ export default function TeeboxSelector({
       <div
         key={teebox.rowId}
         onClick={() => updateTeeboxSelection(teebox.rowId, isFrontNine)}
-        className="flex items-center gap-2 p-3 cursor-pointer hover:bg-gray-50 rounded"
+        className="flex items-center gap-2 p-3 cursor-pointer hover:bg-accent/20 rounded"
       >
         <div
           className="w-7 h-7 rounded-full flex items-center justify-center"
@@ -184,13 +184,13 @@ export default function TeeboxSelector({
           <div className="text-sm font-medium">
             {teebox.name} ({teebox.color})
           </div>
-          <div className="text-xs text-gray-600">
+          <div className="text-xs text-muted-foreground">
             {t('yards')}: {yards} • {rating} / {slope}
           </div>
         </div>
         {isSelected && (
           <svg
-            className="w-5 h-5 text-green-600"
+            className="w-5 h-5 text-primary"
             fill="currentColor"
             viewBox="0 0 20 20"
           >
@@ -223,7 +223,7 @@ export default function TeeboxSelector({
     const titleText = isSingleScorecard ? displayName : `${displayName} - ${sideLabel}`;
 
     return (
-      <div key={sc.id} className="border border-gray-200 rounded-lg overflow-hidden mb-2">
+      <div key={sc.id} className="border border-border rounded-lg overflow-hidden mb-2 bg-card">
         <button
           onClick={() => {
             if (expandedIndex === index) {
@@ -234,7 +234,7 @@ export default function TeeboxSelector({
               setExpandedIndex(index);
             }
           }}
-          className="w-full px-4 py-3 text-left font-semibold text-sm flex items-center justify-between bg-gray-50 hover:bg-gray-100"
+          className="w-full px-4 py-3 text-left font-semibold text-sm flex items-center justify-between bg-muted hover:bg-accent/20"
         >
           <span>{titleText}</span>
           <svg
@@ -257,7 +257,7 @@ export default function TeeboxSelector({
               <div key={teebox.rowId}>
                 {teeTile(sc, teebox, isFrontNine)}
                 {idx < allTeeboxes.length - 1 && (
-                  <div className="h-px bg-gray-200 my-1" />
+                  <div className="h-px bg-border my-1" />
                 )}
               </div>
             ))}
@@ -277,9 +277,9 @@ export default function TeeboxSelector({
     : null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] flex flex-col">
-        <div className="px-6 py-4 border-b border-gray-200">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-card rounded-lg shadow-xl max-w-md w-full max-h-[90vh] flex flex-col">
+        <div className="px-6 py-4 border-b border-border">
           <h2 className="text-lg font-semibold">{t('selectTeebox')}</h2>
         </div>
         <div className="flex-1 overflow-y-auto p-4">
@@ -296,8 +296,8 @@ export default function TeeboxSelector({
               disabled={!areAllTeeboxesSelected()}
               className={`w-full py-2 px-4 rounded-lg font-medium ${
                 areAllTeeboxesSelected()
-                  ? 'bg-green-600 text-white hover:bg-green-700'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                  : 'bg-muted text-muted-foreground cursor-not-allowed'
               }`}
             >
               {t('save')}

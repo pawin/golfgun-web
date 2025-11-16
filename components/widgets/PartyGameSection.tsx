@@ -175,20 +175,20 @@ export default function PartyGameSection({ round, currentUserId }: PartyGameSect
 
   return (
     <div className="p-4">
-      <div className="bg-white border border-gray-200 rounded-lg p-4">
+      <div className="bg-card border border-border rounded-lg p-4">
         <div className="flex items-center justify-between">
           <div className="flex-1">
-            <div className="text-xs font-semibold text-green-600 mb-1">{t('partyGameWheelTitle')}</div>
+            <div className="text-xs font-semibold text-primary mb-1">{t('partyGameWheelTitle')}</div>
             <div className="text-base font-medium">{displayText}</div>
             {hasResult && latestDetail && (
-              <div className="text-xs text-gray-500 mt-1">
+              <div className="text-xs text-muted-foreground mt-1">
                 {spinnerName ? `${spinnerName} · ${latestDetail}` : latestDetail}
               </div>
             )}
           </div>
           <button
             onClick={() => setShowSpinnerModal(true)}
-            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium"
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 font-medium"
           >
             {t('partyGameSpin')}
           </button>
@@ -244,27 +244,27 @@ function EnablePrompt({
   const t = useTranslations();
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-4">
+    <div className="bg-card border border-border rounded-lg p-4">
       <div className="flex items-center justify-between">
         <div className="flex-1">
           <div className="text-base font-semibold mb-1">{t('partyGamePromptTitle')}</div>
-          <div className="text-xs text-gray-600">{t('partyGamePromptDescription')}</div>
+          <div className="text-xs text-muted-foreground">{t('partyGamePromptDescription')}</div>
         </div>
         <div className="flex gap-2 ml-3">
           <button
             onClick={() => onDecision(false)}
             disabled={isProcessing}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-50"
+            className="px-3 py-2 border border-border rounded-lg text-sm hover:bg-accent/20 disabled:opacity-50"
           >
             {t('partyGameDisable')}
           </button>
           <button
             onClick={() => onDecision(true)}
             disabled={isProcessing}
-            className="px-3 py-2 bg-green-600 text-white rounded-lg text-sm hover:bg-green-700 disabled:opacity-50 flex items-center gap-2"
+            className="px-3 py-2 bg-primary text-primary-foreground rounded-lg text-sm hover:bg-primary/90 disabled:opacity-50 flex items-center gap-2"
           >
             {isProcessing && (
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
             )}
             {t('partyGameEnable')}
           </button>
@@ -296,27 +296,17 @@ function SpinnerModal({
 }) {
   const t = useTranslations();
 
-  const segmentColors = [
-    '#16a34a', // green
-    '#eab308', // gold
-    '#3b82f6', // blue
-    '#f97316', // orange
-    '#dc2626', // red
-    '#a855f7', // purple
-    '#14b8a6', // teal
-    '#4f46e5', // indigo
-    '#ec4899', // pink
-    '#14532d', // dark green
-  ];
+  const segmentClasses = (index: number) =>
+    index % 2 === 0 ? 'bg-accent text-accent-foreground' : 'bg-secondary text-secondary-foreground';
 
   const anglePerSegment = 360 / options.length;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-50">
       <div className="bg-white rounded-t-xl shadow-xl w-full max-w-md max-h-[90vh] flex flex-col">
-        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-border flex items-center justify-between">
           <h2 className="text-lg font-semibold">{t('partyGameWheelTitle')}</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -327,7 +317,7 @@ function SpinnerModal({
           {/* Wheel */}
           <div className="flex justify-center mb-4">
             {options.length < 2 ? (
-              <div className="w-80 h-80 flex items-center justify-center text-center text-gray-600">
+              <div className="w-80 h-80 flex items-center justify-center text-center text-muted-foreground">
                 {t('partyGameNoOptions')}
               </div>
             ) : (
@@ -335,19 +325,17 @@ function SpinnerModal({
                 {/* Wheel */}
                 <div
                   ref={wheelRef}
-                  className="relative w-full h-full rounded-full border-4 border-white shadow-lg overflow-hidden"
+                  className="relative w-full h-full rounded-full border-4 border-background shadow-lg overflow-hidden"
                   style={{ transform: 'rotate(0deg)' }}
                 >
                   {options.map((option, index) => {
                     const startAngle = index * anglePerSegment;
-                    const color = segmentColors[index % segmentColors.length];
                     return (
                       <div
                         key={index}
-                        className="absolute inset-0"
+                        className={`absolute inset-0 ${segmentClasses(index)}`}
                         style={{
                           clipPath: `polygon(50% 50%, ${50 + 50 * Math.cos((startAngle * Math.PI) / 180)}% ${50 - 50 * Math.sin((startAngle * Math.PI) / 180)}%, ${50 + 50 * Math.cos(((startAngle + anglePerSegment) * Math.PI) / 180)}% ${50 - 50 * Math.sin(((startAngle + anglePerSegment) * Math.PI) / 180)}%)`,
-                          backgroundColor: color,
                         }}
                       >
                         <div
@@ -357,7 +345,7 @@ function SpinnerModal({
                             top: '10%',
                             transform: `translateX(-50%) rotate(${startAngle + anglePerSegment / 2}deg)`,
                             transformOrigin: '50% 40%',
-                            color: 'white',
+                            color: 'inherit',
                             fontSize: '14px',
                             fontWeight: 600,
                             textAlign: 'center',
@@ -371,7 +359,7 @@ function SpinnerModal({
                   })}
                 </div>
                 {/* Pointer */}
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 w-0 h-0 border-l-[12px] border-r-[12px] border-t-[20px] border-l-transparent border-r-transparent border-t-black" />
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 w-0 h-0 border-l-[12px] border-r-[12px] border-t-[20px] border-l-transparent border-r-transparent border-t-foreground" />
               </div>
             )}
           </div>
@@ -380,11 +368,11 @@ function SpinnerModal({
           <button
             onClick={onSpin}
             disabled={isSpinning || options.length < 2}
-            className="w-full py-3 px-4 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mb-4"
+            className="w-full py-3 px-4 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mb-4"
           >
             {isSpinning ? (
               <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
                 {t('partyGameSpinning')}
               </>
             ) : (
@@ -401,7 +389,7 @@ function SpinnerModal({
           <div className="flex justify-end mb-4">
             <button
               onClick={onEditOptions}
-              className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800"
+              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -416,9 +404,9 @@ function SpinnerModal({
           </div>
 
           {/* History */}
-          <div className="border-t border-gray-200 pt-4">
+          <div className="border-t border-border pt-4">
             {entries.length === 0 ? (
-              <div className="text-center text-gray-500 py-8">{t('partyGameHistoryEmpty')}</div>
+              <div className="text-center text-muted-foreground py-8">{t('partyGameHistoryEmpty')}</div>
             ) : (
               <div className="space-y-0">
                 {entries.map((entry, index) => {
@@ -432,16 +420,16 @@ function SpinnerModal({
                   const opacity = index === 0 ? 1.0 : 0.5;
 
                   return (
-                    <div key={entry.id} className={`flex items-center gap-3 p-3 border-b border-gray-100`} style={{ opacity }}>
+                    <div key={entry.id} className={`flex items-center gap-3 p-3 border-b border-border`} style={{ opacity }}>
                       <div
-                        className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm"
+                        className="w-10 h-10 rounded-full flex items-center justify-center text-primary-foreground font-bold text-sm"
                         style={{ backgroundColor: bgColor }}
                       >
                         {initials}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="text-sm font-bold truncate">{entry.option}</div>
-                        <div className="text-xs text-gray-600 truncate">{subtitle}</div>
+                        <div className="text-xs text-muted-foreground truncate">{subtitle}</div>
                       </div>
                     </div>
                   );
@@ -506,10 +494,10 @@ function OptionsEditorModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-50">
-      <div className="bg-white rounded-t-xl shadow-xl w-full max-w-md max-h-[90vh] flex flex-col">
-        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+      <div className="bg-card rounded-t-xl shadow-xl w-full max-w-md max-h-[90vh] flex flex-col">
+        <div className="px-6 py-4 border-b border-border flex items-center justify-between">
           <h2 className="text-lg font-semibold">{t('partyGameEditOptions')}</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -517,7 +505,7 @@ function OptionsEditorModal({
         </div>
 
         <div className="flex-1 overflow-y-auto p-6">
-          <p className="text-xs text-gray-600 mb-3">{t('partyGameOptionsHint')}</p>
+          <p className="text-xs text-muted-foreground mb-3">{t('partyGameOptionsHint')}</p>
 
           <div className="space-y-3 mb-4">
             {options.map((option, index) => (
@@ -527,12 +515,12 @@ function OptionsEditorModal({
                   value={option}
                   onChange={(e) => updateOption(index, e.target.value)}
                   placeholder={`${t('partyGameAddOption')} ${index + 1}`}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="flex-1 px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
                 />
                 <button
                   onClick={() => removeOption(index)}
                   disabled={options.length <= 1}
-                  className="p-2 text-gray-500 hover:text-red-600 disabled:opacity-30"
+                  className="p-2 text-muted-foreground hover:text-destructive disabled:opacity-30"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -544,7 +532,7 @@ function OptionsEditorModal({
 
           <button
             onClick={addOption}
-            className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 mb-4"
+            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-4"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -552,11 +540,11 @@ function OptionsEditorModal({
             {t('partyGameAddOption')}
           </button>
 
-          {errorMessage && <div className="text-xs text-red-600 mb-4">{errorMessage}</div>}
+          {errorMessage && <div className="text-xs text-destructive mb-4">{errorMessage}</div>}
 
           <button
             onClick={handleSave}
-            className="w-full py-3 px-4 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700"
+            className="w-full py-3 px-4 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90"
           >
             {t('partyGameSaveOptions')}
           </button>

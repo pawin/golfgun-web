@@ -18,6 +18,8 @@ import GamesView from '@/components/widgets/GamesView';
 import AddPlayerMenu from '@/components/widgets/AddPlayerMenu';
 import TeeboxSelector from '@/components/widgets/TeeboxSelector';
 import { useLocale } from 'next-intl';
+import { Button } from '@/components/ui/button';
+import type { TeeboxRow } from '@/lib/models/scorecard';
 
 export default function RoundDetailScreen() {
   const t = useTranslations();
@@ -111,7 +113,7 @@ export default function RoundDetailScreen() {
           <h1 className="text-xl font-semibold">{t('round')}</h1>
         </div>
         <div className="flex items-center justify-center py-20">
-          <p className="text-error">{error || t('roundNotFound')}</p>
+          <p className="text-destructive">{error || t('roundNotFound')}</p>
         </div>
       </div>
     );
@@ -123,23 +125,23 @@ export default function RoundDetailScreen() {
   // Calculate teebox info if available
   const getTeeboxInfo = () => {
     if (!user?.uid) return null;
-    const selectedIds = round.userTeeboxes[user.uid] || [];
+    const selectedIds = (round.userTeeboxes[user.uid] || []) as string[];
     if (selectedIds.length === 0 || round.scorecards.length === 0) return null;
 
-    const allTees = round.scorecards.flatMap((sc) => [
-      ...sc.backTeeboxes.teeboxes,
-      ...sc.forwardTeeboxes.teeboxes,
+    const allTees: TeeboxRow[] = round.scorecards.flatMap((scorecard) => [
+      ...scorecard.backTeeboxes.teeboxes,
+      ...scorecard.forwardTeeboxes.teeboxes,
     ]);
 
     const selectedTees = selectedIds
-      .map((id) => allTees.find((t) => t.rowId === id))
-      .filter((t) => t !== undefined);
+      .map((selectedId) => allTees.find((tee) => tee.rowId === selectedId))
+      .filter((tee): tee is typeof allTees[number] => tee !== undefined);
 
     if (selectedTees.length === 0) return null;
 
-    const tees = Array.from(new Set(selectedTees.map((t) => t.name))).join('/');
-    const ratings = selectedTees.map((t) => t.rating).filter((r) => r != null) as number[];
-    const slopes = selectedTees.map((t) => t.slope).filter((s) => s != null) as number[];
+    const tees = Array.from(new Set(selectedTees.map((tee) => tee.name))).join('/');
+    const ratings = selectedTees.map((tee) => tee.rating).filter((rating) => rating != null) as number[];
+    const slopes = selectedTees.map((tee) => tee.slope).filter((slope) => slope != null) as number[];
 
     const avgRating = ratings.length > 0 ? ratings.reduce((a, b) => a + b) / ratings.length : null;
     const avgSlope =
@@ -167,13 +169,15 @@ export default function RoundDetailScreen() {
             }}
           />
           {isMember && (
-            <button
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() => router.push(`/${locale}/rounds/${round.id}/settings`)}
-              className="text-muted-foreground hover:text-foreground"
               title={t('settings') || 'Settings'}
+              aria-label={t('settings') || 'Settings'}
             >
               <FontAwesomeIcon icon={faCog} />
-            </button>
+            </Button>
           )}
         </div>
       </div>
