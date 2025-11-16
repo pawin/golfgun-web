@@ -194,6 +194,8 @@
   "deleteThisRound": "Delete This Round",
   "deleting": "Deleting...",
   "gamesTitle": "Games",
+  "startNewGame": "Start a New Game",
+  "matchplay": "Matchplay",
   "error": "Error",
   "failedToProcessImage": "Failed to process image: {error}",
   "editProfile": "Edit Profile",

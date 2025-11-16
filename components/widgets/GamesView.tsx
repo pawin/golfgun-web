@@ -1,10 +1,13 @@
 'use client';
 
+import * as React from 'react';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsis, faCheck, faTimes, faPlus, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { faEllipsis, faCheck, faTimes, faPlus, faChevronRight, faUser, faUsers, faCoins, faMedal, faHorse } from '@fortawesome/free-solid-svg-icons';
 import { Round, RoundGame, roundIsMember, roundColorForPlayer, roundColorForTeam } from '@/lib/models/round';
 import { AppUser } from '@/lib/models/appUser';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { roundService } from '@/lib/services/roundService';
 import {
   GameStatsService,
   HorseOutcome,
@@ -16,7 +19,6 @@ interface GamesViewProps {
   round: Round | null;
   users: Record<string, AppUser>;
   currentUserId: string;
-  onAddGame?: () => void;
   onGameTap?: (game: RoundGame) => void;
 }
 
@@ -24,11 +26,12 @@ export default function GamesView({
   round,
   users,
   currentUserId,
-  onAddGame,
   onGameTap,
 }: GamesViewProps) {
   const t = useTranslations();
   const router = useRouter();
+  const [isAddDialogOpen, setIsAddDialogOpen] = React.useState(false);
+  const [creatingType, setCreatingType] = React.useState<string | null>(null);
 
   if (!round) return null;
 
@@ -46,7 +49,7 @@ export default function GamesView({
   }
 
   // Sort by predefined order
-  const typeOrder = ['1v1', 'teamvs', 'horse', 'olympic', 'skins'];
+  const typeOrder = ['1v1', 'teamvs', 'skins', 'olympic', 'horse'];
   const sortedTypes = Object.entries(gamesByType).sort((a, b) => {
     const indexA = typeOrder.indexOf(a[0].toLowerCase());
     const indexB = typeOrder.indexOf(b[0].toLowerCase());
@@ -75,13 +78,40 @@ export default function GamesView({
 
   const usersMap = new Map(Object.entries(users));
 
+  const createAndOpenGame = async (type: string) => {
+    if (!round || !isMember) return;
+    try {
+      setCreatingType(type);
+      const timestamp = Date.now();
+      const newGameId = `${type}:${currentUserId}:${timestamp}`;
+      const game: RoundGame = {
+        id: newGameId,
+        type,
+        playerIds: [...round.memberIds],
+        blueTeamIds: [],
+        redTeamIds: [],
+        handicapStrokes: {},
+        holePoints: {},
+        horseSettings: {},
+        skinsStartingHole: 1,
+      };
+      await roundService.saveGame({ roundId: round.id, game });
+      setIsAddDialogOpen(false);
+      onGameTap?.(game);
+    } catch (e) {
+      alert(String(e));
+    } finally {
+      setCreatingType(null);
+    }
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
         <h2 className="text-xl font-semibold">{t('gamesTitle')}</h2>
-            {isMember && onAddGame && (
+            {isMember && (
           <button
-            onClick={onAddGame}
+            onClick={() => setIsAddDialogOpen(true)}
             className="w-11 h-8 bg-primary text-primary-foreground rounded flex items-center justify-center hover:bg-primary-hover"
           >
             <FontAwesomeIcon icon={faPlus} className="w-4 h-4" />
@@ -129,6 +159,65 @@ export default function GamesView({
           ))}
         </div>
       )}
+      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('startNewGame')}</DialogTitle>
+          </DialogHeader>
+          <div className="grid grid-cols-1 gap-2">
+            <button
+              className="w-full py-3 px-4 rounded-md border hover:bg-accent text-left font-medium"
+              onClick={() => createAndOpenGame('1v1')}
+              disabled={creatingType !== null}
+            >
+              <span className="inline-flex items-center gap-2">
+                <FontAwesomeIcon icon={faUser} className="w-4 h-4 text-muted-foreground" />
+                {getGameTypeTitle('1v1')}
+              </span>
+            </button>
+            <button
+              className="w-full py-3 px-4 rounded-md border hover:bg-accent text-left font-medium"
+              onClick={() => createAndOpenGame('teamvs')}
+              disabled={creatingType !== null}
+            >
+              <span className="inline-flex items-center gap-2">
+                <FontAwesomeIcon icon={faUsers} className="w-4 h-4 text-muted-foreground" />
+                {t('matchplay') || getGameTypeTitle('teamvs')}
+              </span>
+            </button>
+            <button
+              className="w-full py-3 px-4 rounded-md border hover:bg-accent text-left font-medium"
+              onClick={() => createAndOpenGame('skins')}
+              disabled={creatingType !== null}
+            >
+              <span className="inline-flex items-center gap-2">
+                <FontAwesomeIcon icon={faCoins} className="w-4 h-4 text-muted-foreground" />
+                {getGameTypeTitle('skins')}
+              </span>
+            </button>
+            <button
+              className="w-full py-3 px-4 rounded-md border hover:bg-accent text-left font-medium"
+              onClick={() => createAndOpenGame('olympic')}
+              disabled={creatingType !== null}
+            >
+              <span className="inline-flex items-center gap-2">
+                <FontAwesomeIcon icon={faMedal} className="w-4 h-4 text-muted-foreground" />
+                {getGameTypeTitle('olympic')}
+              </span>
+            </button>
+            <button
+              className="w-full py-3 px-4 rounded-md border hover:bg-accent text-left font-medium"
+              onClick={() => createAndOpenGame('horse')}
+              disabled={creatingType !== null}
+            >
+              <span className="inline-flex items-center gap-2">
+                <FontAwesomeIcon icon={faHorse} className="w-4 h-4 text-muted-foreground" />
+                {getGameTypeTitle('horse')}
+              </span>
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -194,6 +194,8 @@
   "deleteThisRound": "ลบรอบนี้",
   "deleting": "กำลังลบ...",
   "gamesTitle": "เกม",
+  "startNewGame": "เริ่มเกมใหม่",
+  "matchplay": "แมตช์เพลย์",
   "error": "ข้อผิดพลาด",
   "failedToProcessImage": "ประมวลผลรูปภาพไม่สำเร็จ: {error}",
   "editProfile": "แก้ไขโปรไฟล์",
