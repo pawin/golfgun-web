@@ -9,13 +9,14 @@ import { auth } from '@/lib/firebase/config';
 import { roundService } from '@/lib/services/roundService';
 import { spinnerService } from '@/lib/services/spinnerService';
 import { Round, RoundGame } from '@/lib/models/round';
+import { roundColorForPlayer } from '@/lib/models/round';
 import { AppUser } from '@/lib/models/appUser';
 import { userService } from '@/lib/services/userService';
 import { getInitials } from '@/lib/utils/validator';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { defaultWheelOptionsTh } from '@/lib/utils/party_game_defaults';
 import GameSettingsScreen from './GameSettingsScreen';
-import GamesView from '@/components/widgets/GamesView';
+import TeeboxSelector from '@/components/widgets/TeeboxSelector';
 
 export default function RoundSettingsScreen() {
   const t = useTranslations();
@@ -29,6 +30,7 @@ export default function RoundSettingsScreen() {
   const [roundId, setRoundId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [updatingPartyGame, setUpdatingPartyGame] = useState(false);
+  const [showTeeboxSelector, setShowTeeboxSelector] = useState(false);
   
   const gameId = searchParams?.get('gameId');
 
@@ -122,6 +124,151 @@ export default function RoundSettingsScreen() {
     }
   };
 
+  // Helpers to present selected teebox info similar to Dart implementation
+  function colorFromTeeboxName(name: string): string {
+    const key = (name || '').trim().toLowerCase();
+    const map: Record<string, string> = {
+      white: '#ffffff',
+      black: '#000000',
+      blue: '#1e40af',
+      navy: '#1e3a8a',
+      royal: '#4169e1',
+      sky: '#38bdf8',
+      red: '#dc2626',
+      maroon: '#7f1d1d',
+      green: '#16a34a',
+      emerald: '#059669',
+      teal: '#0d9488',
+      yellow: '#eab308',
+      gold: '#d4af37',
+      orange: '#f97316',
+      purple: '#7e22ce',
+      violet: '#8b5cf6',
+      pink: '#ec4899',
+      brown: '#92400e',
+      bronze: '#cd7f32',
+      silver: '#c0c0c0',
+      gray: '#9ca3af',
+      grey: '#9ca3af',
+    };
+    return map[key] ?? key;
+  }
+
+  function totalYardsFromTeebox(teebox: any): number {
+    if (!teebox) return 0;
+    if (typeof teebox.totalYardsOverride === 'number') return teebox.totalYardsOverride;
+    let sum = 0;
+    const cells: any[] = Array.isArray(teebox.cells) ? teebox.cells : [];
+    for (const cell of cells) {
+      if (cell?.kind === 'hole' && typeof cell?.yards === 'number') {
+        sum += cell.yards;
+      }
+    }
+    // Fallback: if side cells contain yards, take max
+    if (sum === 0) {
+      const sides = cells.filter((c) => typeof c?.yards === 'number').map((c) => c.yards as number);
+      if (sides.length > 0) sum = Math.max(...sides);
+    }
+    return sum;
+  }
+
+  function allTeeboxesOfScorecard(sc: any): any[] {
+    const back = sc?.backTeeboxes?.teeboxes ?? [];
+    const forward = sc?.forwardTeeboxes?.teeboxes ?? [];
+    return [...back, ...forward];
+  }
+
+  function renderTeeboxInfo() {
+    if (!round || !user) return null;
+    const selectedIds: string[] = Array.isArray(round.userTeeboxes[user.uid]) ? (round.userTeeboxes[user.uid] as string[]) : [];
+    if (selectedIds.length === 0 || !Array.isArray(round.scorecards) || round.scorecards.length === 0) return null;
+
+    // Multiple scorecards (front/back)
+    if (round.scorecards.length > 1 && round.selectedScoreCardIds.length >= 2) {
+      const frontSc = round.scorecards.find((sc) => sc.id === round.selectedScoreCardIds[0]) || round.scorecards[0];
+      const backSc = round.scorecards.find((sc) => sc.id === round.selectedScoreCardIds[1]) || round.scorecards[round.scorecards.length - 1];
+      const frontSelectedId = selectedIds[0] ?? null;
+      const backSelectedId = selectedIds[1] ?? null;
+      const frontTee = allTeeboxesOfScorecard(frontSc).find((t) => t.rowId === frontSelectedId) ||
+        allTeeboxesOfScorecard(frontSc).find((t) => selectedIds.includes(t.rowId));
+      const backTee = allTeeboxesOfScorecard(backSc).find((t) => t.rowId === backSelectedId) ||
+        allTeeboxesOfScorecard(backSc).find((t) => selectedIds.includes(t.rowId));
+
+      const rows: any[] = [];
+      if (frontTee) {
+        const color = colorFromTeeboxName(frontTee.name || frontTee.color || '');
+        const frontName = frontSc?.name?.length ? frontSc.name : round.course.name;
+        const rating = typeof frontTee.rating === 'number' ? frontTee.rating.toFixed(1) : '-';
+        const slope = typeof frontTee.slope === 'number' ? String(frontTee.slope) : '-';
+        rows.push(
+          <div key="front" className="flex items-center gap-4">
+            <div className="w-7 h-7 rounded-full border" style={{ backgroundColor: color }} />
+            <div className="flex-1 min-w-0">
+              <div className="text-sm">{`${frontName} — ${t('front9')}`}</div>
+              <div className="text-xs text-muted-foreground">
+                {frontTee.name} {t('yards')}: {totalYardsFromTeebox(frontTee)} • {rating} / {slope}
+              </div>
+            </div>
+          </div>
+        );
+      }
+      if (backTee) {
+        if (rows.length > 0) {
+          rows.push(<div key="divider" className="h-px bg-border my-3" />);
+        }
+        const color = colorFromTeeboxName(backTee.name || backTee.color || '');
+        const backName = backSc?.name?.length ? backSc.name : round.course.name;
+        const rating = typeof backTee.rating === 'number' ? backTee.rating.toFixed(1) : '-';
+        const slope = typeof backTee.slope === 'number' ? String(backTee.slope) : '-';
+        rows.push(
+          <div key="back" className="flex items-center gap-4">
+            <div className="w-7 h-7 rounded-full border" style={{ backgroundColor: color }} />
+            <div className="flex-1 min-w-0">
+              <div className="text-sm">{`${backName} — ${t('back9')}`}</div>
+              <div className="text-xs text-muted-foreground">
+                {backTee.name} {t('yards')}: {totalYardsFromTeebox(backTee)} • {rating} / {slope}
+              </div>
+            </div>
+          </div>
+        );
+      }
+      if (rows.length === 0) return null;
+      return <div className="space-y-0">{rows}</div>;
+    }
+
+    // Single scorecard: combine
+    const sc = round.scorecards[0];
+    const tees = allTeeboxesOfScorecard(sc).filter((tbox) => selectedIds.includes(tbox.rowId));
+    if (tees.length === 0) return null;
+    const badgeColor = colorFromTeeboxName(tees[0].name || tees[0].color || '');
+    const names = Array.from(new Set(tees.map((tbox) => tbox.name))).join('/');
+    let details: string;
+    if (tees.length === 1) {
+      const tt = tees[0];
+      const rating = typeof tt.rating === 'number' ? tt.rating.toFixed(1) : '-';
+      const slope = typeof tt.slope === 'number' ? String(tt.slope) : '-';
+      details = `${t('yards')}: ${totalYardsFromTeebox(tt)} • ${rating} / ${slope}`;
+    } else {
+      const ratings = tees.map((tbox) => (typeof tbox.rating === 'number' ? tbox.rating : null)).filter((v) => v !== null) as number[];
+      const slopes = tees.map((tbox) => (typeof tbox.slope === 'number' ? tbox.slope : null)).filter((v) => v !== null) as number[];
+      const sumRating = ratings.length ? ratings.reduce((a, b) => a + b, 0) : null;
+      const avgSlope = slopes.length ? Math.round(slopes.reduce((a, b) => a + b, 0) / slopes.length) : null;
+      const r = sumRating !== null ? sumRating.toFixed(1) : '-';
+      const s = avgSlope !== null ? String(avgSlope) : '-';
+      details = `${r} / ${s}`;
+    }
+    const title = sc?.name?.length ? sc.name : round.course.name;
+    return (
+      <div className="flex items-center gap-4">
+        <div className="w-7 h-7 rounded-full border" style={{ backgroundColor: badgeColor }} />
+        <div className="flex-1 min-w-0">
+          <div className="text-sm">{title}</div>
+          <div className="text-xs text-muted-foreground">{names} • {details}</div>
+        </div>
+      </div>
+    );
+  }
+
   if (loading || !round) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -161,6 +308,28 @@ export default function RoundSettingsScreen() {
       </div>
 
       <div className="p-4 space-y-4">
+        {/* Teebox Section (V2 only) */}
+        {round.version === '2' && user && (
+          <div className="bg-card border border-border rounded-lg p-4">
+            <div className="flex items-center justify-between">
+              <p className="font-medium">{t('myTeebox')}</p>
+              <button
+                onClick={() => setShowTeeboxSelector(true)}
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-muted hover:bg-accent/20 text-sm"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5h2M4 7h16M4 12h16M4 17h16" />
+                </svg>
+                {t('edit')}
+              </button>
+            </div>
+            <div className="h-3" />
+            <div className="border border-border rounded-lg p-4">
+              {renderTeeboxInfo() ?? <div className="text-sm text-muted-foreground">{t('noSelection') || ''}</div>}
+            </div>
+          </div>
+        )}
+
         {/* Party Game Toggle */}
         <div className="bg-card border border-border rounded-lg p-4">
           <div className="flex items-center justify-between">
@@ -184,19 +353,6 @@ export default function RoundSettingsScreen() {
           </div>
         </div>
 
-        {/* Games Section */}
-        <div>
-          <GamesView
-            round={round}
-            users={users}
-            currentUserId={user?.uid || ''}
-            /* GamesView now owns the Add Game dialog */
-            onGameTap={(game) => {
-              router.push(`/${locale}/rounds/${roundId}/settings?gameId=${game.id}`);
-            }}
-          />
-        </div>
-
         {/* Members Section */}
         <div>
           <h2 className="text-lg font-semibold mb-3">{t('members')}</h2>
@@ -211,7 +367,7 @@ export default function RoundSettingsScreen() {
                   <div className="flex items-center gap-3">
                     <Avatar className="w-12 h-12">
                       {member?.pictureUrl ? <AvatarImage src={member.pictureUrl} alt={member?.name} /> : null}
-                      <AvatarFallback className="text-white font-bold" style={{ backgroundColor: 'var(--color-chart-1)' }}>
+                      <AvatarFallback className="text-white font-bold" style={{ backgroundColor: roundColorForPlayer(round, memberId) }}>
                         {getInitials(member?.name || memberId)}
                       </AvatarFallback>
                     </Avatar>
@@ -263,6 +419,15 @@ export default function RoundSettingsScreen() {
           </div>
         )}
       </div>
+
+      {/* Teebox selector overlay */}
+      {showTeeboxSelector && user && round && (
+        <TeeboxSelector
+          round={round}
+          currentUserId={user.uid}
+          onClose={() => setShowTeeboxSelector(false)}
+        />
+      )}
 
       {/* Game Type Selection Dialog is handled inside GamesView */}
     </div>

@@ -310,7 +310,7 @@ function TeamVsGameDisplay({
           <div
             key={player.id}
             className={`text-sm font-medium truncate ${idx < stats.redPlayers.length - 1 ? 'mb-0.5' : ''}`}
-            style={{ color: roundColorForTeam(0) }}
+            style={{ color: roundColorForPlayer(round, player.id) }}
           >
             {player.name}
           </div>
@@ -338,7 +338,7 @@ function TeamVsGameDisplay({
           <div
             key={player.id}
             className={`text-sm font-medium truncate ${idx < stats.bluePlayers.length - 1 ? 'mb-0.5' : ''}`}
-            style={{ color: roundColorForTeam(1) }}
+            style={{ color: roundColorForPlayer(round, player.id) }}
           >
             {player.name}
           </div>
