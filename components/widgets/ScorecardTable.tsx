@@ -223,187 +223,211 @@ export default function ScorecardTable({
   };
 
   return (
-    <div className="border border-border rounded-lg overflow-hidden bg-card">
-      <div className="relative overflow-x-auto">
-        {/* Scrollable table */}
-        <table className="table-fixed divide-y divide-border">
-          <thead>
-            {/* Header row (Holes) */}
-            <tr className="bg-accent text-accent-foreground">
-              <th className="w-[80px] min-w-[80px] max-w-[80px] h-[40px] px-2 py-2 text-xs font-bold sticky left-0 bg-accent z-20 border border-border">
-                {t('hole')}
-              </th>
-              {holes.map((hole, idx) => {
-                const kind = hole.kind?.toString().toLowerCase();
-                const isSummary = kind === 'side';
-                return (
-                  <th
-                    key={idx}
-                    className={`h-[40px] px-2 py-2 text-xs font-bold text-center border border-border ${
-                      isSummary ? 'w-[50px] min-w-[60px] max-w-[60px] bg-accent/80' : 'w-[40px] min-w-[40px] max-w-[40px]'
-                    }`}
-                  >
-                    {hole.value?.toString() || ''}
+    <>
+      <div className="relative">
+        {/* Shared vertical scroll container to keep left and right tables aligned */}
+        <div className="flex overflow-y-auto">
+          {/* Left table: labels + player names */}
+          <div className="shrink-0">
+            <table className="table-fixed divide-y divide-border">
+              <thead>
+                <tr className="bg-accent text-accent-foreground">
+                  <th className="w-[80px] min-w-[80px] max-w-[80px] h-[40px] px-2 py-2 text-xs font-bold bg-accent border border-border text-center">
+                    {t('hole')}
                   </th>
-                );
-              })}
-            </tr>
-            {/* HDCP row */}
-            <tr className="bg-muted">
-              <th className="w-[80px] min-w-[80px] max-w-[80px] h-[40px] px-2 py-2 text-xs font-bold sticky left-0 bg-muted z-20 border border-border">
-                {t('handicapShort') || 'HDCP'}
-              </th>
-              {handicaps.map((hdcp, idx) => {
-                const kind = hdcp.kind?.toString().toLowerCase();
-                const isSummary = kind === 'side';
-                return (
-                  <td
-                    key={idx}
-                    className={`h-[40px] px-2 py-2 text-xs font-bold text-center border border-border ${
-                      isSummary ? 'w-[60px] min-w-[60px] max-w-[60px]' : 'w-[40px] min-w-[40px] max-w-[40px]'
-                    }`}
-                  >
-                    {hdcp.value?.toString() || ''}
-                  </td>
-                );
-              })}
-            </tr>
-            {/* Par row */}
-            <tr className="bg-accent text-accent-foreground">
-              <th className="w-[80px] min-w-[80px] max-w-[80px] h-[40px] px-2 py-2 text-xs font-bold sticky left-0 bg-accent z-20 border border-border">
-                {t('par')}
-              </th>
-              {holes.map((hole, idx) => {
-                const kind = hole.kind?.toString().toLowerCase();
-                const isSummary = kind === 'side';
-                const parValue = idx < par.length ? par[idx]?.value : null;
-                return (
-                  <td
-                    key={idx}
-                    className={`h-[40px] px-2 py-2 text-xs font-bold text-center border border-border ${
-                      isSummary ? 'w-[60px] min-w-[60px] max-w-[60px] bg-accent/80' : 'w-[40px] min-w-[40px] max-w-[40px]'
-                    }`}
-                  >
-                    {parValue?.toString() || ''}
-                  </td>
-                );
-              })}
-            </tr>
-          </thead>
-          <tbody className="bg-card divide-y divide-border">
-            {round.memberIds.map((memberId) => {
-              const member = users[memberId];
-              if (!member) return null;
+                </tr>
+                <tr className="bg-muted">
+                  <th className="w-[80px] min-w-[80px] max-w-[80px] h-[40px] px-2 py-2 text-xs font-bold bg-muted border border-border text-center">
+                    {t('handicapShort') || 'HDCP'}
+                  </th>
+                </tr>
+                <tr className="bg-accent text-accent-foreground">
+                  <th className="w-[80px] min-w-[80px] max-w-[80px] h-[40px] px-2 py-2 text-xs font-bold bg-accent border border-border text-center">
+                    {t('par')}
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-card divide-y divide-border">
+                {round.memberIds.map((memberId) => {
+                  const member = users[memberId];
+                  if (!member) return null;
+                  return (
+                    <tr key={memberId} className="hover:bg-accent/20">
+                      <td
+                        onClick={(e) => handleNameClick(memberId, e)}
+                        className="w-[80px] min-w-[80px] max-w-[80px] h-[40px] px-2 py-2 text-xs font-semibold bg-card border border-border text-center cursor-pointer hover:underline"
+                        style={{ color: roundColorForPlayer(round, memberId) }}
+                      >
+                        <span className="block truncate whitespace-nowrap overflow-hidden" title={member.name}>
+                          {member.name}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
 
-              let outSum = 0;
-              let inSum = 0;
-              let inPhase = startsWithIn;
-
-              return (
-                <tr key={memberId} className="hover:bg-accent/20">
-                  {/* Sticky player name cell */}
-                  <td
-                    onClick={(e) => handleNameClick(memberId, e)}
-                    className="w-[80px] min-w-[80px] max-w-[80px] h-[40px] px-2 py-2 text-xs font-semibold sticky left-0 bg-card z-20 border border-border text-center cursor-pointer hover:underline"
-                    style={{
-                      color: roundColorForPlayer(round, memberId),
-                    }}
-                  >
-                    <span className="block truncate whitespace-nowrap overflow-hidden" title={member.name}>
-                      {member.name}
-                    </span>
-                  </td>
-
-                  {/* Score cells */}
+          {/* Right table: scrollable horizontally */}
+          <div className="overflow-x-auto border-r border-border">
+            <table className="table-fixed divide-y divide-border">
+              <thead>
+                {/* Header row (Holes) */}
+                <tr className="bg-accent text-accent-foreground">
                   {holes.map((hole, idx) => {
                     const kind = hole.kind?.toString().toLowerCase();
-                    const label = hole.value?.toString() ?? '';
-
-                    if (kind === 'side') {
-                      const low = label.toLowerCase();
-                      let displayValue = '';
-                      if (low === 'out') {
-                        displayValue = outSum > 0 ? outSum.toString() : '';
-                        inPhase = true;
-                      } else if (low === 'in') {
-                        displayValue = inSum > 0 ? inSum.toString() : '';
-                        inPhase = false;
-                      } else if (low === 'total') {
-                        const total = outSum + inSum;
-                        displayValue = total > 0 ? total.toString() : '';
-                      }
-
-                      return (
-                        <td
-                          key={idx}
-                          className="w-[60px] min-w-[60px] max-w-[60px] h-[40px] px-2 py-2 text-sm font-bold text-center bg-muted border border-border"
-                        >
-                          {displayValue}
-                        </td>
-                      );
-                    }
-
-                    if (kind !== 'hole') return null;
-
-                    const holeKey = label;
-                    const rawScore = round.score[holeKey]?.[memberId] ?? null;
-                    const holeScore = rawScore && rawScore > 0 ? rawScore : 0;
-                    const parValue = idx < par.length ? parForHole(parseInt(holeKey) || 0) : 4;
-                    const style = getCellStyle(holeScore, parValue);
-
-                    // Track sums
-                    if (hasOut && hasIn) {
-                      if (inPhase) {
-                        inSum += holeScore;
-                      } else {
-                        outSum += holeScore;
-                      }
-                    } else {
-                      outSum += holeScore;
-                    }
-
-                    let holeScoreText = '';
-                    if (rawScore === -1) {
-                      holeScoreText = 'X';
-                    } else if (rawScore && rawScore > 0) {
-                      holeScoreText = rawScore.toString();
-                    }
-
-                    const canEditThis =
-                      isAdmin || (round.memberIds.includes(currentUserId) && !round.disableMemberEdit);
-
+                    const isSummary = kind === 'side';
+                    return (
+                      <th
+                        key={idx}
+                        className={`h-[40px] px-2 py-2 text-xs font-bold text-center border border-border ${idx === 0 ? 'border-l-0' : ''} ${idx === holes.length - 1 ? 'border-r-0' : ''} ${
+                          isSummary ? 'w-[50px] min-w-[60px] max-w-[60px] bg-accent/80' : 'w-[40px] min-w-[40px] max-w-[40px]'
+                        }`}
+                      >
+                        {hole.value?.toString() || ''}
+                      </th>
+                    );
+                  })}
+                </tr>
+                {/* HDCP row */}
+                <tr className="bg-muted">
+                  {handicaps.map((hdcp, idx) => {
+                    const kind = hdcp.kind?.toString().toLowerCase();
+                    const isSummary = kind === 'side';
                     return (
                       <td
                         key={idx}
-                        onClick={() =>
-                          canEditThis && handleScoreClick(memberId, holeKey, rawScore)
-                        }
-                        className={`w-[40px] min-w-[40px] max-w-[40px] h-[40px] px-2 py-2 text-sm font-bold text-center relative border border-border ${
-                          canEditThis
-                            ? 'cursor-pointer hover:opacity-80'
-                            : 'cursor-default'
+                        className={`h-[40px] px-2 py-2 text-xs font-bold text-center border border-border ${idx === 0 ? 'border-l-0' : ''} ${idx === handicaps.length - 1 ? 'border-r-0' : ''} ${
+                          isSummary ? 'w-[60px] min-w-[60px] max-w-[60px]' : 'w-[40px] min-w-[40px] max-w-[40px]'
                         }`}
                       >
-                        {holeScore > 0 && (
-                          <div
-                            className={`absolute inset-0 m-[5px] flex items-center justify-center ${
-                              style.shape === 'circle' ? 'rounded-full' : 'rounded'
-                            } ${style.className}`}
-                          >
-                            {holeScoreText}
-                          </div>
-                        )}
-                        {holeScore === 0 && holeScoreText && (
-                          <span className="text-muted-foreground">{holeScoreText}</span>
-                        )}
+                        {hdcp.value?.toString() || ''}
                       </td>
                     );
                   })}
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                {/* Par row */}
+                <tr className="bg-accent text-accent-foreground">
+                  {holes.map((hole, idx) => {
+                    const kind = hole.kind?.toString().toLowerCase();
+                    const isSummary = kind === 'side';
+                    const parValue = idx < par.length ? par[idx]?.value : null;
+                    return (
+                      <td
+                        key={idx}
+                        className={`h-[40px] px-2 py-2 text-xs font-bold text-center border border-border ${idx === 0 ? 'border-l-0' : ''} ${idx === holes.length - 1 ? 'border-r-0' : ''} ${
+                          isSummary ? 'w-[60px] min-w-[60px] max-w-[60px] bg-accent/80' : 'w-[40px] min-w-[40px] max-w-[40px]'
+                        }`}
+                      >
+                        {parValue?.toString() || ''}
+                      </td>
+                    );
+                  })}
+                </tr>
+              </thead>
+              <tbody className="bg-card divide-y divide-border">
+                {round.memberIds.map((memberId) => {
+                  const member = users[memberId];
+                  if (!member) return null;
+
+                  let outSum = 0;
+                  let inSum = 0;
+                  let inPhase = startsWithIn;
+
+                  return (
+                    <tr key={memberId} className="hover:bg-accent/20">
+                      {holes.map((hole, idx) => {
+                        const kind = hole.kind?.toString().toLowerCase();
+                        const label = hole.value?.toString() ?? '';
+
+                        if (kind === 'side') {
+                          const low = label.toLowerCase();
+                          let displayValue = '';
+                          if (low === 'out') {
+                            displayValue = outSum > 0 ? outSum.toString() : '';
+                            inPhase = true;
+                          } else if (low === 'in') {
+                            displayValue = inSum > 0 ? inSum.toString() : '';
+                            inPhase = false;
+                          } else if (low === 'total') {
+                            const total = outSum + inSum;
+                            displayValue = total > 0 ? total.toString() : '';
+                          }
+
+                          return (
+                            <td
+                              key={idx}
+                              className={`w-[60px] min-w-[60px] max-w-[60px] h-[40px] px-2 py-2 text-sm font-bold text-center bg-muted border border-border ${idx === 0 ? 'border-l-0' : ''} ${idx === holes.length - 1 ? 'border-r-0' : ''}`}
+                            >
+                              {displayValue}
+                            </td>
+                          );
+                        }
+
+                        if (kind !== 'hole') return null;
+
+                        const holeKey = label;
+                        const rawScore = round.score[holeKey]?.[memberId] ?? null;
+                        const holeScore = rawScore && rawScore > 0 ? rawScore : 0;
+                        const parValue = idx < par.length ? parForHole(parseInt(holeKey) || 0) : 4;
+                        const style = getCellStyle(holeScore, parValue);
+
+                        // Track sums
+                        if (hasOut && hasIn) {
+                          if (inPhase) {
+                            inSum += holeScore;
+                          } else {
+                            outSum += holeScore;
+                          }
+                        } else {
+                          outSum += holeScore;
+                        }
+
+                        let holeScoreText = '';
+                        if (rawScore === -1) {
+                          holeScoreText = 'X';
+                        } else if (rawScore && rawScore > 0) {
+                          holeScoreText = rawScore.toString();
+                        }
+
+                        const canEditThis =
+                          isAdmin || (round.memberIds.includes(currentUserId) && !round.disableMemberEdit);
+
+                        return (
+                          <td
+                            key={idx}
+                            onClick={() =>
+                              canEditThis && handleScoreClick(memberId, holeKey, rawScore)
+                            }
+                                className={`w-[40px] min-w-[40px] max-w-[40px] h-[40px] px-2 py-2 text-sm font-bold text-center relative border border-border ${idx === 0 ? 'border-l-0' : ''} ${idx === holes.length - 1 ? 'border-r-0' : ''} ${
+                              canEditThis
+                                ? 'cursor-pointer hover:opacity-80'
+                                : 'cursor-default'
+                            }`}
+                          >
+                            {holeScore > 0 && (
+                              <div
+                                className={`absolute inset-0 m-[5px] flex items-center justify-center ${
+                                  style.shape === 'circle' ? 'rounded-full' : 'rounded'
+                                } ${style.className}`}
+                              >
+                                {holeScoreText}
+                              </div>
+                            )}
+                            {holeScore === 0 && holeScoreText && (
+                              <span className="text-muted-foreground">{holeScoreText}</span>
+                            )}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
       {/* Score Edit Dialog */}
@@ -422,7 +446,7 @@ export default function ScorecardTable({
           onSave={handleDialogSave}
         />
       )}
-    </div>
+    </>
   );
 }
 
