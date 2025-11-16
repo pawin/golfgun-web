@@ -53,18 +53,7 @@ export default function HomeTab() {
     setError(null);
 
     try {
-      const allRounds = await roundService.getAllRounds(user.uid);
-      
-      console.log('All rounds loaded:', allRounds.length);
-      console.log('Rounds data:', allRounds.map(r => ({
-        id: r.id,
-        deletedAt: r.deletedAt,
-        isFinished: roundIsFinished(r),
-        memberIds: r.memberIds,
-        adminId: r.adminId,
-        userId: user.uid,
-      })));
-      
+      const allRounds = await roundService.getAllRounds(user.uid);      
       // Filter active rounds (not finished, not deleted)
       // Include rounds where the user is a member or the admin
       const active = allRounds
@@ -75,9 +64,7 @@ export default function HomeTab() {
           return isMember && notDeleted && notFinished;
         })
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-
-      console.log('Active rounds after filtering:', active.length, active.map(r => r.id));
-
+        
       setActiveRounds(active);
 
       // Fetch users
