@@ -226,11 +226,11 @@ export default function ScorecardTable({
     <div className="border border-border rounded-lg overflow-hidden bg-card">
       <div className="relative overflow-x-auto">
         {/* Scrollable table */}
-        <table className="min-w-full divide-y divide-border">
+        <table className="table-fixed divide-y divide-border">
           <thead>
             {/* Header row (Holes) */}
             <tr className="bg-accent text-accent-foreground">
-              <th className="w-20 h-10 px-2 py-2 text-xs font-bold sticky left-0 bg-accent z-20">
+              <th className="w-[80px] min-w-[80px] max-w-[80px] h-[40px] px-2 py-2 text-xs font-bold sticky left-0 bg-accent z-20 border border-border">
                 {t('hole')}
               </th>
               {holes.map((hole, idx) => {
@@ -239,8 +239,8 @@ export default function ScorecardTable({
                 return (
                   <th
                     key={idx}
-                    className={`h-10 px-2 py-2 text-xs font-bold text-center ${
-                      isSummary ? 'w-16 bg-accent/80' : 'w-10'
+                    className={`h-[40px] px-2 py-2 text-xs font-bold text-center border border-border ${
+                      isSummary ? 'w-[50px] min-w-[60px] max-w-[60px] bg-accent/80' : 'w-[40px] min-w-[40px] max-w-[40px]'
                     }`}
                   >
                     {hole.value?.toString() || ''}
@@ -250,7 +250,7 @@ export default function ScorecardTable({
             </tr>
             {/* HDCP row */}
             <tr className="bg-muted">
-              <th className="w-20 h-10 px-2 py-2 text-xs font-bold sticky left-0 bg-muted z-20 border-r border-border">
+              <th className="w-[80px] min-w-[80px] max-w-[80px] h-[40px] px-2 py-2 text-xs font-bold sticky left-0 bg-muted z-20 border border-border">
                 {t('handicapShort') || 'HDCP'}
               </th>
               {handicaps.map((hdcp, idx) => {
@@ -259,8 +259,8 @@ export default function ScorecardTable({
                 return (
                   <td
                     key={idx}
-                    className={`h-10 px-2 py-2 text-xs font-bold text-center ${
-                      isSummary ? 'w-16' : 'w-10'
+                    className={`h-[40px] px-2 py-2 text-xs font-bold text-center border border-border ${
+                      isSummary ? 'w-[60px] min-w-[60px] max-w-[60px]' : 'w-[40px] min-w-[40px] max-w-[40px]'
                     }`}
                   >
                     {hdcp.value?.toString() || ''}
@@ -270,7 +270,7 @@ export default function ScorecardTable({
             </tr>
             {/* Par row */}
             <tr className="bg-accent text-accent-foreground">
-              <th className="w-20 h-10 px-2 py-2 text-xs font-bold sticky left-0 bg-accent z-20 border-r border-border">
+              <th className="w-[80px] min-w-[80px] max-w-[80px] h-[40px] px-2 py-2 text-xs font-bold sticky left-0 bg-accent z-20 border border-border">
                 {t('par')}
               </th>
               {holes.map((hole, idx) => {
@@ -280,8 +280,8 @@ export default function ScorecardTable({
                 return (
                   <td
                     key={idx}
-                    className={`h-10 px-2 py-2 text-xs font-bold text-center ${
-                      isSummary ? 'w-16 bg-accent/80' : 'w-10'
+                    className={`h-[40px] px-2 py-2 text-xs font-bold text-center border border-border ${
+                      isSummary ? 'w-[60px] min-w-[60px] max-w-[60px] bg-accent/80' : 'w-[40px] min-w-[40px] max-w-[40px]'
                     }`}
                   >
                     {parValue?.toString() || ''}
@@ -304,12 +304,14 @@ export default function ScorecardTable({
                   {/* Sticky player name cell */}
                   <td
                     onClick={(e) => handleNameClick(memberId, e)}
-                    className="w-20 h-10 px-2 py-2 text-xs font-semibold sticky left-0 bg-card z-20 border-r border-border text-center cursor-pointer hover:underline"
+                    className="w-[80px] min-w-[80px] max-w-[80px] h-[40px] px-2 py-2 text-xs font-semibold sticky left-0 bg-card z-20 border border-border text-center cursor-pointer hover:underline"
                     style={{
                       color: roundColorForPlayer(round, memberId),
                     }}
                   >
-                    {member.name}
+                    <span className="block truncate whitespace-nowrap overflow-hidden" title={member.name}>
+                      {member.name}
+                    </span>
                   </td>
 
                   {/* Score cells */}
@@ -334,7 +336,7 @@ export default function ScorecardTable({
                       return (
                         <td
                           key={idx}
-                          className="w-16 h-10 px-2 py-2 text-sm font-bold text-center bg-muted"
+                          className="w-[60px] min-w-[60px] max-w-[60px] h-[40px] px-2 py-2 text-sm font-bold text-center bg-muted border border-border"
                         >
                           {displayValue}
                         </td>
@@ -376,7 +378,7 @@ export default function ScorecardTable({
                         onClick={() =>
                           canEditThis && handleScoreClick(memberId, holeKey, rawScore)
                         }
-                        className={`w-10 h-10 px-2 py-2 text-sm font-bold text-center relative ${
+                        className={`w-[40px] min-w-[40px] max-w-[40px] h-[40px] px-2 py-2 text-sm font-bold text-center relative border border-border ${
                           canEditThis
                             ? 'cursor-pointer hover:opacity-80'
                             : 'cursor-default'
@@ -384,7 +386,7 @@ export default function ScorecardTable({
                       >
                         {holeScore > 0 && (
                           <div
-                            className={`absolute inset-0 flex items-center justify-center ${
+                            className={`absolute inset-0 m-[5px] flex items-center justify-center ${
                               style.shape === 'circle' ? 'rounded-full' : 'rounded'
                             } ${style.className}`}
                           >
