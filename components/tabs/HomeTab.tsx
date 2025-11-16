@@ -12,6 +12,9 @@ import { userService } from '@/lib/services/userService';
 import { Round, roundIsFinished } from '@/lib/models/round';
 import { AppUser } from '@/lib/models/appUser';
 import RoundCardView from '@/components/widgets/RoundCardView';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface RoundStatistics {
   totalRounds: number;
@@ -122,7 +125,7 @@ export default function HomeTab() {
   if (loading || loadingRounds) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -130,7 +133,7 @@ export default function HomeTab() {
   if (!user) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-600">{t('notSignedIn')}</p>
+        <p className="text-muted-foreground">{t('notSignedIn')}</p>
       </div>
     );
   }
@@ -139,45 +142,43 @@ export default function HomeTab() {
   const userName = appUser?.name || t('player');
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen bg-background pb-20">
       <div className="p-4 space-y-6">
         {/* Welcome Section */}
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold">
             {t('welcomeUser', { name: userName })}
           </h1>
         </div>
 
         {/* Error Display */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p className="text-red-700 text-sm">{error}</p>
-            <button
-              onClick={loadRounds}
-              className="mt-2 text-red-600 underline text-sm"
-            >
-              {t('retry')}
-            </button>
-          </div>
+          <Alert variant="destructive" className="border-destructive/30">
+            <AlertDescription>
+              <p className="text-sm">{error}</p>
+              <Button variant="link" className="mt-2 px-0" onClick={loadRounds}>
+                {t('retry')}
+              </Button>
+            </AlertDescription>
+          </Alert>
         )}
 
         {/* Active Rounds Section */}
         {activeRounds.length > 0 ? (
           <ActiveRoundsSection rounds={activeRounds} users={users} currentUserId={user.uid} />
         ) : !loadingRounds && !error ? (
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center text-gray-600">
-            <p>{t('noActiveRounds')}</p>
-          </div>
+          <Card>
+            <CardContent className="p-4 text-center">
+              <p className="text-muted-foreground">{t('noActiveRounds')}</p>
+            </CardContent>
+          </Card>
         ) : null}
 
         {/* Start New Round Button */}
-        <button
-          onClick={handleStartRound}
-          className="w-full bg-green-600 text-white py-4 rounded-lg font-semibold text-lg hover:bg-green-700 flex items-center justify-center gap-2"
-        >
-          <FontAwesomeIcon icon={faPlus} className="text-2xl" />
+        <Button onClick={handleStartRound} className="w-full h-12 text-base">
+          <FontAwesomeIcon icon={faPlus} className="text-xl" />
           {t('startNewRound')}
-        </button>
+        </Button>
 
         {/* Quick Stats Summary */}
         {stats && <QuickStatsSummary stats={stats} />}
@@ -185,7 +186,7 @@ export default function HomeTab() {
         {/* Statistics Dashboard */}
         {loadingStats ? (
           <div className="flex justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           </div>
         ) : stats ? (
           <StatisticsSection stats={stats} />
@@ -208,15 +209,19 @@ function ActiveRoundsSection({
 
   return (
     <div className="space-y-3">
-      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-        <div className="flex items-center gap-3">
-          <FontAwesomeIcon icon={faPlay} className="text-2xl text-green-700" />
-          <div className="flex-1">
-            <h2 className="text-lg font-bold text-green-700">{t('activeRounds')}</h2>
-            <p className="text-sm text-green-600">{t('roundsInProgress', { count: rounds.length })}</p>
+      <Card>
+        <CardContent className="p-4">
+          <div className="flex items-center gap-3">
+            <FontAwesomeIcon icon={faPlay} className="text-2xl text-primary" />
+            <div className="flex-1">
+              <h2 className="text-lg font-bold text-primary">{t('activeRounds')}</h2>
+              <p className="text-sm text-muted-foreground">
+                {t('roundsInProgress', { count: rounds.length })}
+              </p>
+            </div>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
       {rounds.map((round) => (
         <RoundCardView
           key={round.id}
@@ -234,40 +239,44 @@ function QuickStatsSummary({ stats }: { stats: RoundStatistics }) {
 
   if (stats.totalRounds === 0) {
     return (
-      <div className="bg-white border border-gray-200 rounded-lg p-4">
-        <h3 className="text-lg font-bold mb-2">{t('welcomeTitle')}</h3>
-        <p className="text-gray-600">{t('welcomeSubtitle')}</p>
-      </div>
+      <Card>
+        <CardContent className="p-4">
+          <h3 className="text-lg font-bold mb-2">{t('welcomeTitle')}</h3>
+          <p className="text-muted-foreground">{t('welcomeSubtitle')}</p>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-4">
-      <h3 className="text-lg font-bold mb-4">{t('summary')}</h3>
-      <div className="space-y-3">
-        <StatRow icon={faGolfBall} label={t('totalRounds')} value={stats.totalRounds.toString()} />
-        {stats.totalRounds > 0 && (
-          <>
-            <StatRow
-              icon={faChartLine}
-              label={t('averageScore')}
-              value={stats.averageScore > 0 ? stats.averageScore.toFixed(1) : t('dash')}
-            />
-            {stats.bestScore !== 0 && (
+    <Card>
+      <CardContent className="p-4">
+        <h3 className="text-lg font-bold mb-4">{t('summary')}</h3>
+        <div className="space-y-3">
+          <StatRow icon={faGolfBall} label={t('totalRounds')} value={stats.totalRounds.toString()} />
+          {stats.totalRounds > 0 && (
+            <>
               <StatRow
-                icon={faTrophy}
-                label={t('bestScore')}
-                value={formatBestScore(stats.bestTotalScore, stats.bestScore)}
+                icon={faChartLine}
+                label={t('averageScore')}
+                value={stats.averageScore > 0 ? stats.averageScore.toFixed(1) : t('dash')}
               />
-            )}
-            <StatRow icon={faCalendar} label={t('thisMonth')} value={stats.roundsThisMonth.toString()} />
-            {stats.mostPlayedCourse && (
-              <StatRow icon={faMapMarkerAlt} label={t('courses')} value={stats.mostPlayedCourse} />
-            )}
-          </>
-        )}
-      </div>
-    </div>
+              {stats.bestScore !== 0 && (
+                <StatRow
+                  icon={faTrophy}
+                  label={t('bestScore')}
+                  value={formatBestScore(stats.bestTotalScore, stats.bestScore)}
+                />
+              )}
+              <StatRow icon={faCalendar} label={t('thisMonth')} value={stats.roundsThisMonth.toString()} />
+              {stats.mostPlayedCourse && (
+                <StatRow icon={faMapMarkerAlt} label={t('courses')} value={stats.mostPlayedCourse} />
+              )}
+            </>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -275,8 +284,8 @@ function StatRow({ icon, label, value }: { icon: any; label: string; value: stri
   return (
     <div className="flex items-center gap-3">
       <FontAwesomeIcon icon={icon} className="text-xl" />
-      <span className="flex-1 text-gray-700">{label}</span>
-      <span className="font-bold text-gray-900">{value}</span>
+      <span className="flex-1 text-muted-foreground">{label}</span>
+      <span className="font-bold">{value}</span>
     </div>
   );
 }
@@ -292,25 +301,25 @@ function StatisticsSection({ stats }: { stats: RoundStatistics }) {
           icon={faGolfBall}
           label={t('totalRounds')}
           value={stats.totalRounds.toString()}
-          color="blue"
+          color="primary"
         />
         <StatCard
           icon={faChartLine}
           label={t('averageScore')}
           value={stats.averageScore > 0 ? stats.averageScore.toFixed(1) : t('dash')}
-          color="green"
+          color="primary"
         />
         <StatCard
           icon={faTrophy}
           label={t('bestScore')}
           value={stats.bestScore !== 0 ? formatBestScore(stats.bestTotalScore, stats.bestScore) : t('dash')}
-          color="amber"
+          color="secondary"
         />
         <StatCard
           icon={faCalendar}
           label={t('thisMonth')}
           value={stats.roundsThisMonth.toString()}
-          color="purple"
+          color="muted"
         />
       </div>
     </div>
@@ -329,11 +338,16 @@ function StatCard({
   color: string;
 }) {
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-4 flex flex-col items-center">
-      <FontAwesomeIcon icon={icon} className="text-3xl mb-2" />
-      <span className="text-2xl font-bold mb-1">{value}</span>
-      <span className="text-xs text-gray-600 text-center">{label}</span>
-    </div>
+    <Card>
+      <CardContent className="p-4 flex flex-col items-center">
+        <FontAwesomeIcon
+          icon={icon}
+          className="text-3xl mb-2 text-primary"
+        />
+        <span className="text-2xl font-bold mb-1">{value}</span>
+        <span className="text-xs text-muted-foreground text-center">{label}</span>
+      </CardContent>
+    </Card>
   );
 }
 
