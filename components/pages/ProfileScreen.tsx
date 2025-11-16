@@ -14,7 +14,8 @@ import { HeadToHeadService, HeadToHeadStats, hasHeadToHeadData } from '@/lib/ser
 import { AppUser } from '@/lib/models/appUser';
 import { Round, roundIsFinished } from '@/lib/models/round';
 import { Friendship, FriendshipStatus } from '@/lib/models/friendship';
-import { getInitials, colorFromName } from '@/lib/utils/validator';
+import { getInitials } from '@/lib/utils/validator';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import RoundCardView from '@/components/widgets/RoundCardView';
 
 export default function ProfileScreen() {
@@ -238,20 +239,12 @@ export default function ProfileScreen() {
       <div className="p-4 space-y-4">
         {/* Profile Header */}
         <div className="bg-card border border-border rounded-lg p-4 flex items-center gap-4">
-          <div
-            className="w-20 h-20 rounded-full flex items-center justify-center text-white font-bold text-2xl flex-shrink-0"
-            style={{ backgroundColor: 'var(--color-chart-1)' }}
-          >
-            {profileUser.pictureUrl ? (
-              <img
-                src={profileUser.pictureUrl}
-                alt={profileUser.name}
-                className="w-full h-full rounded-full object-cover"
-              />
-            ) : (
-              getInitials(profileUser.name)
-            )}
-          </div>
+          <Avatar className="w-20 h-20 flex-shrink-0">
+            {profileUser.pictureUrl ? <AvatarImage src={profileUser.pictureUrl} alt={profileUser.name} /> : null}
+            <AvatarFallback className="text-white font-bold text-2xl" style={{ backgroundColor: 'var(--color-chart-1)' }}>
+              {getInitials(profileUser.name)}
+            </AvatarFallback>
+          </Avatar>
           <div className="flex-1 min-w-0">
             <p className="font-semibold text-xl truncate">{profileUser.name}</p>
           </div>

@@ -12,7 +12,8 @@ import { spinnerService } from '@/lib/services/spinnerService';
 import { Round, RoundGame } from '@/lib/models/round';
 import { AppUser } from '@/lib/models/appUser';
 import { userService } from '@/lib/services/userService';
-import { getInitials, colorFromName } from '@/lib/utils/validator';
+import { getInitials } from '@/lib/utils/validator';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { defaultWheelOptionsTh } from '@/lib/utils/party_game_defaults';
 import GameSettingsScreen from './GameSettingsScreen';
 import GamesView from '@/components/widgets/GamesView';
@@ -126,7 +127,7 @@ export default function RoundSettingsScreen() {
   if (loading || !round) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -139,8 +140,8 @@ export default function RoundSettingsScreen() {
     const game = round.games.find((g) => g.id === gameId);
     if (game) {
       return (
-        <div className="min-h-screen bg-gray-50">
-          <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3">
+        <div className="min-h-screen bg-subtle">
+          <div className="sticky top-0 bg-background border-b border-border px-4 py-3">
             <h1 className="text-xl font-semibold">{t('gameSettings') || 'Game Settings'}</h1>
           </div>
           <GameSettingsScreen
@@ -156,21 +157,21 @@ export default function RoundSettingsScreen() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3">
+    <div className="min-h-screen bg-subtle pb-20">
+      <div className="sticky top-0 bg-background border-b border-border px-4 py-3">
         <h1 className="text-xl font-semibold">{t('roundSettings')}</h1>
       </div>
 
       <div className="p-4 space-y-4">
         {/* Party Game Toggle */}
-        <div className="bg-white border border-gray-200 rounded-lg p-4">
+        <div className="bg-card border border-border rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium">{t('partyGameToggleTitle')}</p>
-              <p className="text-sm text-gray-600">{t('partyGameToggleSubtitle')}</p>
+              <p className="text-sm text-muted-foreground">{t('partyGameToggleSubtitle')}</p>
             </div>
             {updatingPartyGame ? (
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600"></div>
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
             ) : (
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
@@ -179,7 +180,7 @@ export default function RoundSettingsScreen() {
                   onChange={(e) => handleTogglePartyGame(e.target.checked)}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                <div className="w-11 h-6 bg-muted peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-primary-foreground after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-card after:border-border after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
               </label>
             )}
           </div>
@@ -201,7 +202,7 @@ export default function RoundSettingsScreen() {
         {/* Members Section */}
         <div>
           <h2 className="text-lg font-semibold mb-3">{t('members')}</h2>
-          <div className="bg-white border border-gray-200 rounded-lg divide-y">
+          <div className="bg-card border border-border rounded-lg divide-y">
             {round.memberIds.map((memberId, index) => {
               const member = users[memberId];
               const isRoundAdmin = memberId === round.adminId;
@@ -210,29 +211,21 @@ export default function RoundSettingsScreen() {
               return (
                 <div key={memberId} className="p-4 flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div
-                      className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold"
-                      style={{ backgroundColor: colorFromName(member?.name || memberId) }}
-                    >
-                      {member?.pictureUrl ? (
-                        <img
-                          src={member.pictureUrl}
-                          alt={member.name}
-                          className="w-full h-full rounded-full object-cover"
-                        />
-                      ) : (
-                        getInitials(member?.name || memberId)
-                      )}
-                    </div>
+                    <Avatar className="w-12 h-12">
+                      {member?.pictureUrl ? <AvatarImage src={member.pictureUrl} alt={member?.name} /> : null}
+                      <AvatarFallback className="text-white font-bold" style={{ backgroundColor: 'var(--color-chart-1)' }}>
+                        {getInitials(member?.name || memberId)}
+                      </AvatarFallback>
+                    </Avatar>
                     <div>
                       <p className="font-medium">{member?.name || memberId}</p>
-                      {isRoundAdmin && <p className="text-xs text-gray-500">Admin</p>}
+                      {isRoundAdmin && <p className="text-xs text-muted-foreground">Admin</p>}
                     </div>
                   </div>
                   {canRemove && (
                     <button
                       onClick={() => handleRemoveMember(memberId)}
-                      className="text-red-600 hover:text-red-800"
+                      className="text-error hover:opacity-80"
                     >
                       Remove
                     </button>
@@ -245,12 +238,12 @@ export default function RoundSettingsScreen() {
 
         {/* Leave Round (Members Only) */}
         {!isAdmin && isMember && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <h3 className="text-lg font-semibold text-red-600 mb-2">{t('dangerZone')}</h3>
-            <p className="text-sm text-gray-700 mb-4">{t('leaveRoundConfirm')}</p>
+          <div className="bg-error/10 border border-error/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-error mb-2">{t('dangerZone')}</h3>
+            <p className="text-sm text-muted-foreground mb-4">{t('leaveRoundConfirm')}</p>
             <button
               onClick={handleLeaveRound}
-              className="w-full px-4 py-2 bg-red-600 text-white rounded-lg font-medium"
+              className="w-full px-4 py-2 bg-error text-error-foreground rounded-lg font-medium"
             >
               {t('leaveRound')}
             </button>
@@ -259,13 +252,13 @@ export default function RoundSettingsScreen() {
 
         {/* Delete Round (Admin Only) */}
         {isAdmin && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <h3 className="text-lg font-semibold text-red-600 mb-2">{t('dangerZone')}</h3>
-            <p className="text-sm text-gray-700 mb-4">{t('deleteRoundWarning')}</p>
+          <div className="bg-error/10 border border-error/30 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-error mb-2">{t('dangerZone')}</h3>
+            <p className="text-sm text-muted-foreground mb-4">{t('deleteRoundWarning')}</p>
             <button
               onClick={handleDeleteRound}
               disabled={isDeleting}
-              className="w-full px-4 py-2 bg-red-600 text-white rounded-lg font-medium disabled:bg-gray-400"
+              className="w-full px-4 py-2 bg-error text-error-foreground rounded-lg font-medium disabled:bg-muted"
             >
               {isDeleting ? t('deleting') : t('deleteThisRound')}
             </button>
@@ -327,11 +320,11 @@ function GameTypeDialog({
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/50">
+      <div className="bg-card rounded-lg shadow-xl max-w-md w-full mx-4">
+        <div className="flex items-center justify-between p-4 border-b border-border">
           <h2 className="text-xl font-semibold">{t('selectGameType') || 'Select Game Type'}</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl">
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground text-2xl">
             <FontAwesomeIcon icon={faTimes} />
           </button>
         </div>
@@ -341,7 +334,7 @@ function GameTypeDialog({
               <button
                 key={gameType.type}
                 onClick={() => onSelect(gameType.type)}
-                className="w-full p-4 border border-gray-200 rounded-lg hover:bg-gray-50 flex items-center gap-3 text-left"
+                className="w-full p-4 border border-border rounded-lg hover:bg-muted flex items-center gap-3 text-left"
               >
                 <FontAwesomeIcon icon={gameType.icon} className="text-2xl" />
                 <span className="font-medium">{gameType.title}</span>

@@ -90,13 +90,13 @@ export default function CoursesScreen() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="sticky top-0 bg-white border-b border-gray-200 z-10 px-4 py-3">
+    <div className="min-h-screen bg-background">
+      <div className="sticky top-0 bg-background border-b border-border z-10 px-4 py-3">
         <div className="flex items-center justify-between mb-3">
           <h1 className="text-xl font-semibold">{t('courses')}</h1>
           <button
             onClick={loadCourses}
-            className="p-2 text-gray-600 hover:text-gray-900"
+            className="p-2 text-muted-foreground hover:text-foreground"
           >
             🔄
           </button>
@@ -106,23 +106,23 @@ export default function CoursesScreen() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder={t('searchCourseByName')}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
+          className="w-full px-4 py-2 border border-input bg-input-background rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
         />
       </div>
 
       <div className="px-4 py-2">
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
           </div>
         ) : error ? (
-          <div className="text-center py-20 text-red-600">
+          <div className="text-center py-20 text-error">
             {t('failedToLoadCourses')}
             <br />
             {error.message}
           </div>
         ) : sortedCourses.length === 0 ? (
-          <div className="text-center py-20 text-gray-600">{t('noCoursesFound')}</div>
+          <div className="text-center py-20 text-muted-foreground">{t('noCoursesFound')}</div>
         ) : (
           <div className="space-y-1">
             {sortedCourses.map((course) => {
@@ -141,13 +141,13 @@ export default function CoursesScreen() {
                 <button
                   key={course.id}
                   onClick={() => handleCourseClick(course)}
-                  className="w-full text-left px-4 py-3 border-b border-gray-200 hover:bg-gray-50 flex items-center justify-between"
+                  className="w-full text-left px-4 py-3 border-b border-border hover:bg-muted flex items-center justify-between"
                 >
                   <div>
                     <div className="font-medium">{course.name}</div>
-                    {subtitle && <div className="text-sm text-gray-600">{subtitle}</div>}
+                    {subtitle && <div className="text-sm text-muted-foreground">{subtitle}</div>}
                   </div>
-                  <span className="text-gray-400">›</span>
+                  <span className="text-muted-foreground">›</span>
                 </button>
               );
             })}

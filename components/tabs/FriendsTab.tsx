@@ -10,6 +10,7 @@ import { auth } from '@/lib/firebase/config';
 import { friendService, FriendOverview, FriendshipWithUser } from '@/lib/services/friendService';
 import { AppUser } from '@/lib/models/appUser';
 import { getInitials } from '@/lib/utils/validator';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useLocale } from 'next-intl';
 
 type FriendRelationship = 'self' | 'friend' | 'incoming' | 'outgoing' | 'none';
@@ -442,20 +443,12 @@ function SearchResultTile({
       onClick={() => onAction('view')}
       className="p-3 flex items-center gap-3 hover:bg-muted cursor-pointer"
     >
-      <div
-        className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0"
-        style={{ backgroundColor: bgColor }}
-      >
-        {entry.user.pictureUrl ? (
-          <img
-            src={entry.user.pictureUrl}
-            alt={entry.user.name}
-            className="w-full h-full rounded-full object-cover"
-          />
-        ) : (
-          initials
-        )}
-      </div>
+      <Avatar className="w-10 h-10 flex-shrink-0">
+        {entry.user.pictureUrl ? <AvatarImage src={entry.user.pictureUrl} alt={entry.user.name} /> : null}
+        <AvatarFallback className="text-white font-bold text-sm" style={{ backgroundColor: bgColor }}>
+          {initials}
+        </AvatarFallback>
+      </Avatar>
       <div className="flex-1 min-w-0">
         <p className="font-medium truncate">{entry.user.name}</p>
       </div>
@@ -574,20 +567,12 @@ function FriendListTile({
       onClick={onTap}
       className="p-3 flex items-center gap-3 hover:bg-muted cursor-pointer"
     >
-      <div
-        className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0"
-        style={{ backgroundColor: bgColor }}
-      >
-        {user.pictureUrl ? (
-          <img
-            src={user.pictureUrl}
-            alt={user.name}
-            className="w-full h-full rounded-full object-cover"
-          />
-        ) : (
-          initials
-        )}
-      </div>
+      <Avatar className="w-10 h-10 flex-shrink-0">
+        {user.pictureUrl ? <AvatarImage src={user.pictureUrl} alt={user.name} /> : null}
+        <AvatarFallback className="text-white font-bold text-sm" style={{ backgroundColor: bgColor }}>
+          {initials}
+        </AvatarFallback>
+      </Avatar>
       <div className="flex-1 min-w-0">
         <p className="font-medium truncate">{user.name}</p>
       </div>

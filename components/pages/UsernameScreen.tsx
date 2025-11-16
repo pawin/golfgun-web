@@ -84,32 +84,32 @@ export default function UsernameScreen() {
   if (signingIn || loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center px-4">
+    <div className="min-h-screen bg-background flex items-center justify-center px-4">
       <div className="max-w-md w-full space-y-8">
         {/* Logo */}
         <div className="flex justify-center">
-          <div className="w-40 h-40 bg-green-600 rounded-full flex items-center justify-center">
-            <span className="text-white text-4xl font-bold">GG</span>
+          <div className="w-40 h-40 bg-primary rounded-full flex items-center justify-center">
+            <span className="text-primary-foreground text-4xl font-bold">GG</span>
           </div>
         </div>
 
         {/* Title */}
         <div className="text-center">
           <h1 className="text-2xl font-semibold mb-2">{t('welcomeTitle')}</h1>
-          <p className="text-gray-600">{t('chooseUsernameToGetStarted')}</p>
+          <p className="text-muted-foreground">{t('chooseUsernameToGetStarted')}</p>
         </div>
 
         {/* Form */}
         <form onSubmit={handleSave} className="space-y-4">
           {/* Username Field */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium mb-1">
               {t('username')}
             </label>
             <input
@@ -117,20 +117,20 @@ export default function UsernameScreen() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder={t('username')}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
+              className="w-full px-4 py-2 border border-input bg-input-background rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               disabled={saving}
             />
           </div>
 
           {/* Language Selector */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium mb-1">
               {t('settingsLanguage')}
             </label>
             <select
               value={selectedLanguage}
               onChange={(e) => setSelectedLanguage(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
+              className="w-full px-4 py-2 border border-input bg-input-background rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               disabled={saving}
             >
               <option value="en">{t('languageEnglish')}</option>
@@ -142,11 +142,11 @@ export default function UsernameScreen() {
           <button
             type="submit"
             disabled={saving || !username.trim()}
-            className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+            className="w-full bg-primary text-primary-foreground py-3 rounded-lg font-semibold hover:bg-primary-hover disabled:bg-muted disabled:cursor-not-allowed"
           >
             {saving ? (
               <div className="flex items-center justify-center">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground"></div>
               </div>
             ) : (
               t('continueButton')
@@ -158,7 +158,7 @@ export default function UsernameScreen() {
         <div className="text-center">
           <button
             onClick={() => router.push('/auth')}
-            className="text-sm text-green-600 hover:underline"
+            className="text-sm text-primary hover:underline"
           >
             {t('alreadyHaveAccountSignIn')}
           </button>

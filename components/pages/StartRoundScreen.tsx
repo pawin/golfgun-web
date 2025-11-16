@@ -119,7 +119,7 @@ export default function StartRoundScreen() {
   if (loading || loadingScorecards) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -127,19 +127,19 @@ export default function StartRoundScreen() {
   if (!user) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-600">{t('notSignedIn')}</p>
+        <p className="text-muted-foreground">{t('notSignedIn')}</p>
       </div>
     );
   }
 
   if (error && !course) {
     return (
-      <div className="min-h-screen bg-white">
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3">
+      <div className="min-h-screen bg-background">
+        <div className="sticky top-0 bg-background border-b border-border px-4 py-3">
           <h1 className="text-xl font-semibold">{t('startRound')}</h1>
         </div>
         <div className="flex items-center justify-center py-20">
-          <p className="text-red-600 text-center px-4">
+          <p className="text-error text-center px-4">
             {t('failedToLoadScorecards')}
             <br />
             {error}
@@ -155,26 +155,26 @@ export default function StartRoundScreen() {
 
   if (scorecards.length === 0) {
     return (
-      <div className="min-h-screen bg-white">
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3">
+      <div className="min-h-screen bg-background">
+        <div className="sticky top-0 bg-background border-b border-border px-4 py-3">
           <h1 className="text-xl font-semibold">{t('startRound')}</h1>
         </div>
         <div className="flex items-center justify-center py-20">
-          <p className="text-gray-600">{t('noScorecardsFound')}</p>
+          <p className="text-muted-foreground">{t('noScorecardsFound')}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       {isStarting && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+        <div className="fixed inset-0 bg-foreground/50 flex items-center justify-center z-50">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-foreground"></div>
         </div>
       )}
 
-      <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3">
+      <div className="sticky top-0 bg-background border-b border-border px-4 py-3">
         <h1 className="text-xl font-semibold">{t('startRound')}</h1>
       </div>
 
@@ -182,7 +182,7 @@ export default function StartRoundScreen() {
         <h2 className="text-lg font-semibold">{course.name}</h2>
 
         {/* Step 1: Select first scorecard */}
-        <div className="bg-white border border-gray-200 rounded-lg p-4">
+        <div className="bg-card border border-border rounded-lg p-4">
           <h3 className="text-lg font-semibold mb-4">{t('startRound')}</h3>
           <div className="space-y-2">
             {scorecards.map((sc) => {
@@ -203,8 +203,8 @@ export default function StartRoundScreen() {
                   }}
                   className={`w-full text-left p-4 rounded-lg border-2 transition-colors ${
                     isSelected
-                      ? 'border-green-600 bg-green-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-primary bg-accent'
+                      : 'border-border hover:border-border-strong'
                   }`}
                 >
                   <div className="flex items-center justify-between">
@@ -212,14 +212,14 @@ export default function StartRoundScreen() {
                       <p className={`font-medium ${isSelected ? 'font-semibold' : ''}`}>
                         {sc.name || course.name}
                       </p>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-muted-foreground">
                         {count} {t('holes')}
                       </p>
                     </div>
                     {isSelected ? (
-                      <span className="text-green-600 text-xl">✓</span>
+                      <span className="text-primary text-xl">✓</span>
                     ) : (
-                      <span className="text-gray-400 text-xl">○</span>
+                      <span className="text-muted-foreground text-xl">○</span>
                     )}
                   </div>
                 </button>
@@ -230,7 +230,7 @@ export default function StartRoundScreen() {
 
         {/* Step 2: Select second scorecard if first is 9 holes */}
         {needsSecondSelection && (
-          <div className="bg-white border border-gray-200 rounded-lg p-4">
+          <div className="bg-card border border-border rounded-lg p-4">
             <h3 className="text-lg font-semibold mb-4">
               {t('selectAnother9HoleScorecard')}
             </h3>
@@ -249,8 +249,8 @@ export default function StartRoundScreen() {
                       }}
                       className={`w-full text-left p-4 rounded-lg border-2 transition-colors ${
                         isSelected
-                          ? 'border-green-600 bg-green-50'
-                          : 'border-gray-200 hover:border-gray-300'
+                          ? 'border-primary bg-accent'
+                          : 'border-border hover:border-border-strong'
                       }`}
                     >
                       <div className="flex items-center justify-between">
@@ -258,14 +258,14 @@ export default function StartRoundScreen() {
                           <p className={`font-medium ${isSelected ? 'font-semibold' : ''}`}>
                             {sc.name || course.name}
                           </p>
-                          <p className="text-sm text-gray-600">
+                          <p className="text-sm text-muted-foreground">
                             {count} {t('holes')}
                           </p>
                         </div>
                         {isSelected ? (
-                          <span className="text-green-600 text-xl">✓</span>
+                          <span className="text-primary text-xl">✓</span>
                         ) : (
-                          <span className="text-gray-400 text-xl">○</span>
+                          <span className="text-muted-foreground text-xl">○</span>
                         )}
                       </div>
                     </button>
@@ -280,7 +280,7 @@ export default function StartRoundScreen() {
           <button
             onClick={handleStart}
             disabled={isStarting}
-            className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+            className="w-full bg-primary text-primary-foreground py-3 rounded-lg font-semibold hover:bg-primary-hover disabled:bg-muted disabled:cursor-not-allowed"
           >
             {firstScorecard && holeCount(firstScorecard) === 9 && !selectedSecond
               ? t('start9Hole')
@@ -289,8 +289,8 @@ export default function StartRoundScreen() {
         )}
 
         {error && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-sm text-red-700">
+          <div className="p-3 bg-error/10 border border-error/30 rounded-lg">
+            <p className="text-sm text-error">
               {t('failedToStartRound', { error })}
             </p>
           </div>

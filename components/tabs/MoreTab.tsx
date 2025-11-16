@@ -11,7 +11,8 @@ import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase/config';
 import { userService } from '@/lib/services/userService';
 import { AppUser } from '@/lib/models/appUser';
-import { getInitials, colorFromName } from '@/lib/utils/validator';
+import { getInitials } from '@/lib/utils/validator';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 export default function MoreTab() {
   const t = useTranslations();
@@ -122,20 +123,12 @@ export default function MoreTab() {
               onClick={() => router.push(`/${locale}/profile/edit`)}
               className="bg-card border border-border rounded-lg p-4 flex items-center gap-4 cursor-pointer hover:bg-muted"
             >
-              <div
-                className="w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0"
-                style={{ backgroundColor: 'var(--color-chart-1)' }}
-              >
-                {appUser.pictureUrl ? (
-                  <img
-                    src={appUser.pictureUrl}
-                    alt={appUser.name}
-                    className="w-full h-full rounded-full object-cover"
-                  />
-                ) : (
-                  getInitials(appUser.name)
-                )}
-              </div>
+              <Avatar className="w-16 h-16 flex-shrink-0">
+                {appUser.pictureUrl ? <AvatarImage src={appUser.pictureUrl} alt={appUser.name} /> : null}
+                <AvatarFallback className="text-white font-bold text-lg" style={{ backgroundColor: 'var(--color-chart-1)' }}>
+                  {getInitials(appUser.name)}
+                </AvatarFallback>
+              </Avatar>
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-lg truncate">{appUser.name}</p>
                 <p className="text-sm text-muted-foreground truncate">

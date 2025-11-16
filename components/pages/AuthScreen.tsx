@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { sendPasswordResetEmail, FirebaseAuthError, getAuthErrorCode } from 'firebase/auth';
+import { sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '@/lib/firebase/config';
 import { userService } from '@/lib/services/userService';
 
@@ -106,19 +106,19 @@ export default function AuthScreen() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       <div className="max-w-md mx-auto px-6 py-8">
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Logo */}
           <div className="flex justify-center mb-6">
-            <div className="w-40 h-40 bg-green-600 rounded-full flex items-center justify-center">
-              <span className="text-white text-4xl font-bold">GG</span>
+            <div className="w-40 h-40 bg-primary rounded-full flex items-center justify-center">
+              <span className="text-primary-foreground text-4xl font-bold">GG</span>
             </div>
           </div>
 
@@ -127,13 +127,13 @@ export default function AuthScreen() {
           <h2 className="text-xl font-semibold text-center mb-1">
             {isLogin ? t('welcomeBack') : t('createAccount')}
           </h2>
-          <p className="text-gray-600 text-center text-sm mb-8">
+          <p className="text-muted-foreground text-center text-sm mb-8">
             {isLogin ? t('signInToContinue') : t('signUpToGetStarted')}
           </p>
 
           {/* Email Field */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium mb-1">
               {t('email')}
             </label>
             <input
@@ -141,14 +141,14 @@ export default function AuthScreen() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder={t('yourEmailExample')}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
+              className="w-full px-4 py-2 border border-input bg-input-background rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               disabled={isLoading}
             />
           </div>
 
           {/* Password Field */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium mb-1">
               {t('password')}
             </label>
             <div className="relative">
@@ -157,13 +157,13 @@ export default function AuthScreen() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder={t('enterYourPassword')}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent pr-10"
+                className="w-full px-4 py-2 border border-input bg-input-background rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent pr-10"
                 disabled={isLoading}
               />
               <button
                 type="button"
                 onClick={() => setObscurePassword(!obscurePassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
               >
                 {obscurePassword ? '👁️' : '👁️‍🗨️'}
               </button>
@@ -173,13 +173,13 @@ export default function AuthScreen() {
           {/* Language Selector (only in signup) */}
           {!isLogin && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium mb-1">
                 {t('settingsLanguage')}
               </label>
               <select
                 value={selectedLanguage}
                 onChange={(e) => setSelectedLanguage(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent"
+                className="w-full px-4 py-2 border border-input bg-input-background rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 disabled={isLoading}
               >
                 <option value="en">{t('languageEnglish')}</option>
@@ -195,7 +195,7 @@ export default function AuthScreen() {
                 type="button"
                 onClick={handleResetPassword}
                 disabled={isLoading}
-                className="text-sm text-green-600 hover:underline"
+              className="text-sm text-primary hover:underline"
               >
                 {t('forgotPassword')}
               </button>
@@ -204,8 +204,8 @@ export default function AuthScreen() {
 
           {/* Error Message */}
           {errorMessage && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-700">{errorMessage}</p>
+            <div className="p-3 bg-error/10 border border-error/30 rounded-lg">
+              <p className="text-sm text-error">{errorMessage}</p>
             </div>
           )}
 
@@ -213,11 +213,11 @@ export default function AuthScreen() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+            className="w-full bg-primary text-primary-foreground py-3 rounded-lg font-semibold hover:bg-primary-hover disabled:bg-muted disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <div className="flex items-center justify-center">
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary-foreground"></div>
               </div>
             ) : (
               isLogin ? t('signIn') : t('signUp')
@@ -225,7 +225,7 @@ export default function AuthScreen() {
           </button>
 
           {/* Toggle Login/Signup */}
-          <div className="text-center text-sm text-gray-600">
+          <div className="text-center text-sm text-muted-foreground">
             {isLogin ? t('dontHaveAccount') : t('alreadyHaveAccount')}{' '}
             <button
               type="button"
@@ -234,7 +234,7 @@ export default function AuthScreen() {
                 setErrorMessage(null);
               }}
               disabled={isLoading}
-              className="text-green-600 font-semibold hover:underline"
+              className="text-primary font-semibold hover:underline"
             >
               {isLogin ? t('signUp') : t('signIn')}
             </button>

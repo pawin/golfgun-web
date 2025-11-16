@@ -61,7 +61,7 @@ export default function MyRoundsScreen() {
   if (loading || loadingRounds) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -69,25 +69,25 @@ export default function MyRoundsScreen() {
   if (!user) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-600">{t('notSignedIn')}</p>
+        <p className="text-muted-foreground">{t('notSignedIn')}</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-white">
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3">
+      <div className="min-h-screen bg-background">
+        <div className="sticky top-0 bg-background border-b border-border px-4 py-3">
           <h1 className="text-xl font-semibold">{t('rounds')}</h1>
         </div>
         <div className="flex items-center justify-center py-20">
           <div className="text-center">
-            <p className="text-red-600 mb-4">
+            <p className="text-error mb-4">
               {t('failedToLoadRounds', { error: error.message })}
             </p>
             <button
               onClick={loadRounds}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg"
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-lg"
             >
               {t('retry')}
             </button>
@@ -98,14 +98,14 @@ export default function MyRoundsScreen() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3">
+    <div className="min-h-screen bg-background">
+      <div className="sticky top-0 bg-background border-b border-border px-4 py-3">
         <h1 className="text-xl font-semibold">{t('rounds')}</h1>
       </div>
 
       {rounds.length === 0 ? (
         <div className="flex items-center justify-center py-20">
-          <p className="text-gray-600">{t('noRoundsFound')}</p>
+          <p className="text-muted-foreground">{t('noRoundsFound')}</p>
         </div>
       ) : (
         <div className="p-4 space-y-3">
