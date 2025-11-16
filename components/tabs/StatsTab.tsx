@@ -273,15 +273,15 @@ function ScoringBreakdownSection({ stats }: { stats: ScoringBreakdownStats }) {
           <BreakdownRow
             label={t('eagleOrBetter')}
             percent={stats.eagleOrBetterPercent}
-            color="orange"
+            color="eagle"
           />
-          <BreakdownRow label={t('birdie')} percent={stats.birdiePercent} color="red" />
-          <BreakdownRow label={t('par')} percent={stats.parPercent} color="blue" />
-          <BreakdownRow label={t('bogey')} percent={stats.bogeyPercent} color="green" />
+          <BreakdownRow label={t('birdie')} percent={stats.birdiePercent} color="birdie" />
+          <BreakdownRow label={t('par')} percent={stats.parPercent} color="par" />
+          <BreakdownRow label={t('bogey')} percent={stats.bogeyPercent} color="bogey" />
           <BreakdownRow
             label={t('doubleOrWorse')}
             percent={stats.doubleOrWorsePercent}
-            color="gray"
+            color="double-bogey"
           />
         </div>
       </div>
@@ -324,17 +324,22 @@ function BreakdownRow({
   color: string;
 }) {
   const t = useTranslations();
-  const colorClass = {
-    orange: 'bg-orange-500',
-    red: 'bg-red-500',
-    blue: 'bg-blue-500',
-    green: 'bg-green-500',
-    gray: 'bg-gray-500',
-  }[color] || 'bg-gray-500';
+  const colorStyle: React.CSSProperties =
+    color === 'eagle'
+      ? { backgroundColor: 'var(--score-eagle)' }
+      : color === 'birdie'
+      ? { backgroundColor: 'var(--score-birdie)' }
+      : color === 'par'
+      ? { backgroundColor: 'var(--score-par)' }
+      : color === 'bogey'
+      ? { backgroundColor: 'var(--score-bogey)' }
+      : color === 'double-bogey'
+      ? { backgroundColor: 'var(--score-double-bogey)' }
+      : { backgroundColor: 'var(--muted)' };
 
   return (
     <div className="flex items-center gap-3">
-      <div className={`w-1 h-6 rounded ${colorClass}`}></div>
+      <div className="w-1 h-6 rounded" style={colorStyle}></div>
       <span className="flex-1 text-gray-700">{label}</span>
       <span className="font-bold text-gray-900">
         {percent != null ? `${percent.toFixed(1)}%` : t('dash')}

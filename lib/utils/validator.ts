@@ -46,8 +46,13 @@ export function getInitials(name: string): string {
 }
 
 export function colorFromName(name: string): string {
-  // Take first 3 characters (lowercased)
-  const key = name.toLowerCase().padEnd(3).substring(0, 3);
+  // Build key from first 2 and last 2 characters (case-insensitive).
+  // Short names are repeated to ensure sufficient length.
+  const lowered = name.toLowerCase();
+  const source = lowered.length > 0 ? lowered : 'user';
+  const expanded = source.repeat(Math.ceil(4 / source.length));
+  const base = expanded.substring(0, Math.max(4, source.length));
+  const key = base.substring(0, 2) + base.substring(base.length - 2);
 
   // Generate a simple hash
   let hash = 0;
@@ -58,9 +63,9 @@ export function colorFromName(name: string): string {
   // Use hash to pick hue (0–360)
   const hue = hash % 360;
 
-  // Keep colors rich but dark enough for white text
-  const saturation = 60; // 0–100
-  const lightness = 35; // darker side
+  // Keep colors rich but dark enough for white text, with slight variation
+  const saturation = 55 + (hash % 21); // 55–76
+  const lightness = 32 + ((hash >> 3) % 9); // 32–40
 
   return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
 }

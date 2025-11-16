@@ -224,31 +224,31 @@ export function DesignSystemShowcase() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span>Hole in One</span>
-                  <Badge className="bg-purple-600 text-white">-4</Badge>
+                  <Badge className="bg-[var(--score-hole-in-one)] text-white">-4</Badge>
                 </div>
                 <div className="flex items-center justify-between">
                   <span>Albatross</span>
-                  <Badge className="bg-fuchsia-600 text-white">-3</Badge>
+                  <Badge className="bg-[var(--score-albatross)] text-white">-3</Badge>
                 </div>
                 <div className="flex items-center justify-between">
                   <span>Eagle</span>
-                  <Badge className="bg-orange-600 text-white">-2</Badge>
+                  <Badge className="bg-[var(--score-eagle)] text-white">-2</Badge>
                 </div>
                 <div className="flex items-center justify-between">
                   <span>Birdie</span>
-                  <Badge className="bg-red-600 text-white">-1</Badge>
+                  <Badge className="bg-[var(--score-birdie)] text-white">-1</Badge>
                 </div>
                 <div className="flex items-center justify-between">
                   <span>Par</span>
-                  <Badge className="bg-blue-600 text-white">E</Badge>
+                  <Badge className="bg-[var(--score-par)] text-white">E</Badge>
                 </div>
                 <div className="flex items-center justify-between">
                   <span>Bogey</span>
-                  <Badge className="bg-green-600 text-white">+1</Badge>
+                  <Badge className="bg-[var(--score-bogey)] text-white">+1</Badge>
                 </div>
                 <div className="flex items-center justify-between">
                   <span>Double Bogey</span>
-                  <Badge className="bg-gray-600 text-white">+2</Badge>
+                  <Badge className="bg-[var(--score-double-bogey)] text-white">+2</Badge>
                 </div>
                 <div className="flex items-center justify-between">
                   <span>Triple Bogey+</span>
@@ -1008,32 +1008,32 @@ export function DesignSystemShowcase() {
                   </CardHeader>
                   <CardContent className="space-y-2">
                     <div className="flex items-center gap-3">
-                      <div className="h-12 flex-1 rounded-lg bg-[#9333ea] flex items-center justify-center text-white">Hole in One</div>
+                      <div className="h-12 flex-1 rounded-lg bg-[var(--score-hole-in-one)] flex items-center justify-center text-white">Hole in One</div>
                       <span className="text-sm text-muted-foreground w-20">#9333ea</span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <div className="h-12 flex-1 rounded-lg bg-[#c026d3] flex items-center justify-center text-white">Albatross (-3)</div>
+                      <div className="h-12 flex-1 rounded-lg bg-[var(--score-albatross)] flex items-center justify-center text-white">Albatross (-3)</div>
                       <span className="text-sm text-muted-foreground w-20">#c026d3</span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <div className="h-12 flex-1 rounded-lg bg-[#ea580c] flex items-center justify-center text-white">Eagle (-2)</div>
+                      <div className="h-12 flex-1 rounded-lg bg-[var(--score-eagle)] flex items-center justify-center text-white">Eagle (-2)</div>
                       <span className="text-sm text-muted-foreground w-20">#ea580c</span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <div className="h-12 flex-1 rounded-lg bg-[#dc2626] flex items-center justify-center text-white">Birdie (-1)</div>
+                      <div className="h-12 flex-1 rounded-lg bg-[var(--score-birdie)] flex items-center justify-center text-white">Birdie (-1)</div>
                       <span className="text-sm text-muted-foreground w-20">#dc2626</span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <div className="h-12 flex-1 rounded-lg bg-[#2563eb] flex items-center justify-center text-white">Par (E)</div>
+                      <div className="h-12 flex-1 rounded-lg bg-[var(--score-par)] flex items-center justify-center text-white">Par (E)</div>
                       <span className="text-sm text-muted-foreground w-20">#2563eb</span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <div className="h-12 flex-1 rounded-lg bg-[#16a34a] flex items-center justify-center text-white">Bogey (+1)</div>
+                      <div className="h-12 flex-1 rounded-lg bg-[var(--score-bogey)] flex items-center justify-center text-white">Bogey (+1)</div>
                       <span className="text-sm text-muted-foreground w-20">#16a34a</span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <div className="h-12 flex-1 rounded-lg bg-[#4b5563] flex items-center justify-center text-white">Double Bogey (+2)</div>
-                      <span className="text-sm text-muted-foreground w-20">#4b5563</span>
+                      <div className="h-12 flex-1 rounded-lg bg-[var(--score-double-bogey)] flex items-center justify-center text-white">Double Bogey (+2)</div>
+                      <span className="text-sm text-muted-foreground w-20">#9ca3af</span>
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="h-12 flex-1 rounded-lg bg-black flex items-center justify-center text-white">Triple+ (+3)</div>
