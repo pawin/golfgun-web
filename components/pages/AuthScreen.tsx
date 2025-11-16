@@ -7,10 +7,12 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '@/lib/firebase/config';
 import { userService } from '@/lib/services/userService';
+import { useLocale } from 'next-intl';
 
 export default function AuthScreen() {
   const t = useTranslations();
   const router = useRouter();
+  const locale = useLocale();
   const [user, loading] = useAuthState(auth);
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
@@ -21,10 +23,24 @@ export default function AuthScreen() {
   const [selectedLanguage, setSelectedLanguage] = useState('th');
 
   useEffect(() => {
-    if (user && !loading) {
-      router.push('/');
-    }
-  }, [user, loading, router]);
+    let isMounted = true;
+    const run = async () => {
+      if (!user || loading) return;
+      try {
+        const appUser = await userService.getUserById(user.uid);
+        const hasName = !!appUser && !!String(appUser.name ?? '').trim();
+        if (hasName) {
+          router.push(`/${locale}`);
+        }
+      } catch {
+        // ignore
+      }
+    };
+    run();
+    return () => {
+      isMounted = false;
+    };
+  }, [user, loading, router, locale]);
 
   const getErrorMessage = (code: string): string => {
     switch (code) {
@@ -73,7 +89,7 @@ export default function AuthScreen() {
         isLogin,
         language: isLogin ? 'th' : selectedLanguage,
       });
-      router.push('/');
+      router.push(`/${locale}`);
     } catch (error: any) {
       const code = error?.code || error?.message || 'unknown';
       setErrorMessage(getErrorMessage(code));

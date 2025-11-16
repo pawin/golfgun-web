@@ -8,10 +8,12 @@ import { signInAnonymously } from 'firebase/auth';
 import { doc, runTransaction, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase/config';
 import { sanitizeUsername } from '@/lib/utils/validator';
+import { useLocale } from 'next-intl';
 
 export default function UsernameScreen() {
   const t = useTranslations();
   const router = useRouter();
+  const locale = useLocale();
   const [user, loading] = useAuthState(auth);
   const [username, setUsername] = useState('');
   const [saving, setSaving] = useState(false);
@@ -73,7 +75,7 @@ export default function UsernameScreen() {
         }, { merge: true });
       });
 
-      router.push('/');
+      router.push(`/${locale}`);
     } catch (error: any) {
       alert(error.message || t('errorWithMessage', { error: String(error) }));
     } finally {
@@ -157,7 +159,7 @@ export default function UsernameScreen() {
         {/* Sign In Link */}
         <div className="text-center">
           <button
-            onClick={() => router.push('/auth')}
+            onClick={() => router.push(`/${locale}/auth`)}
             className="text-sm text-primary hover:underline"
           >
             {t('alreadyHaveAccountSignIn')}

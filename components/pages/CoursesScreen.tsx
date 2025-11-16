@@ -94,12 +94,6 @@ export default function CoursesScreen() {
       <div className="sticky top-0 bg-background border-b border-border z-10 px-4 py-3">
         <div className="flex items-center justify-between mb-3">
           <h1 className="text-xl font-semibold">{t('courses')}</h1>
-          <button
-            onClick={loadCourses}
-            className="p-2 text-muted-foreground hover:text-foreground"
-          >
-            🔄
-          </button>
         </div>
         <input
           type="text"
