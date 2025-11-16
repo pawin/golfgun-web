@@ -16,7 +16,7 @@ import {
   limit,
 } from 'firebase/firestore';
 import { db } from '../firebase/config';
-import { Round, roundFromFirestore, RoundGame } from '../models/round';
+import { Round, roundFromFirestore, RoundGame, roundGameToMap } from '../models/round';
 import { Course, courseToMap } from '../models/course';
 import { Scorecard, scorecardToMap } from '../models/scorecard';
 import { AppUser } from '../models/appUser';
@@ -135,31 +135,8 @@ export class RoundService {
     const games = data?.games || [];
     const gameIndex = games.findIndex((g: any) => g.id === game.id);
 
-    const gameData = {
-      id: game.id,
-      type: game.type,
-      playerIds: game.playerIds,
-      redTeamIds: game.redTeamIds,
-      blueTeamIds: game.blueTeamIds,
-      handicapStrokes: game.handicapStrokes,
-      holePoints: game.holePoints,
-      birdieMultiplier: game.birdieMultiplier,
-      eagleMultiplier: game.eagleMultiplier,
-      albatrossMultiplier: game.albatrossMultiplier,
-      holeInOneMultiplier: game.holeInOneMultiplier,
-      scoreCountMode: game.scoreCountMode,
-      skinsMode: game.skinsMode,
-      maxSkins: game.maxSkins,
-      skinsStartingHole: game.skinsStartingHole,
-      ...(Object.keys(game.horseSettings).length > 0 && {
-        horseSettings: Object.fromEntries(
-          Object.entries(game.horseSettings).map(([segment, values]) => [
-            segment,
-            Object.fromEntries(Object.entries(values)),
-          ])
-        ),
-      }),
-    };
+    // Serialize with safe mapper that omits undefined fields
+    const gameData = roundGameToMap(game);
 
     if (gameIndex >= 0) {
       games[gameIndex] = gameData;

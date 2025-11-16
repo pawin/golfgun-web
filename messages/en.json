@@ -162,7 +162,7 @@
   "noAvailablePlayers": "No players found",
   "selectGameType": "Select Game Type",
   "gameType1v1": "1v1",
-  "gameTypeTeamVs": "Team vs Team",
+  "gameTypeTeamVs": "Team",
   "gameTypeHorse": "Horse",
   "gameTypeSkins": "Skins",
   "gameTypeOlympic": "Olympic",
@@ -205,6 +205,7 @@
   "failedToUpdate": "Failed to update: {error}",
   "enterYourUsername": "Enter your username",
   "retry": "Retry",
+  "clear": "Clear",
   "noActiveRounds": "No active rounds",
   "setValue": "Set Value",
   "total": "Total",
@@ -215,6 +216,7 @@
   "horseSettings": "Horse Settings",
   "players": "Players",
   "skinsSettings": "Skins Settings",
+  "notPlay": "Not play",
   "startingHole": "Starting Hole",
   "holeWithNumber": "Hole {number}",
   "skinsMode": "Skins Mode",
@@ -329,6 +331,7 @@
   "replaceGuestConfirm": "Replace guest {name} with your account?",
   "guestReplaced": "Guest {name} has been replaced with your account",
   "failedToReplaceGuest": "Failed to replace guest: {error}",
-  "holes": "holes"
+  "holes": "holes",
+  "net": "Net"
 }
 

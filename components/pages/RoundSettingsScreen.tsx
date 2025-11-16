@@ -5,7 +5,6 @@ import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faUsers, faHorse, faTrophy, faStar, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { auth } from '@/lib/firebase/config';
 import { roundService } from '@/lib/services/roundService';
 import { spinnerService } from '@/lib/services/spinnerService';
@@ -30,7 +29,6 @@ export default function RoundSettingsScreen() {
   const [roundId, setRoundId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [updatingPartyGame, setUpdatingPartyGame] = useState(false);
-  const [showGameTypeDialog, setShowGameTypeDialog] = useState(false);
   
   const gameId = searchParams?.get('gameId');
 
@@ -192,7 +190,7 @@ export default function RoundSettingsScreen() {
             round={round}
             users={users}
             currentUserId={user?.uid || ''}
-            onAddGame={() => setShowGameTypeDialog(true)}
+            /* GamesView now owns the Add Game dialog */
             onGameTap={(game) => {
               router.push(`/${locale}/rounds/${roundId}/settings?gameId=${game.id}`);
             }}
@@ -266,83 +264,7 @@ export default function RoundSettingsScreen() {
         )}
       </div>
 
-      {/* Game Type Selection Dialog */}
-      {showGameTypeDialog && (
-        <GameTypeDialog
-          onSelect={(gameType) => {
-            setShowGameTypeDialog(false);
-            if (!roundId || !user) return;
-            
-            // Create a new game with a unique ID
-            const newGameId = `${Date.now()}_${user.uid}`;
-            const newGame: RoundGame = {
-              id: newGameId,
-              type: gameType,
-              playerIds: [],
-              blueTeamIds: [],
-              redTeamIds: [],
-              handicapStrokes: {},
-              holePoints: {},
-              horseSettings: {},
-              skinsStartingHole: 1,
-            };
-
-            // Save the game first
-            roundService.saveGame({ roundId, game: newGame }).then(() => {
-              // Then navigate to game settings
-              router.push(`/${locale}/rounds/${roundId}/settings?gameId=${newGameId}`);
-            }).catch((e) => {
-              alert(t('failedToCreateGame', { error: (e as Error).toString() }) || `Failed to create game: ${e}`);
-            });
-          }}
-          onClose={() => setShowGameTypeDialog(false)}
-        />
-      )}
-    </div>
-  );
-}
-
-function GameTypeDialog({
-  onSelect,
-  onClose,
-}: {
-  onSelect: (gameType: string) => void;
-  onClose: () => void;
-}) {
-  const t = useTranslations();
-
-  const gameTypes = [
-    { type: '1v1', title: t('gameType1v1') || '1v1', icon: faUser },
-    { type: 'teamvs', title: t('gameTypeTeamVs') || 'Team vs Team', icon: faUsers },
-    { type: 'horse', title: t('gameTypeHorse') || 'Horse', icon: faHorse },
-    { type: 'skins', title: t('gameTypeSkins') || 'Skins', icon: faTrophy },
-    { type: 'olympic', title: t('gameTypeOlympic') || 'Olympic', icon: faStar },
-  ];
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/50">
-      <div className="bg-card rounded-lg shadow-xl max-w-md w-full mx-4">
-        <div className="flex items-center justify-between p-4 border-b border-border">
-          <h2 className="text-xl font-semibold">{t('selectGameType') || 'Select Game Type'}</h2>
-          <button onClick={onClose} className="text-muted-foreground hover:text-foreground text-2xl">
-            <FontAwesomeIcon icon={faTimes} />
-          </button>
-        </div>
-        <div className="p-4">
-          <div className="space-y-2">
-            {gameTypes.map((gameType) => (
-              <button
-                key={gameType.type}
-                onClick={() => onSelect(gameType.type)}
-                className="w-full p-4 border border-border rounded-lg hover:bg-muted flex items-center gap-3 text-left"
-              >
-                <FontAwesomeIcon icon={gameType.icon} className="text-2xl" />
-                <span className="font-medium">{gameType.title}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
+      {/* Game Type Selection Dialog is handled inside GamesView */}
     </div>
   );
 }

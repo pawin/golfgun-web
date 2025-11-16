@@ -2,21 +2,15 @@
 
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPause, faCheck, faTimes, faPlus, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { faEllipsis, faCheck, faTimes, faPlus, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { Round, RoundGame, roundIsMember, roundColorForPlayer, roundColorForTeam } from '@/lib/models/round';
 import { AppUser } from '@/lib/models/appUser';
 import {
   GameStatsService,
-  OneVOneGameStats,
-  TeamVsGameStats,
-  SkinsGameStats,
-  OlympicGameStats,
-  HorseGameStats,
   HorseOutcome,
   HorseSegmentScore,
 } from '@/lib/services/gameStatsService';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
 
 interface GamesViewProps {
   round: Round | null;
@@ -86,9 +80,12 @@ export default function GamesView({
       <div className="flex items-center justify-between mb-2">
         <h2 className="text-xl font-semibold">{t('gamesTitle')}</h2>
             {isMember && onAddGame && (
-          <Button onClick={onAddGame} size="icon" aria-label={t('add') || 'Add'}>
+          <button
+            onClick={onAddGame}
+            className="w-11 h-8 bg-primary text-primary-foreground rounded flex items-center justify-center hover:bg-primary-hover"
+          >
             <FontAwesomeIcon icon={faPlus} className="w-4 h-4" />
-          </Button>
+          </button>
         )}
       </div>
 
@@ -103,7 +100,7 @@ export default function GamesView({
                   <div key={game.id}>
                     <div
                       onClick={() => isMember && onGameTap?.(game)}
-                      className={`py-3 px-2 ${isMember ? 'cursor-pointer hover:bg-accent/20 rounded' : ''}`}
+                      className={`py-3 px-2 ${isMember ? 'cursor-pointer hover:bg-accent rounded' : ''}`}
                     >
                       {gameType.toLowerCase() === '1v1' && (
                         <OneVOneGameDisplay round={round} game={game} usersMap={usersMap} />
@@ -175,7 +172,7 @@ function OneVOneGameDisplay({
           +
         </span>
         <div
-          className="min-w-[40px] min-h-[40px] px-2 py-2 rounded flex items-center justify-center text-base font-medium text-primary-foreground"
+          className="min-w-[40px] min-h-[40px] px-2 py-2 rounded flex items-center justify-center text-white text-lg font-bold"
           style={{ backgroundColor: color }}
         >
           {scoreText}
@@ -236,7 +233,7 @@ function TeamVsGameDisplay({
             +
           </span>
           <div
-            className="min-w-[40px] min-h-[40px] px-2 py-2 rounded flex items-center justify-center text-white text-base font-medium"
+            className="min-w-[40px] min-h-[40px] px-2 py-2 rounded flex items-center justify-center text-white text-lg font-bold"
             style={{ backgroundColor: color }}
           >
             {scoreText}
@@ -281,7 +278,7 @@ function HorseGameDisplay({
   return (
     <div>
       {/* Header */}
-      <div className="bg-green-600 text-white px-3 py-2 rounded-t grid grid-cols-9 gap-2 text-xs font-bold mb-0">
+      <div className="bg-primary text-primary-foreground px-3 py-2 rounded-t grid grid-cols-9 gap-2 text-xs font-bold mb-0">
         <div className="col-span-3">{t('player')}</div>
         <div className="col-span-2 text-center">{t('front9')}</div>
         <div className="col-span-2 text-center">{t('back9')}</div>
@@ -293,9 +290,9 @@ function HorseGameDisplay({
         return (
           <div
             key={playerStats.player.id}
-            className={`px-3 py-2.5 grid grid-cols-9 gap-2 ${!isLast ? 'border-b border-gray-200' : ''}`}
+            className={`px-3 py-2.5 grid grid-cols-9 gap-2 ${!isLast ? 'border-b border-border' : ''}`}
           >
-            <div className="col-span-3 text-sm font-semibold truncate" style={{ color: roundColorForPlayer(round, playerStats.player.id) }}>
+            <div className="col-span-3 text-sm font-semibold truncate flex items-center" style={{ color: roundColorForPlayer(round, playerStats.player.id) }}>
               {playerStats.player.name}
             </div>
             <div className="col-span-2">
@@ -319,32 +316,32 @@ function HorseSegmentCell({ segment }: { segment?: HorseSegmentScore }) {
     return <div className="h-12 flex items-center justify-center text-sm">-</div>;
   }
 
-  let textColor = '#000000';
-  let iconColor = '#3b82f6';
-  let icon = faPause;
+  let textColorClass = 'text-foreground';
+  let iconColorClass = 'text-info';
+  let icon = faEllipsis;
 
   switch (segment.outcome) {
     case HorseOutcome.pending:
-      textColor = '#000000';
-      iconColor = '#3b82f6';
-      icon = faPause;
+      textColorClass = 'text-foreground';
+      iconColorClass = 'text-black';
+      icon = faEllipsis;
       break;
     case HorseOutcome.win:
-      textColor = '#16a34a';
-      iconColor = '#16a34a';
+      textColorClass = 'text-success';
+      iconColorClass = 'text-success';
       icon = faCheck;
       break;
     case HorseOutcome.lose:
-      textColor = '#dc2626';
-      iconColor = '#dc2626';
+      textColorClass = 'text-error';
+      iconColorClass = 'text-error';
       icon = faTimes;
       break;
   }
 
   return (
     <div className="h-12 flex flex-col items-center justify-center">
-      <FontAwesomeIcon icon={icon} className="text-base mb-1" style={{ color: iconColor }} />
-      <span className="text-xs font-semibold" style={{ color: textColor }}>
+      <FontAwesomeIcon icon={icon} className={`text-base mb-1 ${iconColorClass}`} />
+      <span className={`text-xs font-semibold ${textColorClass}`}>
         {segment.stroke}/{segment.target}
       </span>
     </div>
@@ -365,7 +362,7 @@ function OlympicGameDisplay({
 
   return (
     <div>
-      <div className="bg-green-600 text-white px-3 py-2 rounded-t grid grid-cols-5 gap-2 text-xs font-bold mb-0">
+      <div className="bg-primary text-primary-foreground px-3 py-2 rounded-t grid grid-cols-5 gap-2 text-xs font-bold mb-0">
         <div className="col-span-3">{t('player')}</div>
         <div className="text-center">{t('total')}</div>
         <div className="text-center">{t('net')}</div>
@@ -375,7 +372,7 @@ function OlympicGameDisplay({
         return (
           <div
             key={playerStats.player.id}
-            className={`px-3 py-2.5 grid grid-cols-5 gap-2 ${!isLast ? 'border-b border-gray-200' : ''}`}
+            className={`px-3 py-2.5 grid grid-cols-5 gap-2 ${!isLast ? 'border-b border-border' : ''}`}
           >
             <div className="col-span-3 text-sm font-semibold truncate" style={{ color: roundColorForPlayer(round, playerStats.player.id) }}>
               {playerStats.player.name}
@@ -403,7 +400,7 @@ function SkinsGameDisplay({
 
   return (
     <div>
-      <div className="bg-green-600 text-white px-3 py-2 rounded-t grid grid-cols-5 gap-2 text-xs font-bold mb-0">
+      <div className="bg-primary text-primary-foreground px-3 py-2 rounded-t grid grid-cols-5 gap-2 text-xs font-bold mb-0">
         <div className="col-span-3">{t('player')}</div>
         <div className="text-center">{t('total')}</div>
         <div className="text-center">{t('net')}</div>
@@ -413,7 +410,7 @@ function SkinsGameDisplay({
         return (
           <div
             key={playerStats.player.id}
-            className={`px-3 py-2.5 grid grid-cols-5 gap-2 ${!isLast ? 'border-b border-gray-200' : ''}`}
+            className={`px-3 py-2.5 grid grid-cols-5 gap-2 ${!isLast ? 'border-b border-border' : ''}`}
           >
             <div className="col-span-3 text-sm font-semibold truncate" style={{ color: roundColorForPlayer(round, playerStats.player.id) }}>
               {playerStats.player.name}

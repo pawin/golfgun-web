@@ -6,6 +6,15 @@ import { Round } from '@/lib/models/round';
 import { AppUser } from '@/lib/models/appUser';
 import { friendService } from '@/lib/services/friendService';
 import { getInitials, colorFromName } from '@/lib/utils/validator';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 interface AddPlayersDialogProps {
   round: Round;
@@ -119,46 +128,42 @@ export default function AddPlayersDialog({
   const canSubmit = Object.keys(selectedUsers).length > 0;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 max-h-[90vh] flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
-          <h2 className="text-xl font-semibold">{t('invite') || 'Invite'}</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-2xl leading-none"
-            title={t('cancel') || 'Cancel'}
-          >
-            ×
-          </button>
-        </div>
+    <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
+      <DialogContent
+        overlayClassName="bg-black/80"
+        className="top-4 sm:top-6 left-1/2 -translate-x-1/2 translate-y-0 max-w-md w-[calc(100%-2rem)] p-0"
+      >
+        <DialogHeader className="p-4 border-b">
+          <DialogTitle>{t('invite') || 'Invite'}</DialogTitle>
+        </DialogHeader>
 
-        {/* Content */}
         <div className="flex-1 overflow-y-auto p-4">
           {/* Search Input */}
           <div className="relative">
-            <input
+            <Input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={t('friendsSearchPlaceholder') || 'Search users...'}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 pr-10"
+              className="pr-10"
             />
             {isSearching ? (
               <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
+                <div className="w-4 h-4 border-2 border-muted-foreground/30 border-t-foreground rounded-full animate-spin"></div>
               </div>
             ) : searchQuery ? (
               <button
                 onClick={handleClearSearch}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                aria-label={t('clear') || 'Clear'}
+                title={t('clear') || 'Clear'}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             ) : (
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
@@ -173,12 +178,14 @@ export default function AddPlayersDialog({
                 {Object.values(selectedUsers).map((user) => (
                   <div
                     key={user.id}
-                    className="flex items-center gap-2 px-3 py-1 bg-green-100 text-green-800 rounded-full"
+                    className="flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary"
                   >
                     <span className="text-sm">{user.name}</span>
                     <button
                       onClick={() => handleRemoveSelected(user.id)}
-                      className="text-green-600 hover:text-green-800"
+                      className="text-primary hover:opacity-80"
+                      aria-label={t('remove') || 'Remove'}
+                      title={t('remove') || 'Remove'}
                     >
                       ×
                     </button>
@@ -197,8 +204,10 @@ export default function AddPlayersDialog({
                   <button
                     key={user.id}
                     onClick={() => handleToggleSelection(user)}
-                    className={`w-full flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 text-left ${
-                      isSelected ? 'bg-green-50 border border-green-200' : ''
+                    className={`w-full flex items-center gap-3 p-3 rounded-lg text-left border transition-colors ${
+                      isSelected
+                        ? 'bg-primary/5 border-primary/30'
+                        : 'hover:bg-accent border-transparent'
                     }`}
                   >
                     <div
@@ -217,7 +226,7 @@ export default function AddPlayersDialog({
                     </div>
                     <span className="flex-1 font-medium">{user.name}</span>
                     {isSelected && (
-                      <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                      <svg className="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                       </svg>
                     )}
@@ -229,52 +238,47 @@ export default function AddPlayersDialog({
 
           {/* Empty States */}
           {!isSearching && searchQuery && searchResults.length === 0 && (
-            <div className="mt-4 text-center text-gray-500">
+            <div className="mt-4 text-center text-muted-foreground">
               {t('noAvailablePlayers') || 'No players found'}
-            </div>
-          )}
-
-          {!searchQuery && searchResults.length === 0 && (
-            <div className="mt-4 text-center text-gray-500">
-              {t('friendsSearchPlaceholder') || 'Search users...'}
             </div>
           )}
 
           {/* Actions */}
           <div className="mt-4 flex gap-3">
-            <button
+            <Button
+              variant="outline"
+              className="flex-1"
               onClick={onShare}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center justify-center gap-2"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
               </svg>
               {t('shareUrl') || 'Share URL'}
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="secondary"
+              className="flex-1"
               onClick={onAddGuest}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center justify-center gap-2"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
               </svg>
               {t('addGuest') || 'Add Guest'}
-            </button>
+            </Button>
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="p-4 border-t border-gray-200">
-          <button
+        <DialogFooter className="p-4 border-t">
+          <Button
             onClick={handleInvite}
             disabled={!canSubmit || isInviting}
-            className="w-full px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            className="w-full"
           >
             {isInviting ? (t('inviting') || 'Inviting...') : (t('invite') || 'Invite')}
-          </button>
-        </div>
-      </div>
-    </div>
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 

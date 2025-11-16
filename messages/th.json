@@ -205,6 +205,7 @@
   "failedToUpdate": "อัปเดตไม่สำเร็จ: {error}",
   "enterYourUsername": "กรุณากรอกชื่อผู้ใช้",
   "retry": "ลองอีกครั้ง",
+  "clear": "ล้าง",
   "noActiveRounds": "ไม่มีรอบที่กำลังเล่น",
   "setValue": "ตั้งค่า",
   "total": "รวม",
@@ -215,6 +216,7 @@
   "horseSettings": "ตั้งค่า Horse",
   "players": "ผู้เล่น",
   "skinsSettings": "ตั้งค่า Skins",
+  "notPlay": "ไม่เล่น",
   "startingHole": "หลุมเริ่มต้น",
   "holeWithNumber": "หลุม {number}",
   "skinsMode": "โหมด Skins",
@@ -329,6 +331,7 @@
   "replaceGuestConfirm": "แทนที่ผู้เล่นชั่วคราว {name} ด้วยบัญชีของคุณหรือไม่?",
   "guestReplaced": "ผู้เล่นชั่วคราว {name} ถูกแทนที่ด้วยบัญชีของคุณแล้ว",
   "failedToReplaceGuest": "แทนที่ผู้เล่นชั่วคราวไม่สำเร็จ: {error}",
-  "holes": "หลุม"
+  "holes": "หลุม",
+  "net": "เน็ต"
 }
 

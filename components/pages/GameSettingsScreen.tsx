@@ -11,6 +11,7 @@ import GameSideSelector from '@/components/widgets/GameSideSelector';
 import GameScoreMultiplier from '@/components/widgets/GameScoreMultiplier';
 import GameHoleHandicap from '@/components/widgets/GameHoleHandicap';
 import { userService } from '@/lib/services/userService';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 interface GameSettingsScreenProps {
   round: Round;
@@ -50,6 +51,10 @@ export default function GameSettingsScreen({
   const [horseDefaultValues, setHorseDefaultValues] = useState<Record<string, number>>({});
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isHorseDialogOpen, setIsHorseDialogOpen] = useState(false);
+  const [horseDialogSegment, setHorseDialogSegment] = useState<'front' | 'back' | 'total' | null>(null);
+  const [horseDialogPlayerId, setHorseDialogPlayerId] = useState<string | null>(null);
+  const [horseDialogValue, setHorseDialogValue] = useState<number>(0);
 
   useEffect(() => {
     // Initialize state from game
@@ -341,18 +346,10 @@ export default function GameSettingsScreen({
   const showHorseValueDialog = async (segment: string, playerId: string) => {
     const existingValue = horseSettings[segment]?.[playerId];
     const initialValue = existingValue && existingValue > 0 ? existingValue : horseDefaultValues[segment] ?? 0;
-
-    // Simple prompt for now - could be replaced with a custom modal
-    const input = prompt(`${t('setValue')}: ${playerName(playerId)} • ${t(segment === 'front' ? 'front9' : segment === 'back' ? 'back9' : 'total')}`, initialValue.toString());
-    if (input === null) return;
-
-    const value = parseInt(input) || 0;
-    if (value === 0) {
-      // Set to 0 (not playing)
-      setHorseValue(segment, playerId, 0);
-    } else {
-      setHorseValue(segment, playerId, value);
-    }
+    setHorseDialogSegment(segment as 'front' | 'back' | 'total');
+    setHorseDialogPlayerId(playerId);
+    setHorseDialogValue(initialValue);
+    setIsHorseDialogOpen(true);
   };
 
   const getSkinsModeText = (mode: number): string => {
@@ -489,7 +486,7 @@ export default function GameSettingsScreen({
                   >
                     {availableSkinsHoles.map((hole) => (
                       <option key={hole} value={hole}>
-                        {t('holeWithNumber').replace('{number}', hole.toString())}
+                        {t('holeWithNumber', { number: hole })}
                       </option>
                     ))}
                   </select>
@@ -591,6 +588,63 @@ export default function GameSettingsScreen({
 
         <div className="h-8" />
       </div>
+      <Dialog open={isHorseDialogOpen} onOpenChange={setIsHorseDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('setValue')}</DialogTitle>
+            <DialogDescription>
+              {horseDialogPlayerId
+                ? `${playerName(horseDialogPlayerId)} • ${t(horseDialogSegment === 'front' ? 'front9' : horseDialogSegment === 'back' ? 'back9' : 'total')}`
+                : ''}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <div className="flex items-center justify-center gap-4">
+              <button
+                onClick={() => setHorseDialogValue((v) => Math.max(0, (Number.isFinite(v) ? v : 0) - 1))}
+                className="h-10 w-10 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 text-xl leading-none"
+                aria-label="decrease"
+              >
+                −
+              </button>
+              <div className="min-w-16 text-center text-2xl font-semibold">
+                {Number.isFinite(horseDialogValue) ? horseDialogValue : 0}
+              </div>
+              <button
+                onClick={() => setHorseDialogValue((v) => (Number.isFinite(v) ? v : 0) + 1)}
+                className="h-10 w-10 rounded-md bg-green-600 text-white hover:bg-green-700 text-xl leading-none"
+                aria-label="increase"
+              >
+                +
+              </button>
+            </div>
+          </div>
+          <DialogFooter>
+            <button
+              onClick={() => {
+                if (horseDialogSegment && horseDialogPlayerId) {
+                  setHorseValue(horseDialogSegment, horseDialogPlayerId, 0);
+                }
+                setIsHorseDialogOpen(false);
+              }}
+              className="px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50"
+            >
+              {t('notPlay')}
+            </button>
+            <button
+              onClick={() => {
+                if (horseDialogSegment && horseDialogPlayerId) {
+                  setHorseValue(horseDialogSegment, horseDialogPlayerId, horseDialogValue || 0);
+                }
+                setIsHorseDialogOpen(false);
+              }}
+              className="px-4 py-2 rounded-md bg-green-600 text-white hover:bg-green-700"
+            >
+              {t('save')}
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
