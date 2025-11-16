@@ -83,36 +83,36 @@ export default function ScorecardTable({
     const diff = score - parValue;
 
     if (score === 1) {
-      // Hole in One - celebrate with primary
-      return { shape: 'circle', className: 'bg-primary text-primary-foreground' };
+      // Hole in One
+      return { shape: 'circle', className: 'bg-[var(--score-hole-in-one)] text-white' };
     }
     if (diff === -3) {
-      // Albatross - primary as well
-      return { shape: 'circle', className: 'bg-primary text-primary-foreground' };
+      // Albatross
+      return { shape: 'circle', className: 'bg-[var(--score-albatross)] text-white' };
     }
     if (diff === -2) {
-      // Eagle - accent
-      return { shape: 'circle', className: 'bg-accent text-accent-foreground' };
+      // Eagle
+      return { shape: 'circle', className: 'bg-[var(--score-eagle)] text-white' };
     }
     if (diff === -1) {
-      // Birdie - secondary
-      return { shape: 'circle', className: 'bg-secondary text-secondary-foreground' };
+      // Birdie
+      return { shape: 'circle', className: 'bg-[var(--score-birdie)] text-white' };
     }
     if (diff === 0) {
-      // Par - muted
-      return { shape: 'circle', className: 'bg-muted text-foreground' };
+      // Par
+      return { shape: 'circle', className: 'bg-[var(--score-par)] text-white' };
     }
     if (diff === 1) {
-      // Bogey - outline/neutral
-      return { shape: 'circle', className: 'bg-muted text-muted-foreground' };
+      // Bogey
+      return { shape: 'square', className: 'bg-[var(--score-bogey)] text-white' };
     }
     if (diff === 2) {
-      // Double Bogey - destructive (square)
-      return { shape: 'square', className: 'bg-destructive text-white' };
+      // Double Bogey
+      return { shape: 'square', className: 'bg-[var(--score-double-bogey)] text-white' };
     }
     if (diff >= 3) {
-      // Triple or worse - destructive (square)
-      return { shape: 'square', className: 'bg-destructive text-white' };
+      // Triple or worse
+      return { shape: 'square', className: 'bg-[var(--score-triple-plus)] text-white' };
     }
 
     return { shape: 'circle', className: '' };
@@ -175,7 +175,7 @@ export default function ScorecardTable({
         round.id,
         dialogState.holeKey,
         dialogState.memberId,
-        result.score === -1 ? null : result.score === 0 ? null : result.score,
+        result.score === -1 ? -1 : result.score === 0 ? null : result.score,
         result.stats,
         result.olympicPoint
       );

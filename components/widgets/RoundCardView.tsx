@@ -150,8 +150,8 @@ function computeThruHole(round: Round): number {
   for (const [holeKey, playerScores] of Object.entries(round.score)) {
     const holeNum = parseInt(holeKey) || 0;
     if (holeNum === 0) continue;
-    const anyScored = Object.values(playerScores).some((v) => (v ?? 0) > 0);
-    if (anyScored && holeNum > thru) thru = holeNum;
+    const anyScored = Object.values(playerScores).some((v) => (v ?? 0) != 0);
+    if (anyScored && holeNum > thru) thru += 1;
   }
   return thru;
 }
