@@ -8,6 +8,8 @@ import { sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '@/lib/firebase/config';
 import { userService } from '@/lib/services/userService';
 import { useLocale } from 'next-intl';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 export default function AuthScreen() {
   const t = useTranslations();
@@ -181,7 +183,7 @@ export default function AuthScreen() {
                 onClick={() => setObscurePassword(!obscurePassword)}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
               >
-                {obscurePassword ? '👁️' : '👁️‍🗨️'}
+                <FontAwesomeIcon icon={obscurePassword ? faEye : faEyeSlash} />
               </button>
             </div>
           </div>

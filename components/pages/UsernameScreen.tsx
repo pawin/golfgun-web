@@ -9,6 +9,7 @@ import { doc, runTransaction, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase/config';
 import { sanitizeUsername } from '@/lib/utils/validator';
 import { useLocale } from 'next-intl';
+import { userService } from '@/lib/services/userService';
 
 export default function UsernameScreen() {
   const t = useTranslations();
@@ -74,6 +75,9 @@ export default function UsernameScreen() {
           updatedAt: serverTimestamp(),
         }, { merge: true });
       });
+
+      // Invalidate cached user so subsequent reads fetch the fresh profile
+      userService.invalidateUserCache(currentUser.uid);
 
       router.push(`/${locale}`);
     } catch (error: any) {

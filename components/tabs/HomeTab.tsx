@@ -81,7 +81,7 @@ export default function HomeTab() {
       setActiveRounds(active);
 
       // Fetch users
-      const allUserIds = new Set<string>();
+      const allUserIds = new Set<string>([user.uid]);
       active.forEach((r) => {
         allUserIds.add(r.adminId);
         r.memberIds.forEach((id) => allUserIds.add(id));

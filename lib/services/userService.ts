@@ -15,6 +15,11 @@ export class UserService {
   // In-memory cache for fetched users during the session
   private userCache: Record<string, AppUser> = {};
 
+  invalidateUserCache(userId: string): void {
+    if (!userId) return;
+    delete this.userCache[userId];
+  }
+
   async signOut(): Promise<void> {
     if (typeof window === 'undefined') {
       throw new Error('UserService can only be used on the client side');
