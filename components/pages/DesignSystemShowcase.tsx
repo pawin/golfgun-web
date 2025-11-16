@@ -1,16 +1,16 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Slider } from "@/components/ui/slider";
-import { Progress } from "@/components/ui/progress";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Checkbox } from "../ui/checkbox";
+import { Switch } from "../ui/switch";
+import { Badge } from "../ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import { Slider } from "../ui/slider";
+import { Progress } from "../ui/progress";
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
+import { Avatar, AvatarFallback } from "../ui/avatar";
+import { Separator } from "../ui/separator";
 import { 
   AlertCircle, 
   CheckCircle2, 
@@ -31,7 +31,7 @@ import {
   BarChart3,
   Crown
 } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "../ui/dialog";
 
 export function DesignSystemShowcase() {
   return (
@@ -1000,38 +1000,297 @@ export function DesignSystemShowcase() {
               <h2 className="mb-4">Color System</h2>
               
               <div className="space-y-4">
+                {/* Score Colors */}
                 <Card>
                   <CardHeader>
-                    <CardTitle>Score Colors</CardTitle>
+                    <CardTitle>Golf Score Colors</CardTitle>
+                    <CardDescription>Color-coded score badges</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-2">
-                    <div className="h-12 rounded-lg bg-purple-600 flex items-center justify-center text-white">Hole in One</div>
-                    <div className="h-12 rounded-lg bg-fuchsia-600 flex items-center justify-center text-white">Albatross</div>
-                    <div className="h-12 rounded-lg bg-orange-600 flex items-center justify-center text-white">Eagle</div>
-                    <div className="h-12 rounded-lg bg-red-600 flex items-center justify-center text-white">Birdie</div>
-                    <div className="h-12 rounded-lg bg-blue-600 flex items-center justify-center text-white">Par</div>
-                    <div className="h-12 rounded-lg bg-green-600 flex items-center justify-center text-white">Bogey</div>
-                    <div className="h-12 rounded-lg bg-gray-600 flex items-center justify-center text-white">Double Bogey</div>
-                    <div className="h-12 rounded-lg bg-black flex items-center justify-center text-white">Triple+</div>
+                    <div className="flex items-center gap-3">
+                      <div className="h-12 flex-1 rounded-lg bg-[#9333ea] flex items-center justify-center text-white">Hole in One</div>
+                      <span className="text-sm text-muted-foreground w-20">#9333ea</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="h-12 flex-1 rounded-lg bg-[#c026d3] flex items-center justify-center text-white">Albatross (-3)</div>
+                      <span className="text-sm text-muted-foreground w-20">#c026d3</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="h-12 flex-1 rounded-lg bg-[#ea580c] flex items-center justify-center text-white">Eagle (-2)</div>
+                      <span className="text-sm text-muted-foreground w-20">#ea580c</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="h-12 flex-1 rounded-lg bg-[#dc2626] flex items-center justify-center text-white">Birdie (-1)</div>
+                      <span className="text-sm text-muted-foreground w-20">#dc2626</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="h-12 flex-1 rounded-lg bg-[#2563eb] flex items-center justify-center text-white">Par (E)</div>
+                      <span className="text-sm text-muted-foreground w-20">#2563eb</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="h-12 flex-1 rounded-lg bg-[#16a34a] flex items-center justify-center text-white">Bogey (+1)</div>
+                      <span className="text-sm text-muted-foreground w-20">#16a34a</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="h-12 flex-1 rounded-lg bg-[#4b5563] flex items-center justify-center text-white">Double Bogey (+2)</div>
+                      <span className="text-sm text-muted-foreground w-20">#4b5563</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="h-12 flex-1 rounded-lg bg-black flex items-center justify-center text-white">Triple+ (+3)</div>
+                      <span className="text-sm text-muted-foreground w-20">#000000</span>
+                    </div>
                   </CardContent>
                 </Card>
 
+                {/* Brand Colors */}
                 <Card>
                   <CardHeader>
                     <CardTitle>Brand Colors</CardTitle>
+                    <CardDescription>Primary, secondary, and tertiary brand colors</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <div>
-                      <div className="text-muted-foreground mb-2">Primary</div>
-                      <div className="h-16 rounded-lg bg-primary"></div>
+                      <div className="text-sm text-muted-foreground mb-2">Primary</div>
+                      <div className="h-12 rounded-lg bg-primary flex items-center justify-center text-primary-foreground">Forest Green</div>
                     </div>
                     <div>
-                      <div className="text-muted-foreground mb-2">Secondary</div>
-                      <div className="h-16 rounded-lg bg-secondary"></div>
+                      <div className="text-sm text-muted-foreground mb-2">Primary Hover</div>
+                      <div className="h-12 rounded-lg bg-[color:var(--primary-hover)] flex items-center justify-center text-white">Darker Primary</div>
                     </div>
                     <div>
-                      <div className="text-muted-foreground mb-2">Accent</div>
-                      <div className="h-16 rounded-lg bg-accent"></div>
+                      <div className="text-sm text-muted-foreground mb-2">Secondary</div>
+                      <div className="h-12 rounded-lg bg-secondary flex items-center justify-center text-secondary-foreground">Tan/Brown</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-2">Secondary Hover</div>
+                      <div className="h-12 rounded-lg bg-[color:var(--secondary-hover)] flex items-center justify-center text-white">Darker Secondary</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-2">Tertiary</div>
+                      <div className="h-12 rounded-lg bg-[color:var(--tertiary)] flex items-center justify-center text-[color:var(--tertiary-foreground)]">Medium Green</div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Semantic Colors */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Semantic Colors</CardTitle>
+                    <CardDescription>Colors that convey meaning</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-2">Success</div>
+                      <div className="h-12 rounded-lg bg-[color:var(--success)] flex items-center justify-center text-[color:var(--success-foreground)]">
+                        <CheckCircle2 className="size-5 mr-2" />
+                        Confirmations & achievements
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-2">Warning</div>
+                      <div className="h-12 rounded-lg bg-[color:var(--warning)] flex items-center justify-center text-[color:var(--warning-foreground)]">
+                        <AlertCircle className="size-5 mr-2" />
+                        Cautions & notices
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-2">Info</div>
+                      <div className="h-12 rounded-lg bg-[color:var(--info)] flex items-center justify-center text-[color:var(--info-foreground)]">
+                        <Info className="size-5 mr-2" />
+                        Tips & information
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-2">Error</div>
+                      <div className="h-12 rounded-lg bg-[color:var(--error)] flex items-center justify-center text-[color:var(--error-foreground)]">
+                        <XCircle className="size-5 mr-2" />
+                        Errors & critical alerts
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-2">Destructive</div>
+                      <div className="h-12 rounded-lg bg-destructive flex items-center justify-center text-destructive-foreground">Delete actions & warnings</div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Golf Course Colors */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Golf Course Colors</CardTitle>
+                    <CardDescription>Themed colors for shot tracking</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-2">Fairway</div>
+                      <div className="h-12 rounded-lg bg-[color:var(--fairway)] flex items-center justify-center text-[color:var(--fairway-foreground)]">Fairway hits & GIR</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-2">Rough</div>
+                      <div className="h-12 rounded-lg bg-[color:var(--rough)] flex items-center justify-center text-[color:var(--rough-foreground)]">Shots from rough</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-2">Sand</div>
+                      <div className="h-12 rounded-lg bg-[color:var(--sand)] flex items-center justify-center text-[color:var(--sand-foreground)]">Bunker shots & sand saves</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-2">Water</div>
+                      <div className="h-12 rounded-lg bg-[color:var(--water)] flex items-center justify-center text-[color:var(--water-foreground)]">Water hazards & penalties</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-2">Green</div>
+                      <div className="h-12 rounded-lg bg-[color:var(--green)] flex items-center justify-center text-[color:var(--green-foreground)]">Putts & green indicators</div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* UI State Colors */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>UI State Colors</CardTitle>
+                    <CardDescription>Backgrounds and states for UI elements</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-2">Muted</div>
+                      <div className="h-12 rounded-lg bg-muted flex items-center justify-center text-muted-foreground">Subtle backgrounds</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-2">Accent</div>
+                      <div className="h-12 rounded-lg bg-accent flex items-center justify-center text-accent-foreground">Hover states</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-2">Subtle</div>
+                      <div className="h-12 rounded-lg bg-[color:var(--subtle)] flex items-center justify-center text-[color:var(--subtle-foreground)]">Very light backgrounds</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-2">Highlight</div>
+                      <div className="h-12 rounded-lg bg-[color:var(--highlight)] flex items-center justify-center text-[color:var(--highlight-foreground)]">
+                        <Crown className="size-5 mr-2" />
+                        Emphasized sections
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-2">Surface</div>
+                      <div className="h-12 rounded-lg bg-[color:var(--surface)] border flex items-center justify-center text-[color:var(--surface-foreground)]">Card backgrounds</div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Chart Colors */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Chart Colors</CardTitle>
+                    <CardDescription>8 colors for data visualization</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <div className="text-sm text-muted-foreground mb-2">Chart 1</div>
+                        <div className="h-12 rounded-lg bg-[color:var(--chart-1)] flex items-center justify-center text-white">Primary</div>
+                      </div>
+                      <div>
+                        <div className="text-sm text-muted-foreground mb-2">Chart 2</div>
+                        <div className="h-12 rounded-lg bg-[color:var(--chart-2)] flex items-center justify-center text-white">Secondary</div>
+                      </div>
+                      <div>
+                        <div className="text-sm text-muted-foreground mb-2">Chart 3</div>
+                        <div className="h-12 rounded-lg bg-[color:var(--chart-3)] flex items-center justify-center text-white">Tertiary</div>
+                      </div>
+                      <div>
+                        <div className="text-sm text-muted-foreground mb-2">Chart 4</div>
+                        <div className="h-12 rounded-lg bg-[color:var(--chart-4)] flex items-center justify-center text-white">Trends</div>
+                      </div>
+                      <div>
+                        <div className="text-sm text-muted-foreground mb-2">Chart 5</div>
+                        <div className="h-12 rounded-lg bg-[color:var(--chart-5)] flex items-center justify-center text-white">Stats</div>
+                      </div>
+                      <div>
+                        <div className="text-sm text-muted-foreground mb-2">Chart 6</div>
+                        <div className="h-12 rounded-lg bg-[color:var(--chart-6)] flex items-center justify-center text-white">Fairways</div>
+                      </div>
+                      <div>
+                        <div className="text-sm text-muted-foreground mb-2">Chart 7</div>
+                        <div className="h-12 rounded-lg bg-[color:var(--chart-7)] flex items-center justify-center text-white">Hazards</div>
+                      </div>
+                      <div>
+                        <div className="text-sm text-muted-foreground mb-2">Chart 8</div>
+                        <div className="h-12 rounded-lg bg-[color:var(--chart-8)] flex items-center justify-center text-white">Water</div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Borders */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Border Colors</CardTitle>
+                    <CardDescription>Border styles for various emphasis</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-2">Default Border</div>
+                      <div className="h-12 rounded-lg bg-card border border-border flex items-center justify-center text-foreground">Standard border</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-2">Strong Border</div>
+                      <div className="h-12 rounded-lg bg-card border-2 border-[color:var(--border-strong)] flex items-center justify-center text-foreground">Emphasized border</div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Usage Examples */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Usage Examples</CardTitle>
+                    <CardDescription>Real-world color combinations</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-2">Success Alert</div>
+                      <div className="bg-[color:var(--success)] text-[color:var(--success-foreground)] p-4 rounded-lg flex items-center gap-2">
+                        <CheckCircle2 className="size-5" />
+                        <span>Round saved successfully! Score: 72 (-2)</span>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-2">Warning Banner</div>
+                      <div className="bg-[color:var(--warning)] text-[color:var(--warning-foreground)] p-4 rounded-lg flex items-center gap-2">
+                        <AlertCircle className="size-5" />
+                        <span>Weather delay - Round suspended at hole 12</span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-2">Course Stats Badges</div>
+                      <div className="flex flex-wrap gap-2">
+                        <Badge className="bg-[color:var(--fairway)] text-[color:var(--fairway-foreground)]">12/14 Fairways</Badge>
+                        <Badge className="bg-[color:var(--green)] text-[color:var(--green-foreground)]">14/18 GIR</Badge>
+                        <Badge className="bg-[color:var(--sand)] text-[color:var(--sand-foreground)]">2 Sand Saves</Badge>
+                        <Badge className="bg-[color:var(--water)] text-[color:var(--water-foreground)]">1 Water</Badge>
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-2">Highlighted Achievement</div>
+                      <div className="bg-[color:var(--highlight)] text-[color:var(--highlight-foreground)] border-2 border-primary p-4 rounded-lg flex items-center gap-2">
+                        <Trophy className="size-5" />
+                        <span>Personal Best! New low score: 68 (-4)</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Color Summary */}
+                <Card className="bg-primary text-primary-foreground">
+                  <CardContent className="pt-6">
+                    <div className="text-center space-y-2">
+                      <div className="text-3xl">56+</div>
+                      <div>Color Options Available</div>
+                      <div className="text-sm opacity-90">
+                        Brand • Semantic • Golf Course • Score • UI State • Chart • Border
+                      </div>
                     </div>
                   </CardContent>
                 </Card>

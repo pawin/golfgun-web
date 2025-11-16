@@ -3,304 +3,425 @@
  * Golf Score Tracker Design System
  */
 
-@import "tailwindcss";
-
-/* Custom variant for dark mode */
-@custom-variant dark (&:is(.dark *));
-
-/* Light Mode Color Tokens */
-:root {
-  /* Base Colors */
-  --font-size: 16px;
-  --background: #f8faf9;
-  --foreground: oklch(0.145 0 0);
-  
-  /* Card Colors */
-  --card: #ffffff;
-  --card-foreground: oklch(0.145 0 0);
-  
-  /* Popover Colors */
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  
-  /* Brand Colors */
-  --primary: #2d5f3e;
-  --primary-foreground: #ffffff;
-  --secondary: #8b7355;
-  --secondary-foreground: #ffffff;
-  
-  /* State Colors */
-  --muted: #e8ebe9;
-  --muted-foreground: #5c6b5f;
-  --accent: #e3f2e8;
-  --accent-foreground: #2d5f3e;
-  --destructive: #d4183d;
-  --destructive-foreground: #ffffff;
-  
-  /* UI Element Colors */
-  --border: rgba(45, 95, 62, 0.15);
-  --input: transparent;
-  --input-background: #f3f5f4;
-  --switch-background: #b8c5bc;
-  --ring: oklch(0.708 0 0);
-  
-  /* Chart Colors */
-  --chart-1: #2d5f3e;
-  --chart-2: #5a9a68;
-  --chart-3: #8b7355;
-  --chart-4: #7eb892;
-  --chart-5: #d4a574;
-  
-  /* Border Radius */
-  --radius: 0.625rem;
-  
-  /* Sidebar Colors */
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: #2d5f3e;
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-  
-  /* Golf Score Badge Colors */
-  --score-hole-in-one: #9333ea;
-  --score-albatross: #c026d3;
-  --score-eagle: #ea580c;
-  --score-birdie: #dc2626;
-  --score-par: #2563eb;
-  --score-bogey: #16a34a;
-  --score-double-bogey: #4b5563;
-  --score-triple-plus: #000000;
-  
-  /* Font Weights */
-  --font-weight-normal: 400;
-  --font-weight-medium: 500;
-}
-
-/* Dark Mode Color Tokens */
-.dark {
-  /* Base Colors */
-  --background: #1a2520;
-  --foreground: #f0f4f2;
-  
-  /* Card Colors */
-  --card: #243229;
-  --card-foreground: #f0f4f2;
-  
-  /* Popover Colors */
-  --popover: #1a2520;
-  --popover-foreground: #f0f4f2;
-  
-  /* Brand Colors */
-  --primary: #7eb892;
-  --primary-foreground: #1a2520;
-  --secondary: #5a4a3a;
-  --secondary-foreground: #f0f4f2;
-  
-  /* State Colors */
-  --muted: #2d3d34;
-  --muted-foreground: #a8b5ad;
-  --accent: #2d4838;
-  --accent-foreground: #d5e8dc;
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
-  
-  /* UI Element Colors */
-  --border: #3a5045;
-  --input: #2d3d34;
-  --ring: #7eb892;
-  
-  /* Chart Colors */
-  --chart-1: #7eb892;
-  --chart-2: #5a9a68;
-  --chart-3: #d4a574;
-  --chart-4: #a8d4b8;
-  --chart-5: #e8c9a3;
-  
-  /* Sidebar Colors */
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: #7eb892;
-  --sidebar-primary-foreground: #1a2520;
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.269 0 0);
-  --sidebar-ring: oklch(0.439 0 0);
-}
-
-/* Tailwind v4 Theme Definition */
-@theme inline {
-  /* Color Tokens */
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-input-background: var(--input-background);
-  --color-switch-background: var(--switch-background);
-  --color-ring: var(--ring);
-  
-  /* Chart Color Tokens */
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  
-  /* Sidebar Color Tokens */
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
-  
-  /* Golf Score Color Tokens */
-  --color-score-hole-in-one: var(--score-hole-in-one);
-  --color-score-albatross: var(--score-albatross);
-  --color-score-eagle: var(--score-eagle);
-  --color-score-birdie: var(--score-birdie);
-  --color-score-par: var(--score-par);
-  --color-score-bogey: var(--score-bogey);
-  --color-score-double-bogey: var(--score-double-bogey);
-  --color-score-triple-plus: var(--score-triple-plus);
-  
-  /* Border Radius Tokens */
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  
-  /* Font Family */
-  --font-sans: "Athiti", ui-sans-serif, system-ui, sans-serif;
-}
-
-/* Base Styles */
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-
-  body {
-    @apply bg-background text-foreground;
-    font-family: var(--font-sans);
-  }
-}
-
-/* Base Typography - Only applied when no text class is present */
-@layer base {
-  :where(:not(:has([class*=" text-"]), :not(:has([class^="text-"])))) {
-    h1 {
-      font-size: var(--text-2xl);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
-    }
-
-    h2 {
-      font-size: var(--text-xl);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
-    }
-
-    h3 {
-      font-size: var(--text-lg);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
-    }
-
-    h4 {
-      font-size: var(--text-base);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
-    }
-
-    p {
-      font-size: var(--text-base);
-      font-weight: var(--font-weight-normal);
-      line-height: 1.5;
-    }
-
-    label {
-      font-size: var(--text-base);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
-    }
-
-    button {
-      font-size: var(--text-base);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.5;
-    }
-
-    input {
-      font-size: var(--text-base);
-      font-weight: var(--font-weight-normal);
-      line-height: 1.5;
-    }
-  }
-}
-
-/* Root Font Size */
-html {
-  font-size: var(--font-size);
-}
-
-/* Utility Classes for Golf Scores */
-@layer utilities {
-  .score-hole-in-one {
-    background-color: var(--score-hole-in-one);
-    color: white;
-  }
-  
-  .score-albatross {
-    background-color: var(--score-albatross);
-    color: white;
-  }
-  
-  .score-eagle {
-    background-color: var(--score-eagle);
-    color: white;
-  }
-  
-  .score-birdie {
-    background-color: var(--score-birdie);
-    color: white;
-  }
-  
-  .score-par {
-    background-color: var(--score-par);
-    color: white;
-  }
-  
-  .score-bogey {
-    background-color: var(--score-bogey);
-    color: white;
-  }
-  
-  .score-double-bogey {
-    background-color: var(--score-double-bogey);
-    color: white;
-  }
-  
-  .score-triple-plus {
-    background-color: var(--score-triple-plus);
-    color: white;
-  }
-}
+ @import "tailwindcss";
+ @import url("https://fonts.googleapis.com/css2?family=Athiti:wght@400;500;600;700&display=swap");
+ 
+ /* Custom variant for dark mode */
+ @custom-variant dark (&:is(.dark *));
+ 
+ /* Light Mode Color Tokens */
+ :root {
+   /* Base Colors */
+   --font-size: 16px;
+   --background: #f8faf9;
+   --foreground: oklch(0.145 0 0);
+   
+   /* Card Colors */
+   --card: #ffffff;
+   --card-foreground: oklch(0.145 0 0);
+   
+   /* Popover Colors */
+   --popover: oklch(1 0 0);
+   --popover-foreground: oklch(0.145 0 0);
+   
+   /* Brand Colors */
+   --primary: #2d5f3e;
+   --primary-foreground: #ffffff;
+   --primary-hover: #234a31;
+   --secondary: #8b7355;
+   --secondary-foreground: #ffffff;
+   --secondary-hover: #6f5c44;
+   --tertiary: #5a9a68;
+   --tertiary-foreground: #ffffff;
+   
+   /* State Colors */
+   --muted: #e8ebe9;
+   --muted-foreground: #5c6b5f;
+   --accent: #e3f2e8;
+   --accent-foreground: #2d5f3e;
+   --destructive: #d4183d;
+   --destructive-foreground: #ffffff;
+   
+   /* Semantic Colors */
+   --success: #16a34a;
+   --success-foreground: #ffffff;
+   --warning: #f59e0b;
+   --warning-foreground: #ffffff;
+   --info: #3b82f6;
+   --info-foreground: #ffffff;
+   --error: #dc2626;
+   --error-foreground: #ffffff;
+   
+   /* Golf Course Colors */
+   --fairway: #4ade80;
+   --fairway-foreground: #ffffff;
+   --rough: #15803d;
+   --rough-foreground: #ffffff;
+   --sand: #fbbf24;
+   --sand-foreground: #78350f;
+   --water: #0ea5e9;
+   --water-foreground: #ffffff;
+   --green: #22c55e;
+   --green-foreground: #ffffff;
+   
+   /* Additional UI Colors */
+   --subtle: #f3f5f4;
+   --subtle-foreground: #71827a;
+   --highlight: #d4f4dd;
+   --highlight-foreground: #1a4d2e;
+   --surface: #ffffff;
+   --surface-foreground: oklch(0.145 0 0);
+   
+   /* UI Element Colors */
+   --border: rgba(45, 95, 62, 0.15);
+   --border-strong: rgba(45, 95, 62, 0.3);
+   --input: transparent;
+   --input-background: #f3f5f4;
+   --switch-background: #b8c5bc;
+   --ring: oklch(0.708 0 0);
+   
+   /* Chart Colors */
+   --chart-1: #2d5f3e;
+   --chart-2: #5a9a68;
+   --chart-3: #8b7355;
+   --chart-4: #7eb892;
+   --chart-5: #d4a574;
+   --chart-6: #4ade80;
+   --chart-7: #fbbf24;
+   --chart-8: #0ea5e9;
+   
+   /* Border Radius */
+   --radius: 0.625rem;
+   
+   /* Sidebar Colors */
+   --sidebar: oklch(0.985 0 0);
+   --sidebar-foreground: oklch(0.145 0 0);
+   --sidebar-primary: #2d5f3e;
+   --sidebar-primary-foreground: oklch(0.985 0 0);
+   --sidebar-accent: oklch(0.97 0 0);
+   --sidebar-accent-foreground: oklch(0.205 0 0);
+   --sidebar-border: oklch(0.922 0 0);
+   --sidebar-ring: oklch(0.708 0 0);
+   
+   /* Golf Score Badge Colors */
+   --score-hole-in-one: #9333ea;
+   --score-albatross: #c026d3;
+   --score-eagle: #ea580c;
+   --score-birdie: #dc2626;
+   --score-par: #2563eb;
+   --score-bogey: #16a34a;
+   --score-double-bogey: #4b5563;
+   --score-triple-plus: #000000;
+   
+   /* Font Weights */
+   --font-weight-normal: 400;
+   --font-weight-medium: 500;
+ }
+ 
+ /* Dark Mode Color Tokens */
+ .dark {
+   /* Base Colors */
+   --background: #1a2520;
+   --foreground: #f0f4f2;
+   
+   /* Card Colors */
+   --card: #243229;
+   --card-foreground: #f0f4f2;
+   
+   /* Popover Colors */
+   --popover: #1a2520;
+   --popover-foreground: #f0f4f2;
+   
+   /* Brand Colors */
+   --primary: #7eb892;
+   --primary-foreground: #1a2520;
+   --primary-hover: #9acaa8;
+   --secondary: #5a4a3a;
+   --secondary-foreground: #f0f4f2;
+   --secondary-hover: #6f5e4d;
+   --tertiary: #4ade80;
+   --tertiary-foreground: #1a2520;
+   
+   /* State Colors */
+   --muted: #2d3d34;
+   --muted-foreground: #a8b5ad;
+   --accent: #2d4838;
+   --accent-foreground: #d5e8dc;
+   --destructive: oklch(0.396 0.141 25.723);
+   --destructive-foreground: oklch(0.637 0.237 25.331);
+   
+   /* Semantic Colors */
+   --success: #22c55e;
+   --success-foreground: #1a2520;
+   --warning: #fbbf24;
+   --warning-foreground: #1a2520;
+   --info: #60a5fa;
+   --info-foreground: #1a2520;
+   --error: #ef4444;
+   --error-foreground: #ffffff;
+   
+   /* Golf Course Colors */
+   --fairway: #4ade80;
+   --fairway-foreground: #1a2520;
+   --rough: #22c55e;
+   --rough-foreground: #1a2520;
+   --sand: #fbbf24;
+   --sand-foreground: #1a2520;
+   --water: #38bdf8;
+   --water-foreground: #1a2520;
+   --green: #4ade80;
+   --green-foreground: #1a2520;
+   
+   /* Additional UI Colors */
+   --subtle: #2d3d34;
+   --subtle-foreground: #a8b5ad;
+   --highlight: #2d4838;
+   --highlight-foreground: #9acaa8;
+   --surface: #243229;
+   --surface-foreground: #f0f4f2;
+   
+   /* UI Element Colors */
+   --border: #3a5045;
+   --border-strong: #4a6055;
+   --input: #2d3d34;
+   --ring: #7eb892;
+   
+   /* Chart Colors */
+   --chart-1: #7eb892;
+   --chart-2: #5a9a68;
+   --chart-3: #d4a574;
+   --chart-4: #a8d4b8;
+   --chart-5: #e8c9a3;
+   --chart-6: #4ade80;
+   --chart-7: #fbbf24;
+   --chart-8: #38bdf8;
+   
+   /* Sidebar Colors */
+   --sidebar: oklch(0.205 0 0);
+   --sidebar-foreground: oklch(0.985 0 0);
+   --sidebar-primary: #7eb892;
+   --sidebar-primary-foreground: #1a2520;
+   --sidebar-accent: oklch(0.269 0 0);
+   --sidebar-accent-foreground: oklch(0.985 0 0);
+   --sidebar-border: oklch(0.269 0 0);
+   --sidebar-ring: oklch(0.439 0 0);
+ }
+ 
+ /* Tailwind v4 Theme Definition */
+ @theme inline {
+   /* Base Color Tokens */
+   --color-background: var(--background);
+   --color-foreground: var(--foreground);
+   --color-card: var(--card);
+   --color-card-foreground: var(--card-foreground);
+   --color-popover: var(--popover);
+   --color-popover-foreground: var(--popover-foreground);
+   
+   /* Brand Color Tokens */
+   --color-primary: var(--primary);
+   --color-primary-foreground: var(--primary-foreground);
+   --color-primary-hover: var(--primary-hover);
+   --color-secondary: var(--secondary);
+   --color-secondary-foreground: var(--secondary-foreground);
+   --color-secondary-hover: var(--secondary-hover);
+   --color-tertiary: var(--tertiary);
+   --color-tertiary-foreground: var(--tertiary-foreground);
+   
+   /* State Color Tokens */
+   --color-muted: var(--muted);
+   --color-muted-foreground: var(--muted-foreground);
+   --color-accent: var(--accent);
+   --color-accent-foreground: var(--accent-foreground);
+   --color-destructive: var(--destructive);
+   --color-destructive-foreground: var(--destructive-foreground);
+   
+   /* Semantic Color Tokens */
+   --color-success: var(--success);
+   --color-success-foreground: var(--success-foreground);
+   --color-warning: var(--warning);
+   --color-warning-foreground: var(--warning-foreground);
+   --color-info: var(--info);
+   --color-info-foreground: var(--info-foreground);
+   --color-error: var(--error);
+   --color-error-foreground: var(--error-foreground);
+   
+   /* Golf Course Color Tokens */
+   --color-fairway: var(--fairway);
+   --color-fairway-foreground: var(--fairway-foreground);
+   --color-rough: var(--rough);
+   --color-rough-foreground: var(--rough-foreground);
+   --color-sand: var(--sand);
+   --color-sand-foreground: var(--sand-foreground);
+   --color-water: var(--water);
+   --color-water-foreground: var(--water-foreground);
+   --color-green: var(--green);
+   --color-green-foreground: var(--green-foreground);
+   
+   /* Additional UI Color Tokens */
+   --color-subtle: var(--subtle);
+   --color-subtle-foreground: var(--subtle-foreground);
+   --color-highlight: var(--highlight);
+   --color-highlight-foreground: var(--highlight-foreground);
+   --color-surface: var(--surface);
+   --color-surface-foreground: var(--surface-foreground);
+   
+   /* UI Element Color Tokens */
+   --color-border: var(--border);
+   --color-border-strong: var(--border-strong);
+   --color-input: var(--input);
+   --color-input-background: var(--input-background);
+   --color-switch-background: var(--switch-background);
+   --color-ring: var(--ring);
+   
+   /* Chart Color Tokens */
+   --color-chart-1: var(--chart-1);
+   --color-chart-2: var(--chart-2);
+   --color-chart-3: var(--chart-3);
+   --color-chart-4: var(--chart-4);
+   --color-chart-5: var(--chart-5);
+   --color-chart-6: var(--chart-6);
+   --color-chart-7: var(--chart-7);
+   --color-chart-8: var(--chart-8);
+   
+   /* Sidebar Color Tokens */
+   --color-sidebar: var(--sidebar);
+   --color-sidebar-foreground: var(--sidebar-foreground);
+   --color-sidebar-primary: var(--sidebar-primary);
+   --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+   --color-sidebar-accent: var(--sidebar-accent);
+   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+   --color-sidebar-border: var(--sidebar-border);
+   --color-sidebar-ring: var(--sidebar-ring);
+   
+   /* Golf Score Color Tokens */
+   --color-score-hole-in-one: var(--score-hole-in-one);
+   --color-score-albatross: var(--score-albatross);
+   --color-score-eagle: var(--score-eagle);
+   --color-score-birdie: var(--score-birdie);
+   --color-score-par: var(--score-par);
+   --color-score-bogey: var(--score-bogey);
+   --color-score-double-bogey: var(--score-double-bogey);
+   --color-score-triple-plus: var(--score-triple-plus);
+   
+   /* Border Radius Tokens */
+   --radius-sm: calc(var(--radius) - 4px);
+   --radius-md: calc(var(--radius) - 2px);
+   --radius-lg: var(--radius);
+   --radius-xl: calc(var(--radius) + 4px);
+   
+   /* Font Family */
+   --font-sans: "Athiti", ui-sans-serif, system-ui, sans-serif;
+ }
+ 
+ /* Base Styles */
+ @layer base {
+   * {
+     @apply border-border outline-ring/50;
+   }
+ 
+   body {
+     @apply bg-background text-foreground;
+     font-family: var(--font-sans);
+   }
+ }
+ 
+ /* Base Typography - Only applied when no text class is present */
+ @layer base {
+   :where(:not(:has([class*=" text-"]), :not(:has([class^="text-"])))) {
+     h1 {
+       font-size: var(--text-2xl);
+       font-weight: var(--font-weight-medium);
+       line-height: 1.5;
+     }
+ 
+     h2 {
+       font-size: var(--text-xl);
+       font-weight: var(--font-weight-medium);
+       line-height: 1.5;
+     }
+ 
+     h3 {
+       font-size: var(--text-lg);
+       font-weight: var(--font-weight-medium);
+       line-height: 1.5;
+     }
+ 
+     h4 {
+       font-size: var(--text-base);
+       font-weight: var(--font-weight-medium);
+       line-height: 1.5;
+     }
+ 
+     p {
+       font-size: var(--text-base);
+       font-weight: var(--font-weight-normal);
+       line-height: 1.5;
+     }
+ 
+     label {
+       font-size: var(--text-base);
+       font-weight: var(--font-weight-medium);
+       line-height: 1.5;
+     }
+ 
+     button {
+       font-size: var(--text-base);
+       font-weight: var(--font-weight-medium);
+       line-height: 1.5;
+     }
+ 
+     input {
+       font-size: var(--text-base);
+       font-weight: var(--font-weight-normal);
+       line-height: 1.5;
+     }
+   }
+ }
+ 
+ /* Root Font Size */
+ html {
+   font-size: var(--font-size);
+ }
+ 
+ /* Utility Classes for Golf Scores */
+ @layer utilities {
+   .score-hole-in-one {
+     background-color: var(--score-hole-in-one);
+     color: white;
+   }
+   
+   .score-albatross {
+     background-color: var(--score-albatross);
+     color: white;
+   }
+   
+   .score-eagle {
+     background-color: var(--score-eagle);
+     color: white;
+   }
+   
+   .score-birdie {
+     background-color: var(--score-birdie);
+     color: white;
+   }
+   
+   .score-par {
+     background-color: var(--score-par);
+     color: white;
+   }
+   
+   .score-bogey {
+     background-color: var(--score-bogey);
+     color: white;
+   }
+   
+   .score-double-bogey {
+     background-color: var(--score-double-bogey);
+     color: white;
+   }
+   
+   .score-triple-plus {
+     background-color: var(--score-triple-plus);
+     color: white;
+   }
+ }

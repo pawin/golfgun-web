@@ -327,6 +327,7 @@
   "failedToSaveTeeboxSelection": "Failed to save teebox selection",
   "replaceGuestConfirm": "Replace guest {name} with your account?",
   "guestReplaced": "Guest {name} has been replaced with your account",
-  "failedToReplaceGuest": "Failed to replace guest: {error}"
+  "failedToReplaceGuest": "Failed to replace guest: {error}",
+  "holes": "holes"
 }
 

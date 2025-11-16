@@ -327,6 +327,7 @@
   "failedToSaveTeeboxSelection": "บันทึกการเลือกตำแหน่งทีไม่สำเร็จ",
   "replaceGuestConfirm": "แทนที่ผู้เล่นชั่วคราว {name} ด้วยบัญชีของคุณหรือไม่?",
   "guestReplaced": "ผู้เล่นชั่วคราว {name} ถูกแทนที่ด้วยบัญชีของคุณแล้ว",
-  "failedToReplaceGuest": "แทนที่ผู้เล่นชั่วคราวไม่สำเร็จ: {error}"
+  "failedToReplaceGuest": "แทนที่ผู้เล่นชั่วคราวไม่สำเร็จ: {error}",
+  "holes": "หลุม"
 }
 
