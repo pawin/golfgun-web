@@ -2,33 +2,32 @@
 
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
-import { Round, roundIsFinished } from '@/lib/models/round';
+import { Round, roundIsFinished, roundColorForPlayer } from '@/lib/models/round';
 import { AppUser } from '@/lib/models/appUser';
 import { DateFormatter, AppDateFormatStyle } from '@/lib/utils/dateFormatter';
-import { getInitials, colorFromName } from '@/lib/utils/validator';
+import { getInitials } from '@/lib/utils/validator';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 interface RoundCardViewProps {
   round: Round;
   currentUserId: string;
   users: Record<string, AppUser>;
-  onMemberTap?: (member: AppUser) => void;
 }
 
 export default function RoundCardView({
   round,
   currentUserId,
   users,
-  onMemberTap,
 }: RoundCardViewProps) {
   const t = useTranslations();
   const router = useRouter();
+  const locale = useLocale();
 
   const total = computeUserTotal(round, currentUserId);
   const thru = computeThruHole(round);
 
   const handleClick = () => {
-    router.push(`/rounds/${round.id}`);
+    router.push(`/${locale}/rounds/${round.id}`);
   };
 
   return (
@@ -42,7 +41,7 @@ export default function RoundCardView({
           <SubtitleLine round={round} thru={thru} />
         </div>
         {total > 0 && (
-          <div className="ml-2 px-2 py-1 bg-primary text-primary-foreground rounded-lg font-bold text-lg">
+          <div className="ml-2 px-2 py-1 bg-[color:var(--green)] text-[color:var(--fairway-foreground)] rounded-lg font-bold text-lg">
             {total}
           </div>
         )}
@@ -50,7 +49,6 @@ export default function RoundCardView({
       <MembersGrid
         round={round}
         users={users}
-        onMemberTap={onMemberTap}
       />
     </div>
   );
@@ -80,11 +78,9 @@ function SubtitleLine({ round, thru }: { round: Round; thru: number }) {
 function MembersGrid({
   round,
   users,
-  onMemberTap,
 }: {
   round: Round;
   users: Record<string, AppUser>;
-  onMemberTap?: (member: AppUser) => void;
 }) {
   const members = round.memberIds;
   if (members.length === 0) return null;
@@ -96,12 +92,12 @@ function MembersGrid({
                         maxColumns === 4 ? 'grid-cols-4' : 'grid-cols-5';
 
   return (
-    <div className={`grid ${gridColsClass} gap-2`}>
+    <div className={`grid ${gridColsClass} gap-2 justify-items-stretch w-full`}>
       {members.map((memberId) => {
         const member = users[memberId];
         if (!member) {
           return (
-            <div key={memberId} className="flex flex-col items-center">
+            <div key={memberId} className="flex flex-col items-center w-full">
               <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
                 <span className="text-muted-foreground text-xs">?</span>
               </div>
@@ -110,17 +106,13 @@ function MembersGrid({
           );
         }
 
-        const bgColor = colorForPlayer(memberId, round.memberIds);
+        const bgColor = roundColorForPlayer(round, memberId);
         const initials = getInitials(member.name);
 
         return (
           <div
             key={memberId}
-            onClick={(e) => {
-              e.stopPropagation();
-              onMemberTap?.(member);
-            }}
-            className="flex flex-col items-center"
+            className="flex flex-col items-center w-full"
           >
             <Avatar className="w-12 h-12">
               {member.pictureUrl ? (

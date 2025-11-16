@@ -283,7 +283,7 @@ function QuickStatsSummary({ stats }: { stats: RoundStatistics }) {
 function StatRow({ icon, label, value }: { icon: any; label: string; value: string }) {
   return (
     <div className="flex items-center gap-3">
-      <FontAwesomeIcon icon={icon} className="text-xl" />
+      <FontAwesomeIcon icon={icon} className="text-xl text-[color:var(--rough)]" />
       <span className="flex-1 text-muted-foreground">{label}</span>
       <span className="font-bold">{value}</span>
     </div>
@@ -301,25 +301,25 @@ function StatisticsSection({ stats }: { stats: RoundStatistics }) {
           icon={faGolfBall}
           label={t('totalRounds')}
           value={stats.totalRounds.toString()}
-          color="primary"
+          color="rough"
         />
         <StatCard
           icon={faChartLine}
           label={t('averageScore')}
           value={stats.averageScore > 0 ? stats.averageScore.toFixed(1) : t('dash')}
-          color="primary"
+          color="water"
         />
         <StatCard
           icon={faTrophy}
           label={t('bestScore')}
           value={stats.bestScore !== 0 ? formatBestScore(stats.bestTotalScore, stats.bestScore) : t('dash')}
-          color="secondary"
+          color="sand"
         />
         <StatCard
           icon={faCalendar}
           label={t('thisMonth')}
           value={stats.roundsThisMonth.toString()}
-          color="muted"
+          color="green"
         />
       </div>
     </div>
@@ -335,14 +335,23 @@ function StatCard({
   icon: any;
   label: string;
   value: string;
-  color: string;
+  color: 'rough' | 'sand' | 'water' | 'green';
 }) {
+  const iconColorClass =
+    color === 'rough'
+      ? 'text-[color:var(--rough)]'
+      : color === 'sand'
+      ? 'text-[color:var(--sand)]'
+      : color === 'water'
+      ? 'text-[color:var(--water)]'
+      : 'text-[color:var(--green)]';
+
   return (
     <Card>
       <CardContent className="p-4 flex flex-col items-center">
         <FontAwesomeIcon
           icon={icon}
-          className="text-3xl mb-2 text-primary"
+          className={`text-3xl mb-2 ${iconColorClass}`}
         />
         <span className="text-2xl font-bold mb-1">{value}</span>
         <span className="text-xs text-muted-foreground text-center">{label}</span>
