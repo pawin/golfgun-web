@@ -9,6 +9,7 @@ import { userService } from '@/lib/services/userService';
 import { AppUser } from '@/lib/models/appUser';
 import { getInitials, colorFromName, sanitizeUsername } from '@/lib/utils/validator';
 import { resizeAndCropImageBytes } from '@/lib/utils/image_helper';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 export default function EditProfileScreen() {
   const t = useTranslations();
@@ -110,25 +111,30 @@ export default function EditProfileScreen() {
         {/* Profile Photo */}
         <div className="flex flex-col items-center">
           <div className="relative">
-            <div
-              className="w-32 h-32 rounded-full flex items-center justify-center text-white font-bold text-4xl"
-              style={{ backgroundColor: colorFromName(appUser.name) }}
-            >
+            <Avatar className="w-32 h-32">
               {displayImage ? (
-                <img
-                  src={displayImage}
-                  alt={appUser.name}
-                  className="w-full h-full rounded-full object-cover"
-                />
-              ) : (
-                getInitials(appUser.name)
-              )}
-            </div>
+                <AvatarImage src={displayImage} alt={appUser.name} />
+              ) : null}
+              <AvatarFallback
+                style={{ backgroundColor: colorFromName(appUser.name) }}
+                className="text-white font-bold text-4xl"
+              >
+                {getInitials(appUser.name)}
+              </AvatarFallback>
+            </Avatar>
             <button
               onClick={() => setShowImageSourceDialog(true)}
               className="absolute bottom-0 right-0 w-10 h-10 bg-green-600 rounded-full flex items-center justify-center text-white border-4 border-white"
             >
-              📷
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 512 512"
+                className="w-5 h-5"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path d="M149.1 64.01C164.9 64.01 179.2 72.63 187.2 86.05L205.5 116.0H306.5L324.8 86.05C332.8 72.63 347.1 64.01 362.9 64.01H400C426.5 64.01 448 85.49 448 112V128H464C490.5 128 512 149.5 512 176V400C512 426.5 490.5 448 464 448H48C21.49 448 0 426.5 0 400V176C0 149.5 21.49 128 48 128H64V112C64 85.49 85.49 64.01 112 64.01H149.1zM256 400C318.3 400 368 350.3 368 288C368 225.7 318.3 176 256 176C193.7 176 144 225.7 144 288C144 350.3 193.7 400 256 400zM256 352C220.7 352 192 323.3 192 288C192 252.7 220.7 224 256 224C291.3 224 320 252.7 320 288C320 323.3 291.3 352 256 352z"/>
+              </svg>
             </button>
           </div>
           <p className="text-sm text-gray-600 mt-2">{t('tapToChangePhoto')}</p>

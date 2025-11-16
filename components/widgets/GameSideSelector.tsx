@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Round, RoundGame, roundColorForPlayer, roundColorForTeam } from '@/lib/models/round';
 import { AppUser } from '@/lib/models/appUser';
 import { getInitials } from '@/lib/utils/validator';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 interface GameSideSelectorProps {
   round: Round;
@@ -289,8 +290,14 @@ export default function GameSideSelector({
 
       {/* Add Player Dialog */}
       {showAddDialog && (
-        <div className="fixed inset-0 bg-black/80 flex items-end justify-center z-50">
-          <div className="bg-white rounded-t-xl shadow-xl w-full max-w-md max-h-[80vh] flex flex-col">
+        <div
+          className="fixed inset-0 bg-black/80 flex items-end justify-center z-50"
+          onClick={() => setShowAddDialog(null)}
+        >
+          <div
+            className="bg-white rounded-t-xl shadow-xl w-full max-w-md max-h-[80vh] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="px-6 py-4 border-b border-gray-200">
               <h2 className="text-lg font-semibold">
                 {t('addTo')} {showAddDialog.isRedTeam ? t('sideA') : t('sideB')}
@@ -315,16 +322,17 @@ export default function GameSideSelector({
                     }}
                     className="flex items-center gap-3 p-4 cursor-pointer hover:bg-gray-50 border-b border-gray-100"
                   >
-                    <div
-                      className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm"
-                      style={{ backgroundColor: bgColor }}
-                    >
+                    <Avatar className="w-10 h-10">
                       {player.pictureUrl ? (
-                        <img src={player.pictureUrl} alt={player.name} className="w-full h-full rounded-full object-cover" />
-                      ) : (
-                        getInitials(player.name)
-                      )}
-                    </div>
+                        <AvatarImage src={player.pictureUrl} alt={player.name} />
+                      ) : null}
+                      <AvatarFallback
+                        style={{ backgroundColor: bgColor }}
+                        className="text-white font-bold text-sm"
+                      >
+                        {getInitials(player.name)}
+                      </AvatarFallback>
+                    </Avatar>
                     <div className="flex-1">
                       <div className="text-sm font-medium">{player.name}</div>
                     </div>
@@ -338,8 +346,14 @@ export default function GameSideSelector({
 
       {/* Change Player Dialog */}
       {showChangeDialog && (
-        <div className="fixed inset-0 bg-black/80 flex items-end justify-center z-50">
-          <div className="bg-white rounded-t-xl shadow-xl w-full max-w-md max-h-[80vh] flex flex-col">
+        <div
+          className="fixed inset-0 bg-black/80 flex items-end justify-center z-50"
+          onClick={() => setShowChangeDialog(null)}
+        >
+          <div
+            className="bg-white rounded-t-xl shadow-xl w-full max-w-md max-h-[80vh] flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="px-6 py-4 border-b border-gray-200">
               <h2 className="text-lg font-semibold">{t('editPlayer')}</h2>
             </div>
@@ -354,20 +368,17 @@ export default function GameSideSelector({
                   return (
                     <div className="flex items-center justify-between gap-3 p-4">
                       <div className="flex items-center gap-3 flex-1">
-                        <div
-                          className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm"
-                          style={{ backgroundColor: bgColor }}
-                        >
+                        <Avatar className="w-10 h-10">
                           {player.pictureUrl ? (
-                            <img
-                              src={player.pictureUrl}
-                              alt={player.name}
-                              className="w-full h-full rounded-full object-cover"
-                            />
-                          ) : (
-                            getInitials(player.name)
-                          )}
-                        </div>
+                            <AvatarImage src={player.pictureUrl} alt={player.name} />
+                          ) : null}
+                          <AvatarFallback
+                            style={{ backgroundColor: bgColor }}
+                            className="text-white font-bold text-sm"
+                          >
+                            {getInitials(player.name)}
+                          </AvatarFallback>
+                        </Avatar>
                         <div className="flex-1">
                           <div className="text-sm font-semibold">{player.name}</div>
                           <div className="text-xs text-gray-600">{t('currentPlayer')}</div>
@@ -419,20 +430,17 @@ export default function GameSideSelector({
                         }}
                         className="flex items-center gap-3 p-4 cursor-pointer hover:bg-gray-50 border-b border-gray-100"
                       >
-                        <div
-                          className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm"
-                          style={{ backgroundColor: bgColor }}
-                        >
+                        <Avatar className="w-10 h-10">
                           {player.pictureUrl ? (
-                            <img
-                              src={player.pictureUrl}
-                              alt={player.name}
-                              className="w-full h-full rounded-full object-cover"
-                            />
-                          ) : (
-                            getInitials(player.name)
-                          )}
-                        </div>
+                            <AvatarImage src={player.pictureUrl} alt={player.name} />
+                          ) : null}
+                          <AvatarFallback
+                            style={{ backgroundColor: bgColor }}
+                            className="text-white font-bold text-sm"
+                          >
+                            {getInitials(player.name)}
+                          </AvatarFallback>
+                        </Avatar>
                         <div className="flex-1">
                           <div className="text-sm font-medium">{player.name}</div>
                         </div>

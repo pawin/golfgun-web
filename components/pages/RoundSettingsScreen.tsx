@@ -286,18 +286,13 @@ export default function RoundSettingsScreen() {
     const game = round.games.find((g) => g.id === gameId);
     if (game) {
       return (
-        <div className="min-h-screen bg-subtle">
-          <div className="sticky top-0 bg-background border-b border-border px-4 py-3">
-            <h1 className="text-xl font-semibold">{t('gameSettings') || 'Game Settings'}</h1>
-          </div>
-          <GameSettingsScreen
-            round={round}
-            game={game}
-            users={users}
-            currentUserId={user.uid}
-            onClose={() => router.back()}
-          />
-        </div>
+        <GameSettingsScreen
+          round={round}
+          game={game}
+          users={users}
+          currentUserId={user.uid}
+          onClose={() => router.back()}
+        />
       );
     }
   }

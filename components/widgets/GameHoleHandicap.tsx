@@ -288,8 +288,14 @@ function PointSelectorDialog({
   const [selectedPoint, setSelectedPoint] = useState(currentPoint);
 
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-sm w-full">
+    <div
+      className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+      onClick={onCancel}
+    >
+      <div
+        className="bg-white rounded-lg shadow-xl max-w-sm w-full"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="px-6 py-4 border-b border-gray-200">
           <h2 className="text-lg font-semibold">{t('editPoint', { hole: holeNumber })}</h2>
         </div>
@@ -448,8 +454,14 @@ function HandicapStrokeDialog({
   const players = getPlayers();
 
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] flex flex-col">
+    <div
+      className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+      onClick={onCancel}
+    >
+      <div
+        className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="px-6 py-4 border-b border-gray-200">
           <h2 className="text-lg font-semibold">{t('handicapStrokes', { hole: holeNumber })}</h2>
         </div>
@@ -513,8 +525,14 @@ function HandicapStrokeDialog({
 
       {/* Stroke Picker Dialog */}
       {showStrokePicker && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[60] p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-sm w-full">
+        <div
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-[60] p-4"
+          onClick={() => setShowStrokePicker(null)}
+        >
+          <div
+            className="bg-white rounded-lg shadow-xl max-w-sm w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="px-6 py-4 border-b border-gray-200">
               <h3 className="text-lg font-semibold">{showStrokePicker.playerName}</h3>
             </div>
