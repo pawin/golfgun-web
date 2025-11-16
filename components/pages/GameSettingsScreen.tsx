@@ -6,6 +6,8 @@ import { useTranslations } from 'next-intl';
 import { Round, RoundGame, roundScorecardBridge, roundColorForPlayer } from '@/lib/models/round';
 import { AppUser } from '@/lib/models/appUser';
 import { roundService } from '@/lib/services/roundService';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import GamePlayerSelector from '@/components/widgets/GamePlayerSelector';
 import GameSideSelector from '@/components/widgets/GameSideSelector';
 import GameScoreMultiplier from '@/components/widgets/GameScoreMultiplier';
@@ -238,6 +240,8 @@ export default function GameSettingsScreen({
     const newDefaults = calculateHorseDefaultValues();
     const newSettings = buildHorseSettings(horseSettings, newDefaults, newPlayerIds);
     setHorseSettings(newSettings);
+    // Auto-save latest players and horse settings
+    saveGameSettings(false, { playerIds: newPlayerIds, horseSettings: newSettings });
   };
 
   const handleTeamsChanged = (red: string[], blue: string[]) => {
@@ -248,14 +252,25 @@ export default function GameSettingsScreen({
     const newDefaults = calculateHorseDefaultValues();
     const newSettings = buildHorseSettings(horseSettings, newDefaults, combined);
     setHorseSettings(newSettings);
+    // Auto-save latest teams, players, and horse settings
+    saveGameSettings(false, {
+      redTeamIds: red,
+      blueTeamIds: blue,
+      playerIds: combined,
+      horseSettings: newSettings,
+    });
   };
 
   const handleScoreCountModeChanged = (mode: number) => {
     setScoreCountMode(mode);
+    // Auto-save score count mode
+    saveGameSettings(false, { scoreCountMode: mode });
   };
 
   const handleHolePointsChanged = (points: Record<string, Record<string, any>>) => {
     setHolePoints(points);
+    // Auto-save hole points
+    saveGameSettings(false, { holePoints: points });
   };
 
   const handleHandicapStrokesChanged = (strokes: Record<string, any>) => {
@@ -279,6 +294,17 @@ export default function GameSettingsScreen({
     if (eagle !== undefined) setEagleMultiplier(eagle);
     if (albatross !== undefined) setAlbatrossMultiplier(albatross);
     if (holeInOne !== undefined) setHoleInOneMultiplier(holeInOne);
+    // Auto-save multipliers using latest values
+    const nextBirdie = birdie ?? birdieMultiplier;
+    const nextEagle = eagle ?? eagleMultiplier;
+    const nextAlbatross = albatross ?? albatrossMultiplier;
+    const nextHoleInOne = holeInOne ?? holeInOneMultiplier;
+    saveGameSettings(false, {
+      birdieMultiplier: nextBirdie,
+      eagleMultiplier: nextEagle,
+      albatrossMultiplier: nextAlbatross,
+      holeInOneMultiplier: nextHoleInOne,
+    });
   };
 
   const saveGameSettings = async (
@@ -286,6 +312,18 @@ export default function GameSettingsScreen({
     override?: {
       handicapStrokes?: Record<string, any>;
       holePoints?: Record<string, Record<string, any>>;
+      playerIds?: string[];
+      redTeamIds?: string[];
+      blueTeamIds?: string[];
+      horseSettings?: Record<string, Record<string, number>>;
+      birdieMultiplier?: string;
+      eagleMultiplier?: string;
+      albatrossMultiplier?: string;
+      holeInOneMultiplier?: string;
+      scoreCountMode?: number;
+      skinsMode?: number;
+      maxSkins?: number;
+      skinsStartingHole?: number;
     }
   ) => {
     setIsSaving(true);
@@ -293,30 +331,30 @@ export default function GameSettingsScreen({
     try {
       const updatedGame: RoundGame = {
         ...game,
-        playerIds,
-        redTeamIds: redTeam,
-        blueTeamIds: blueTeam,
+        playerIds: override?.playerIds ?? playerIds,
+        redTeamIds: override?.redTeamIds ?? redTeam,
+        blueTeamIds: override?.blueTeamIds ?? blueTeam,
         handicapStrokes: convertHandicapStrokesToGame(
           override?.handicapStrokes ?? handicapStrokes
         ),
         holePoints: convertHolePointsToGame(
           override?.holePoints ?? holePoints
         ),
-        horseSettings: game.type.toLowerCase() === 'horse' ? horseSettings : {},
-        birdieMultiplier: birdieMultiplier ?? game.birdieMultiplier,
-        eagleMultiplier: eagleMultiplier ?? game.eagleMultiplier,
-        albatrossMultiplier: albatrossMultiplier ?? game.albatrossMultiplier,
-        holeInOneMultiplier: holeInOneMultiplier ?? game.holeInOneMultiplier,
-        scoreCountMode,
-        skinsMode,
-        maxSkins,
-        skinsStartingHole,
+        horseSettings: game.type.toLowerCase() === 'horse' ? (override?.horseSettings ?? horseSettings) : {},
+        birdieMultiplier: override?.birdieMultiplier ?? birdieMultiplier ?? game.birdieMultiplier,
+        eagleMultiplier: override?.eagleMultiplier ?? eagleMultiplier ?? game.eagleMultiplier,
+        albatrossMultiplier: override?.albatrossMultiplier ?? albatrossMultiplier ?? game.albatrossMultiplier,
+        holeInOneMultiplier: override?.holeInOneMultiplier ?? holeInOneMultiplier ?? game.holeInOneMultiplier,
+        scoreCountMode: override?.scoreCountMode ?? scoreCountMode,
+        skinsMode: override?.skinsMode ?? skinsMode,
+        maxSkins: override?.maxSkins ?? maxSkins,
+        skinsStartingHole: override?.skinsStartingHole ?? skinsStartingHole,
       };
 
       await roundService.saveGame({ roundId: round.id, game: updatedGame });
 
-      alert(t('gameSettingsSaved'));
       if (popAfterSave) {
+        alert(t('gameSettingsSaved'));
         if (onClose) {
           onClose();
         } else {
@@ -357,6 +395,8 @@ export default function GameSettingsScreen({
     segmentValues[playerId] = Math.max(0, value);
     newSettings[segment] = segmentValues;
     setHorseSettings(newSettings);
+    // Auto-save horse settings
+    saveGameSettings(false, { horseSettings: newSettings });
   };
 
   const showHorseValueDialog = async (segment: string, playerId: string) => {
@@ -392,18 +432,20 @@ export default function GameSettingsScreen({
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
         <h1 className="text-lg font-semibold">{t('gameSettings')}</h1>
-        {isSaving ? (
-          <div className="w-6 h-6 border-2 border-green-600 border-t-transparent rounded-full animate-spin" />
-        ) : (
-          <button
-            onClick={() => saveGameSettings(true)}
-            className="p-2 text-green-600 hover:bg-green-50 rounded-lg"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-          </button>
-        )}
+        <button
+          onClick={() => {
+            if (onClose) {
+              onClose();
+            } else {
+              router.back();
+            }
+          }}
+          className="inline-flex items-center justify-center w-9 h-9 rounded-md hover:bg-accent/20"
+          aria-label="close"
+          title={t('close')}
+        >
+          <FontAwesomeIcon icon={faXmark} className="w-5 h-5" />
+        </button>
       </div>
 
       {/* Content */}
@@ -497,7 +539,11 @@ export default function GameSettingsScreen({
                   <span className="text-sm font-medium">{t('startingHole')}</span>
                   <select
                     value={skinsStartingHole}
-                    onChange={(e) => setSkinsStartingHole(parseInt(e.target.value))}
+                    onChange={(e) => {
+                      const v = parseInt(e.target.value);
+                      setSkinsStartingHole(v);
+                      saveGameSettings(false, { skinsStartingHole: v });
+                    }}
                     className="px-3 py-2 border border-gray-300 rounded-lg"
                   >
                     {availableSkinsHoles.map((hole) => (
@@ -512,7 +558,11 @@ export default function GameSettingsScreen({
                   <span className="text-sm font-medium">{t('skinsMode')}</span>
                   <select
                     value={skinsMode}
-                    onChange={(e) => setSkinsMode(parseInt(e.target.value))}
+                    onChange={(e) => {
+                      const v = parseInt(e.target.value);
+                      setSkinsMode(v);
+                      saveGameSettings(false, { skinsMode: v });
+                    }}
                     className="px-3 py-2 border border-gray-300 rounded-lg"
                   >
                     <option value={-1}>{t('skinsModeBirdieOrBetter')}</option>
@@ -526,7 +576,11 @@ export default function GameSettingsScreen({
                   <span className="text-sm font-medium">{t('maxSkins')}</span>
                   <select
                     value={maxSkins}
-                    onChange={(e) => setMaxSkins(parseInt(e.target.value))}
+                    onChange={(e) => {
+                      const v = parseInt(e.target.value);
+                      setMaxSkins(v);
+                      saveGameSettings(false, { maxSkins: v });
+                    }}
                     className="px-3 py-2 border border-gray-300 rounded-lg"
                   >
                     {Array.from({ length: 18 }, (_, i) => i + 1).map((value) => (
