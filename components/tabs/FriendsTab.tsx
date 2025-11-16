@@ -9,7 +9,7 @@ import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { auth } from '@/lib/firebase/config';
 import { friendService, FriendOverview, FriendshipWithUser } from '@/lib/services/friendService';
 import { AppUser } from '@/lib/models/appUser';
-import { getInitials, colorFromName } from '@/lib/utils/validator';
+import { getInitials } from '@/lib/utils/validator';
 import { useLocale } from 'next-intl';
 
 type FriendRelationship = 'self' | 'friend' | 'incoming' | 'outgoing' | 'none';
@@ -214,27 +214,27 @@ export default function FriendsTab() {
   if (loading || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-white">
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3">
+      <div className="min-h-screen bg-background">
+        <div className="sticky top-0 bg-background border-b border-border px-4 py-3">
           <h1 className="text-xl font-semibold">{t('friendsTitle')}</h1>
         </div>
         <div className="flex items-center justify-center py-20">
-          <p className="text-gray-600">{t('friendsSignInRequired')}</p>
+          <p className="text-muted-foreground">{t('friendsSignInRequired')}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3">
+    <div className="min-h-screen bg-subtle pb-20">
+      <div className="sticky top-0 bg-background border-b border-border px-4 py-3">
         <h1 className="text-xl font-semibold">{t('friendsTitle')}</h1>
       </div>
 
@@ -251,11 +251,11 @@ export default function FriendsTab() {
               }}
               value={searchQuery}
               placeholder={t('friendsSearchPlaceholder')}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg pr-10"
+              className="w-full px-4 py-2 border border-input rounded-lg pr-10 bg-input-background"
             />
             {isSearching ? (
               <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600"></div>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
               </div>
             ) : searchQuery ? (
               <button
@@ -263,19 +263,19 @@ export default function FriendsTab() {
                   setSearchQuery('');
                   performSearch('');
                 }}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
               >
                 <FontAwesomeIcon icon={faTimes} />
               </button>
             ) : (
-              <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+              <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
                 <FontAwesomeIcon icon={faSearch} />
               </span>
             )}
           </div>
 
           {searchResults.length > 0 && (
-            <div className="mt-3 bg-white border border-gray-200 rounded-lg divide-y">
+            <div className="mt-3 bg-card border border-border rounded-lg divide-y">
               {searchResults.map((entry) => (
                 <SearchResultTile
                   key={entry.user.id}
@@ -310,8 +310,8 @@ export default function FriendsTab() {
         </div>
 
         {errorMessage && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-            <p className="text-sm text-red-700">{errorMessage}</p>
+          <div className="bg-error/10 border border-error/30 rounded-lg p-3">
+            <p className="text-sm text-error">{errorMessage}</p>
           </div>
         )}
 
@@ -368,7 +368,7 @@ function SearchResultTile({
   onAction: (action: string) => void;
 }) {
   const t = useTranslations();
-  const bgColor = colorFromName(entry.user.name);
+  const bgColor = colorVarFromName(entry.user.name);
   const initials = getInitials(entry.user.name);
 
   const renderAction = () => {
@@ -382,7 +382,7 @@ function SearchResultTile({
               e.stopPropagation();
               onAction('view');
             }}
-            className="px-3 py-1 bg-blue-100 text-blue-700 rounded text-sm font-medium"
+            className="px-3 py-1 bg-info/10 text-info rounded text-sm font-medium"
           >
             {t('friendsActionViewProfile')}
           </button>
@@ -394,7 +394,7 @@ function SearchResultTile({
               e.stopPropagation();
               onAction('cancel');
             }}
-            className="px-3 py-1 bg-red-100 text-red-700 rounded text-sm font-medium"
+            className="px-3 py-1 bg-error/10 text-error rounded text-sm font-medium"
           >
             {t('friendsActionCancel')}
           </button>
@@ -407,7 +407,7 @@ function SearchResultTile({
                 e.stopPropagation();
                 onAction('decline');
               }}
-              className="px-3 py-1 bg-gray-100 text-gray-700 rounded text-sm font-medium"
+              className="px-3 py-1 bg-muted text-foreground rounded text-sm font-medium"
             >
               {t('friendsActionDecline')}
             </button>
@@ -416,7 +416,7 @@ function SearchResultTile({
                 e.stopPropagation();
                 onAction('accept');
               }}
-              className="px-3 py-1 bg-green-600 text-white rounded text-sm font-medium"
+              className="px-3 py-1 bg-success text-success-foreground rounded text-sm font-medium"
             >
               {t('friendsActionAccept')}
             </button>
@@ -429,7 +429,7 @@ function SearchResultTile({
               e.stopPropagation();
               onAction('add');
             }}
-            className="px-3 py-1 bg-green-600 text-white rounded text-sm font-medium"
+            className="px-3 py-1 bg-primary text-primary-foreground rounded text-sm font-medium"
           >
             {t('friendsActionAdd')}
           </button>
@@ -440,7 +440,7 @@ function SearchResultTile({
   return (
     <div
       onClick={() => onAction('view')}
-      className="p-3 flex items-center gap-3 hover:bg-gray-50 cursor-pointer"
+      className="p-3 flex items-center gap-3 hover:bg-muted cursor-pointer"
     >
       <div
         className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0"
@@ -487,7 +487,7 @@ function FriendsSection({
     return (
       <div>
         <h2 className="text-md font-semibold mb-2">{title}</h2>
-        <p className="text-gray-600 text-sm">{emptyLabel}</p>
+        <p className="text-muted-foreground text-sm">{emptyLabel}</p>
       </div>
     );
   }
@@ -495,7 +495,7 @@ function FriendsSection({
   return (
     <div>
       <h2 className="text-md font-semibold mb-2">{title}</h2>
-      <div className="bg-white border border-gray-200 rounded-lg divide-y">
+      <div className="bg-card border border-border rounded-lg divide-y">
         {entries.map((entry) => (
           <FriendListTile
             key={entry.otherUser.id}
@@ -525,7 +525,7 @@ function FriendListTile({
   onTap: () => void;
 }) {
   const t = useTranslations();
-  const bgColor = colorFromName(user.name);
+  const bgColor = colorVarFromName(user.name);
   const initials = getInitials(user.name);
 
   const renderActions = () => {
@@ -572,7 +572,7 @@ function FriendListTile({
   return (
     <div
       onClick={onTap}
-      className="p-3 flex items-center gap-3 hover:bg-gray-50 cursor-pointer"
+      className="p-3 flex items-center gap-3 hover:bg-muted cursor-pointer"
     >
       <div
         className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0"
@@ -594,4 +594,25 @@ function FriendListTile({
       {renderActions()}
     </div>
   );
+}
+
+// Use chart color tokens to avoid hex colors for avatars
+function colorVarFromName(name: string): string {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = (hash << 5) - hash + name.charCodeAt(i);
+    hash |= 0;
+  }
+  const index = Math.abs(hash) % 8; // chart-1..chart-8
+  const vars = [
+    'var(--color-chart-1)',
+    'var(--color-chart-2)',
+    'var(--color-chart-3)',
+    'var(--color-chart-4)',
+    'var(--color-chart-5)',
+    'var(--color-chart-6)',
+    'var(--color-chart-7)',
+    'var(--color-chart-8)',
+  ];
+  return vars[index];
 }

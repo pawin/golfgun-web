@@ -203,7 +203,7 @@ export default function ProfileScreen() {
   if (loading || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -211,7 +211,7 @@ export default function ProfileScreen() {
   if (!profileUser) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-gray-600">{t('profileUnknownUser')}</p>
+        <p className="text-muted-foreground">{t('profileUnknownUser')}</p>
       </div>
     );
   }
@@ -221,13 +221,13 @@ export default function ProfileScreen() {
   const canShowFriendActions = !isOwnProfile && currentUserId && ['member', 'temporary'].includes(profileUser.role || '');
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+    <div className="min-h-screen bg-subtle pb-20">
+      <div className="sticky top-0 bg-background border-b border-border px-4 py-3 flex items-center justify-between">
         <h1 className="text-xl font-semibold">{profileUser.name}</h1>
         {!isOwnProfile && friendship && friendship.status === FriendshipStatus.accepted && (
           <button
             onClick={handleRemoveFriend}
-            className="text-gray-600 text-sm"
+            className="text-muted-foreground text-sm"
             title={t('friendsActionRemove')}
           >
             <FontAwesomeIcon icon={faEllipsisVertical} />
@@ -237,10 +237,10 @@ export default function ProfileScreen() {
 
       <div className="p-4 space-y-4">
         {/* Profile Header */}
-        <div className="bg-white border border-gray-200 rounded-lg p-4 flex items-center gap-4">
+        <div className="bg-card border border-border rounded-lg p-4 flex items-center gap-4">
           <div
             className="w-20 h-20 rounded-full flex items-center justify-center text-white font-bold text-2xl flex-shrink-0"
-            style={{ backgroundColor: colorFromName(profileUser.name) }}
+            style={{ backgroundColor: 'var(--color-chart-1)' }}
           >
             {profileUser.pictureUrl ? (
               <img
@@ -262,12 +262,12 @@ export default function ProfileScreen() {
           <div>
             {isFriendshipLoading ? (
               <div className="flex justify-center py-4">
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600"></div>
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
               </div>
             ) : !friendship ? (
               <button
                 onClick={handleSendFriendRequest}
-                className="w-full px-4 py-2 bg-green-600 text-white rounded-lg font-medium"
+                className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium"
               >
                 {t('friendsActionAdd')}
               </button>
@@ -275,7 +275,7 @@ export default function ProfileScreen() {
               friendship.fromUserId === currentUserId ? (
                 <button
                   onClick={handleCancelFriendRequest}
-                  className="w-full px-4 py-2 bg-red-600 text-white rounded-lg font-medium"
+                  className="w-full px-4 py-2 bg-error text-error-foreground rounded-lg font-medium"
                 >
                   {t('friendsActionCancel')}
                 </button>
@@ -283,13 +283,13 @@ export default function ProfileScreen() {
                 <div className="flex gap-2">
                   <button
                     onClick={handleDeclineFriendRequest}
-                    className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg font-medium"
+                    className="flex-1 px-4 py-2 bg-muted text-foreground rounded-lg font-medium"
                   >
                     {t('friendsActionDecline')}
                   </button>
                   <button
                     onClick={handleAcceptFriendRequest}
-                    className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg font-medium"
+                    className="flex-1 px-4 py-2 bg-success text-success-foreground rounded-lg font-medium"
                   >
                     {t('friendsActionAccept')}
                   </button>
@@ -301,7 +301,7 @@ export default function ProfileScreen() {
 
         {/* Head-to-Head Stats */}
         {!isOwnProfile && headToHead && hasHeadToHeadData(headToHead) && (
-          <div className="bg-white border border-gray-200 rounded-lg p-4">
+          <div className="bg-card border border-border rounded-lg p-4">
             <h2 className="text-lg font-bold mb-4">{t('profileHeadToHeadTitle')}</h2>
             <HeadToHeadSection stats={headToHead} />
           </div>
@@ -314,7 +314,7 @@ export default function ProfileScreen() {
               {t('profileRoundsTogether')} ({rounds.length})
             </h2>
             {rounds.length === 0 ? (
-              <div className="bg-white border border-gray-200 rounded-lg p-4 text-gray-600">
+              <div className="bg-card border border-border rounded-lg p-4 text-muted-foreground">
                 {t('profileNoRounds')}
               </div>
             ) : (
@@ -355,15 +355,15 @@ function HeadToHeadSection({ stats }: { stats: HeadToHeadStats }) {
   };
 
   const colorForWinRate = (winRate: number) => {
-    if (winRate > 50) return 'text-green-600';
-    if (winRate < 50) return 'text-red-600';
-    return 'text-gray-600';
+    if (winRate > 50) return 'text-success';
+    if (winRate < 50) return 'text-error';
+    return 'text-muted-foreground';
   };
 
   const colorForValue = (value: number) => {
-    if (value > 0) return 'text-green-600';
-    if (value < 0) return 'text-red-600';
-    return 'text-gray-600';
+    if (value > 0) return 'text-success';
+    if (value < 0) return 'text-error';
+    return 'text-muted-foreground';
   };
 
   const buildStatsRow = ({
@@ -405,8 +405,8 @@ function HeadToHeadSection({ stats }: { stats: HeadToHeadStats }) {
         </div>
         <div className="text-right">
           <div className="font-bold">
-            <span className="text-green-600">{wins}</span>-<span className="text-red-600">{losses}</span>-
-            <span className="text-gray-600">{ties}</span>
+            <span className="text-success">{wins}</span>-<span className="text-error">{losses}</span>-
+            <span className="text-muted-foreground">{ties}</span>
           </div>
           <div className={`text-sm ${winRateColor}`}>
             {t('profileHeadToHeadWinRate', { rate: winRateText })}%

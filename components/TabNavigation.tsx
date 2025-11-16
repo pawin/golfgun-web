@@ -29,7 +29,7 @@ export default function TabNavigation() {
       <main className="flex-1 overflow-y-auto" key={currentIndex}>
         {tabs[currentIndex].component}
       </main>
-      <nav className="border-t border-gray-200 bg-white">
+      <nav className="border-t border-border bg-background">
         <div className="flex justify-around">
           {tabs.map((tab, index) => (
             <button
@@ -37,8 +37,8 @@ export default function TabNavigation() {
               onClick={() => setCurrentIndex(index)}
               className={`flex flex-col items-center justify-center px-4 py-2 flex-1 ${
                 currentIndex === index
-                  ? 'text-green-600 border-t-2 border-green-600'
-                  : 'text-gray-600'
+                  ? 'text-primary border-t-2 border-primary'
+                  : 'text-muted-foreground'
               }`}
             >
               <FontAwesomeIcon icon={tab.icon} className="text-xl" />

@@ -35,23 +35,23 @@ export default function AdminRoundsScreen() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-white p-4">
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3">
+      <div className="min-h-screen bg-background p-4">
+        <div className="sticky top-0 bg-background border-b border-border px-4 py-3">
           <h1 className="text-xl font-semibold">{t('adminRecentRounds')}</h1>
         </div>
-        <div className="p-4 text-red-600">
+        <div className="p-4 text-error">
           <p>{t('adminFailedToLoadRounds')}</p>
-          <p className="text-sm">{error}</p>
+          <p className="text-sm text-error">{error}</p>
           <button
             onClick={loadRounds}
-            className="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg"
+            className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-lg"
           >
             {t('adminRetry')}
           </button>
@@ -64,14 +64,14 @@ export default function AdminRoundsScreen() {
   const intlLocale = locale === 'th' ? 'th-TH' : locale === 'en' ? 'en-US' : undefined;
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3">
+    <div className="min-h-screen bg-subtle pb-20">
+      <div className="sticky top-0 bg-background border-b border-border px-4 py-3">
         <h1 className="text-xl font-semibold">{t('adminRecentRounds')}</h1>
       </div>
 
       <div className="p-4 space-y-3">
         {rounds.length === 0 ? (
-          <p className="text-gray-600 text-center py-8">{t('adminNoRecentRounds')}</p>
+          <p className="text-muted-foreground text-center py-8">{t('adminNoRecentRounds')}</p>
         ) : (
           rounds.map((round) => {
             const courseName = round.course.name;
@@ -82,23 +82,23 @@ export default function AdminRoundsScreen() {
               <div
                 key={round.id}
                 onClick={() => router.push(`/${locale}/rounds/${round.id}`)}
-                className="bg-white border border-gray-200 rounded-lg p-4 cursor-pointer hover:shadow-md"
+                className="bg-card border border-border rounded-lg p-4 cursor-pointer hover:shadow-md"
               >
                 <div className="flex items-start gap-3">
-                  <div className="w-12 h-12 rounded-full bg-green-600 text-white flex items-center justify-center font-bold">
+                  <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold">
                     {courseInitial}
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold truncate">
                       {courseName || t('adminUnknownCourse')}
                     </h3>
-                    <p className="text-sm text-gray-600">{memberCount} {t('adminPlayers')}</p>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">{memberCount} {t('adminPlayers')}</p>
+                    <p className="text-sm text-muted-foreground">
                       {DateFormatter.format(round.createdAt, AppDateFormatStyle.medium, intlLocale)}
                     </p>
                     <div className="mt-2 space-y-1">
-                      <p className="text-xs text-gray-500">{t('adminRoundId')}: {round.id}</p>
-                      <p className="text-xs text-gray-500">{t('adminAdminId')}: {round.adminId}</p>
+                      <p className="text-xs text-muted-foreground">{t('adminRoundId')}: {round.id}</p>
+                      <p className="text-xs text-muted-foreground">{t('adminAdminId')}: {round.adminId}</p>
                     </div>
                   </div>
                 </div>

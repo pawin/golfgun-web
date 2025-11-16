@@ -99,19 +99,19 @@ export default function RoundDetailScreen() {
   if (loading || loadingRound) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   if (error || !round) {
     return (
-      <div className="min-h-screen bg-white">
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3">
+      <div className="min-h-screen bg-background">
+        <div className="sticky top-0 bg-background border-b border-border px-4 py-3">
           <h1 className="text-xl font-semibold">{t('round')}</h1>
         </div>
         <div className="flex items-center justify-center py-20">
-          <p className="text-red-600">{error || t('roundNotFound')}</p>
+          <p className="text-error">{error || t('roundNotFound')}</p>
         </div>
       </div>
     );
@@ -154,8 +154,8 @@ export default function RoundDetailScreen() {
   const teeboxInfo = getTeeboxInfo();
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between z-10">
+    <div className="min-h-screen bg-background">
+      <div className="sticky top-0 bg-background border-b border-border px-4 py-3 flex items-center justify-between z-10">
         <h1 className="text-lg font-semibold">{t('round')}</h1>
         <div className="flex items-center gap-2">
           <AddPlayerMenu
@@ -169,7 +169,7 @@ export default function RoundDetailScreen() {
           {isMember && (
             <button
               onClick={() => router.push(`/${locale}/rounds/${round.id}/settings`)}
-              className="text-gray-600 hover:text-gray-900"
+              className="text-muted-foreground hover:text-foreground"
               title={t('settings') || 'Settings'}
             >
               <FontAwesomeIcon icon={faCog} />
@@ -183,13 +183,13 @@ export default function RoundDetailScreen() {
         <div>
           <h2 className="text-xl font-semibold">{round.course.name}</h2>
           {round.scorecard.name !== round.course.name && (
-            <p className="text-sm text-gray-600 mt-1">{round.scorecard.name}</p>
+            <p className="text-sm text-muted-foreground mt-1">{round.scorecard.name}</p>
           )}
           {teeboxInfo && (
-            <p className="text-sm text-gray-600 mt-1">{teeboxInfo}</p>
+            <p className="text-sm text-muted-foreground mt-1">{teeboxInfo}</p>
           )}
           {roundIsFinished(round) && (
-            <p className="text-sm text-gray-600 mt-1">
+            <p className="text-sm text-muted-foreground mt-1">
               {DateFormatter.format(round.createdAt, AppDateFormatStyle.medium, locale === 'th' ? 'th-TH' : locale === 'en' ? 'en-US' : undefined)}
             </p>
           )}

@@ -32,41 +32,41 @@ export default function AdminCoursesScreen() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-white p-4">
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3">
+      <div className="min-h-screen bg-background p-4">
+        <div className="sticky top-0 bg-background border-b border-border px-4 py-3">
           <h1 className="text-xl font-semibold">Admin • Courses</h1>
         </div>
-        <div className="p-4 text-red-600">
-          <p>Failed to load admin data.</p>
-          <p className="text-sm">{error}</p>
+        <div className="p-4 text-error">
+          <p className="font-medium">Failed to load admin data.</p>
+          <p className="text-sm text-error">{error}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3">
+    <div className="min-h-screen bg-subtle pb-20">
+      <div className="sticky top-0 bg-background border-b border-border px-4 py-3">
         <h1 className="text-xl font-semibold">Admin • Courses</h1>
       </div>
 
       <div className="p-4 space-y-6">
         {bundles.length === 0 ? (
-          <p className="text-gray-600 text-center py-8">No courses available.</p>
+          <p className="text-muted-foreground text-center py-8">No courses available.</p>
         ) : (
           bundles.map((bundle) => (
-            <div key={bundle.course.id} className="bg-white border border-gray-200 rounded-lg p-4">
+            <div key={bundle.course.id} className="bg-card border border-border rounded-lg p-4">
               <h2 className="text-lg font-bold mb-2">{bundle.course.name}</h2>
-              <p className="text-sm text-gray-600 mb-4">Course ID: {bundle.course.id}</p>
+              <p className="text-sm text-muted-foreground mb-4">Course ID: {bundle.course.id}</p>
               {bundle.scorecards.length === 0 ? (
-                <p className="text-gray-600">No scorecards found.</p>
+                <p className="text-muted-foreground">No scorecards found.</p>
               ) : (
                 <div className="space-y-2">
                   {bundle.scorecards.map((scorecard) => {
@@ -75,9 +75,9 @@ export default function AdminCoursesScreen() {
                       ...(scorecard.forwardTeeboxes?.teeboxes || []),
                     ];
                     return (
-                      <div key={scorecard.id} className="border-t border-gray-200 pt-2">
+                      <div key={scorecard.id} className="border-t border-border pt-2">
                         <p className="font-medium">{scorecard.name || 'Scorecard'}</p>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-muted-foreground">
                           {allTeeboxes.length} teeboxes
                         </p>
                       </div>
