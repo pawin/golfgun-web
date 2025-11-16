@@ -5,12 +5,42 @@ import { useTranslations } from 'next-intl';
 import { Round } from '@/lib/models/round';
 import { Scorecard, TeeboxRow, ScoreCellKind } from '@/lib/models/scorecard';
 import { roundService } from '@/lib/services/roundService';
-import { colorFromName } from '@/lib/utils/validator';
 
 interface TeeboxSelectorProps {
   round: Round;
   currentUserId: string;
   onClose: () => void;
+}
+
+// Convert a teebox name (e.g., "white", "Black", "BLUE") into a CSS color.
+// Includes a small mapping for common golf tee colors; falls back to CSS color names.
+function colorFromTeeboxName(name: string): string {
+  const key = name.trim().toLowerCase();
+  const map: Record<string, string> = {
+    white: '#ffffff',
+    black: '#000000',
+    blue: '#1e40af', // tailwind blue-800
+    navy: '#1e3a8a',
+    royal: '#4169e1',
+    sky: '#38bdf8',
+    red: '#dc2626',
+    maroon: '#7f1d1d',
+    green: '#16a34a',
+    emerald: '#059669',
+    teal: '#0d9488',
+    yellow: '#eab308',
+    gold: '#d4af37',
+    orange: '#f97316',
+    purple: '#7e22ce',
+    violet: '#8b5cf6',
+    pink: '#ec4899',
+    brown: '#92400e',
+    bronze: '#cd7f32',
+    silver: '#c0c0c0',
+    gray: '#9ca3af',
+    grey: '#9ca3af',
+  };
+  return map[key] ?? key; // if not in map, assume it's a valid CSS color name
 }
 
 // Helper function to calculate total yards for a teebox
@@ -33,44 +63,6 @@ function totalYards(teebox: TeeboxRow): number {
     }
   }
   return sum;
-}
-
-// Helper to compute luminance for text color
-function getLuminance(hex: string): number {
-  const r = parseInt(hex.slice(1, 3), 16) / 255;
-  const g = parseInt(hex.slice(3, 5), 16) / 255;
-  const b = parseInt(hex.slice(5, 7), 16) / 255;
-  return 0.299 * r + 0.587 * g + 0.114 * b;
-}
-
-// Convert HSL to hex
-function hslToHex(h: number, s: number, l: number): string {
-  l /= 100;
-  const a = (s * Math.min(l, 1 - l)) / 100;
-  const f = (n: number) => {
-    const k = (n + h / 30) % 12;
-    const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-    return Math.round(255 * color)
-      .toString(16)
-      .padStart(2, '0');
-  };
-  return `#${f(0)}${f(8)}${f(4)}`;
-}
-
-// Parse HSL string to hex
-function parseColor(colorStr: string): string {
-  if (colorStr.startsWith('#')) return colorStr;
-  if (colorStr.startsWith('hsl')) {
-    const match = colorStr.match(/hsl\((\d+),\s*(\d+)%,\s*(\d+)%\)/);
-    if (match) {
-      const h = parseInt(match[1]);
-      const s = parseInt(match[2]);
-      const l = parseInt(match[3]);
-      return hslToHex(h, s, l);
-    }
-  }
-  // Fallback color
-  return '#666666';
 }
 
 export default function TeeboxSelector({
@@ -158,10 +150,8 @@ export default function TeeboxSelector({
     const yards = totalYards(teebox);
     const rating = teebox.rating?.toFixed(1) ?? '-';
     const slope = teebox.slope?.toString() ?? '-';
-    const badgeColorStr = colorFromName(teebox.color);
-    const badgeColor = parseColor(badgeColorStr);
-    const luminance = getLuminance(badgeColor);
-    const fg = luminance < 0.5 ? '#ffffff' : '#000000';
+    // Use color derived purely from the teebox name
+    const badgeColor = colorFromTeeboxName(teebox.name);
     const isSelected = isFrontNine
       ? selectedFrontTeeboxId === teebox.rowId
       : selectedBackTeeboxId === teebox.rowId;
@@ -173,12 +163,9 @@ export default function TeeboxSelector({
         className="flex items-center gap-2 p-3 cursor-pointer hover:bg-accent/20 rounded"
       >
         <div
-          className="w-7 h-7 rounded-full flex items-center justify-center"
+          className="w-4 h-4 rounded-full border-2 border-black"
           style={{ backgroundColor: badgeColor }}
         >
-          <span style={{ color: fg }} className="text-xs">
-            🚩
-          </span>
         </div>
         <div className="flex-1 min-w-0">
           <div className="text-sm font-medium">
