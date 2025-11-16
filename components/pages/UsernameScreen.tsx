@@ -22,15 +22,36 @@ export default function UsernameScreen() {
   const [selectedLanguage, setSelectedLanguage] = useState('th');
 
   useEffect(() => {
+    const checkAndMaybeRedirect = async () => {
+      if (user && !loading) {
+        // If already signed in, fetch latest user and redirect if a name exists
+        try {
+          userService.invalidateUserCache(user.uid);
+          const appUser = await userService.getUserById(user.uid);
+          const hasName = !!appUser && !!String(appUser.name ?? '').trim();
+          if (hasName) {
+            router.push(`/${locale}`);
+            return;
+          }
+        } catch {
+          // ignore and allow form to show
+        } finally {
+          setSigningIn(false);
+        }
+      } else if (!loading && !user) {
+        signInAnonymously(auth).catch((error) => {
+          console.error('Anonymous sign in error:', error);
+          setSigningIn(false);
+        });
+      }
+    };
+    checkAndMaybeRedirect();
+  }, [user, loading, router, locale]);
+
+  useEffect(() => {
+    // If auth state switches from null->user via anonymous sign-in, stop the spinner
     if (user && !loading) {
-      // Check if user already has a username
-      // For now, just proceed - we'll check in the save function
       setSigningIn(false);
-    } else if (!loading && !user) {
-      signInAnonymously(auth).catch((error) => {
-        console.error('Anonymous sign in error:', error);
-        setSigningIn(false);
-      });
     }
   }, [user, loading]);
 

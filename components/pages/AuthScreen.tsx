@@ -28,12 +28,14 @@ export default function AuthScreen() {
     let isMounted = true;
     const run = async () => {
       if (!user || loading) return;
+      // If we're on Auth with an anonymous session (coming from Username), don't redirect yet.
+      if (user.isAnonymous) return;
       try {
+        // Ensure we don't use stale cache when arriving here
+        userService.invalidateUserCache(user.uid);
         const appUser = await userService.getUserById(user.uid);
         const hasName = !!appUser && !!String(appUser.name ?? '').trim();
-        if (hasName) {
-          router.push(`/${locale}`);
-        }
+        router.push(hasName ? `/${locale}` : `/${locale}/username`);
       } catch {
         // ignore
       }
@@ -91,7 +93,16 @@ export default function AuthScreen() {
         isLogin,
         language: isLogin ? 'th' : selectedLanguage,
       });
-      router.push(`/${locale}`);
+      // After auth, ensure fresh user state then route appropriately
+      const current = auth.currentUser;
+      if (current?.uid) {
+        userService.invalidateUserCache(current.uid);
+        const appUser = await userService.getUserById(current.uid);
+        const hasName = !!appUser && !!String(appUser.name ?? '').trim();
+        router.push(hasName ? `/${locale}` : `/${locale}/username`);
+      } else {
+        router.push(`/${locale}`);
+      }
     } catch (error: any) {
       const code = error?.code || error?.message || 'unknown';
       setErrorMessage(getErrorMessage(code));

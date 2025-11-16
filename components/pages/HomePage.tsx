@@ -25,6 +25,8 @@ export default function HomePage() {
         return;
       }
       try {
+        // Always invalidate before fetching to avoid stale cache after auth/profile updates
+        userService.invalidateUserCache(user.uid);
         const appUser = await userService.getUserById(user.uid);
         const missingName =
           !appUser || appUser.name === null || appUser.name === undefined || String(appUser.name).trim() === '';
