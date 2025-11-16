@@ -260,8 +260,8 @@ export default function GameSettingsScreen({
 
   const handleHandicapStrokesChanged = (strokes: Record<string, any>) => {
     setHandicapStrokes(strokes);
-    // Auto-save when handicap strokes are changed
-    saveGameSettings(false);
+    // Auto-save with the freshest strokes value (state set is async)
+    saveGameSettings(false, { handicapStrokes: strokes });
   };
 
   const handleScoreMultipliersChanged = ({
@@ -281,7 +281,13 @@ export default function GameSettingsScreen({
     if (holeInOne !== undefined) setHoleInOneMultiplier(holeInOne);
   };
 
-  const saveGameSettings = async (popAfterSave: boolean = true) => {
+  const saveGameSettings = async (
+    popAfterSave: boolean = true,
+    override?: {
+      handicapStrokes?: Record<string, any>;
+      holePoints?: Record<string, Record<string, any>>;
+    }
+  ) => {
     setIsSaving(true);
 
     try {
@@ -290,8 +296,12 @@ export default function GameSettingsScreen({
         playerIds,
         redTeamIds: redTeam,
         blueTeamIds: blueTeam,
-        handicapStrokes: convertHandicapStrokesToGame(handicapStrokes),
-        holePoints: convertHolePointsToGame(holePoints),
+        handicapStrokes: convertHandicapStrokesToGame(
+          override?.handicapStrokes ?? handicapStrokes
+        ),
+        holePoints: convertHolePointsToGame(
+          override?.holePoints ?? holePoints
+        ),
         horseSettings: game.type.toLowerCase() === 'horse' ? horseSettings : {},
         birdieMultiplier: birdieMultiplier ?? game.birdieMultiplier,
         eagleMultiplier: eagleMultiplier ?? game.eagleMultiplier,

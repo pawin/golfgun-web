@@ -183,12 +183,12 @@ export default function GameHoleHandicap({
   return (
     <div>
       {/* Header */}
-      <div className="bg-green-50 border-b border-gray-200 grid grid-cols-5 gap-2 text-sm font-bold py-3 px-2">
+      <div className="bg-green-50 border-b border-gray-200 grid grid-cols-[56px_56px_56px_1fr_1fr] gap-2 text-sm font-bold py-3 px-2">
         <div className="text-center">{t('hole')}</div>
         <div className="text-center">{t('par')}</div>
         <div className="text-center">{t('hcp')}</div>
-        <div className="text-center col-span-2">{t('point')}</div>
-        <div className="text-center col-span-2">{t('stroke')}</div>
+        <div className="text-center">{t('point')}</div>
+        <div className="text-center">{t('stroke')}</div>
       </div>
 
       {/* Holes */}
@@ -201,13 +201,13 @@ export default function GameHoleHandicap({
         const strokeCount = getHandicapStrokeCountForHole(holeNumber);
 
         return (
-          <div key={holeNumber} className="border-b border-gray-100 grid grid-cols-5 gap-2 py-4 px-2">
+          <div key={holeNumber} className="border-b border-gray-100 grid grid-cols-[56px_56px_56px_1fr_1fr] gap-2 py-4 px-2">
             <div className="text-center text-sm">{holeNumber}</div>
             <div className="text-center text-sm">{par}</div>
             <div className="text-center text-sm">{handicap}</div>
             <button
               onClick={() => setShowPointDialog({ holeNumber, par, currentPoint: point })}
-              className="text-center text-sm font-semibold text-green-600 hover:text-green-700 col-span-2 flex items-center justify-center gap-1"
+              className="text-center text-sm font-semibold text-green-600 hover:text-green-700 flex items-center justify-center gap-1"
             >
               {point}
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -216,7 +216,7 @@ export default function GameHoleHandicap({
             </button>
             <button
               onClick={() => setShowHandicapDialog({ holeNumber, par })}
-              className="text-center text-sm font-semibold text-green-600 hover:text-green-700 col-span-2 flex items-center justify-center gap-1"
+              className="text-center text-sm font-semibold text-green-600 hover:text-green-700 flex items-center justify-center gap-1"
             >
               {strokeCount > 0 ? strokeCount : '-'}
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -288,14 +288,14 @@ function PointSelectorDialog({
   const [selectedPoint, setSelectedPoint] = useState(currentPoint);
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-sm w-full">
         <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold">{t('editPoint').replace('{hole}', holeNumber)}</h2>
+          <h2 className="text-lg font-semibold">{t('editPoint', { hole: holeNumber })}</h2>
         </div>
         <div className="p-6">
           <p className="text-xs text-gray-600 mb-6">
-            {t('parHoleHandicapPoint').replace('{par}', par.toString())}
+            {t('parHoleHandicapPoint', { par: String(par) })}
           </p>
           <div className="flex items-center justify-center gap-4 mb-6">
             <button
@@ -448,13 +448,13 @@ function HandicapStrokeDialog({
   const players = getPlayers();
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] flex flex-col">
         <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold">{t('handicapStrokes').replace('{hole}', holeNumber)}</h2>
+          <h2 className="text-lg font-semibold">{t('handicapStrokes', { hole: holeNumber })}</h2>
         </div>
         <div className="flex-1 overflow-y-auto p-4">
-          <p className="text-xs text-gray-600 mb-4">{t('parTapPlayer').replace('{par}', par.toString())}</p>
+          <p className="text-xs text-gray-600 mb-4">{t('parTapPlayer', { par: String(par) })}</p>
 
           {/* Apply options */}
           <div className="mb-4 space-y-2">
@@ -480,7 +480,7 @@ function HandicapStrokeDialog({
                 }}
                 className="rounded"
               />
-              <span>{t('applyToAllParHoles').replace('{par}', par.toString())}</span>
+              <span>{t('applyToAllParHoles', { par: String(par) })}</span>
             </label>
           </div>
 
@@ -513,7 +513,7 @@ function HandicapStrokeDialog({
 
       {/* Stroke Picker Dialog */}
       {showStrokePicker && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[60] p-4">
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[60] p-4">
           <div className="bg-white rounded-lg shadow-xl max-w-sm w-full">
             <div className="px-6 py-4 border-b border-gray-200">
               <h3 className="text-lg font-semibold">{showStrokePicker.playerName}</h3>

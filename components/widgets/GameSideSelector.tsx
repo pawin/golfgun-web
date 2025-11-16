@@ -289,7 +289,7 @@ export default function GameSideSelector({
 
       {/* Add Player Dialog */}
       {showAddDialog && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-50">
+        <div className="fixed inset-0 bg-black/80 flex items-end justify-center z-50">
           <div className="bg-white rounded-t-xl shadow-xl w-full max-w-md max-h-[80vh] flex flex-col">
             <div className="px-6 py-4 border-b border-gray-200">
               <h2 className="text-lg font-semibold">
@@ -338,7 +338,7 @@ export default function GameSideSelector({
 
       {/* Change Player Dialog */}
       {showChangeDialog && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-50">
+        <div className="fixed inset-0 bg-black/80 flex items-end justify-center z-50">
           <div className="bg-white rounded-t-xl shadow-xl w-full max-w-md max-h-[80vh] flex flex-col">
             <div className="px-6 py-4 border-b border-gray-200">
               <h2 className="text-lg font-semibold">{t('editPlayer')}</h2>

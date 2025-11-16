@@ -54,7 +54,7 @@ export default function GameScoreMultiplier({
     label: string;
     description: string;
     value: number;
-    color: string;
+    color: string; // expects CSS variable e.g., 'var(--score-birdie)'
     onTap: () => void;
   }) => (
     <div
@@ -62,7 +62,8 @@ export default function GameScoreMultiplier({
       className="mb-2 p-4 rounded-lg border-2 cursor-pointer hover:bg-gray-50"
       style={{
         borderColor: color,
-        backgroundColor: `${color}08`,
+        // Subtle tinted background from the score color
+        backgroundColor: `color-mix(in srgb, ${color} 8%, transparent)`,
       }}
     >
       <div className="flex items-center gap-4">
@@ -102,7 +103,7 @@ export default function GameScoreMultiplier({
         label: t('birdie'),
         description: t('birdieDescription'),
         value: birdieMultiplier,
-        color: '#ef4444',
+        color: 'var(--score-birdie)',
         onTap: () => {
           showMultiplierPicker(t('selectBirdieMultiplier'), birdieMultiplier, (value) => {
             setBirdieMultiplier(value);
@@ -115,7 +116,7 @@ export default function GameScoreMultiplier({
         label: t('eagle'),
         description: t('eagleDescription'),
         value: eagleMultiplier,
-        color: '#f97316',
+        color: 'var(--score-eagle)',
         onTap: () => {
           showMultiplierPicker(t('selectEagleMultiplier'), eagleMultiplier, (value) => {
             setEagleMultiplier(value);
@@ -128,7 +129,7 @@ export default function GameScoreMultiplier({
         label: t('albatross'),
         description: t('albatrossDescription'),
         value: albatrossMultiplier,
-        color: '#ec4899',
+        color: 'var(--score-albatross)',
         onTap: () => {
           showMultiplierPicker(t('selectAlbatrossMultiplier'), albatrossMultiplier, (value) => {
             setAlbatrossMultiplier(value);
@@ -141,7 +142,7 @@ export default function GameScoreMultiplier({
         label: t('holeInOne'),
         description: t('holeInOneDescription'),
         value: holeInOneMultiplier,
-        color: '#a855f7',
+        color: 'var(--score-hole-in-one)',
         onTap: () => {
           showMultiplierPicker(t('selectHoleInOneMultiplier'), holeInOneMultiplier, (value) => {
             setHoleInOneMultiplier(value);
@@ -151,13 +152,13 @@ export default function GameScoreMultiplier({
       })}
 
       {showPicker && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] flex flex-col">
             <div className="px-6 py-4 border-b border-gray-200">
               <h2 className="text-lg font-semibold">{showPicker.title}</h2>
             </div>
             <div className="flex-1 overflow-y-auto p-4">
-              <div className="grid grid-cols-6 gap-2">
+              <div className="grid grid-cols-5 gap-2">
                 {Array.from({ length: 30 }, (_, i) => i + 1).map((value) => {
                   const isSelected = value === showPicker.currentValue;
                   return (

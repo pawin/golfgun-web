@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGolfBall, faChartLine, faTrophy, faCalendar, faMapMarkerAlt, faBullseye, faWater, faChartBar, faSync, faRedo, faFlag } from '@fortawesome/free-solid-svg-icons';
+import { faGolfBall, faChartLine, faTrophy, faCalendar, faMapMarkerAlt, faBullseye, faWater, faChartBar, faFlag } from '@fortawesome/free-solid-svg-icons';
 import { auth } from '@/lib/firebase/config';
 import { roundService } from '@/lib/services/roundService';
 import { Round, calculateGir, roundScorecardBridge, roundIsFinished } from '@/lib/models/round';
@@ -98,13 +98,6 @@ export default function StatsTab() {
     <div className="min-h-screen bg-gray-50 pb-20">
       <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
         <h1 className="text-xl font-semibold">{t('statisticsTitle')}</h1>
-        <button
-          onClick={loadStats}
-          className="text-green-600 hover:text-green-700 text-sm font-medium"
-          disabled={isLoading}
-        >
-          <FontAwesomeIcon icon={isLoading ? faSync : faRedo} className={isLoading ? 'animate-spin' : ''} />
-        </button>
       </div>
 
       <div className="p-4 space-y-6">
