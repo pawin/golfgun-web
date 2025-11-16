@@ -15,6 +15,8 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faShareNodes, faUserPlus } from '@fortawesome/free-solid-svg-icons';
 
 interface AddPlayersDialogProps {
   round: Round;
@@ -263,9 +265,7 @@ export default function AddPlayersDialog({
               className="flex-1"
               onClick={onShare}
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-              </svg>
+              <FontAwesomeIcon icon={faShareNodes} className="w-5 h-5" />
               {t('shareUrl') || 'Share URL'}
             </Button>
             <Button
@@ -273,9 +273,7 @@ export default function AddPlayersDialog({
               className="flex-1"
               onClick={onAddGuest}
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-              </svg>
+              <FontAwesomeIcon icon={faUserPlus} className="w-5 h-5" />
               {t('addGuest') || 'Add Guest'}
             </Button>
           </div>

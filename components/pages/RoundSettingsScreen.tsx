@@ -5,6 +5,7 @@ import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import { auth } from '@/lib/firebase/config';
 import { roundService } from '@/lib/services/roundService';
 import { spinnerService } from '@/lib/services/spinnerService';
@@ -202,7 +203,7 @@ export default function RoundSettingsScreen() {
         const slope = typeof frontTee.slope === 'number' ? String(frontTee.slope) : '-';
         rows.push(
           <div key="front" className="flex items-center gap-4">
-            <div className="w-7 h-7 rounded-full border" style={{ backgroundColor: color }} />
+            <div className="w-7 h-7 rounded-full border-2 border-black" style={{ backgroundColor: color }} />
             <div className="flex-1 min-w-0">
               <div className="text-sm">{`${frontName} — ${t('front9')}`}</div>
               <div className="text-xs text-muted-foreground">
@@ -222,7 +223,7 @@ export default function RoundSettingsScreen() {
         const slope = typeof backTee.slope === 'number' ? String(backTee.slope) : '-';
         rows.push(
           <div key="back" className="flex items-center gap-4">
-            <div className="w-7 h-7 rounded-full border" style={{ backgroundColor: color }} />
+            <div className="w-7 h-7 rounded-full border-2 border-black" style={{ backgroundColor: color }} />
             <div className="flex-1 min-w-0">
               <div className="text-sm">{`${backName} — ${t('back9')}`}</div>
               <div className="text-xs text-muted-foreground">
@@ -260,7 +261,7 @@ export default function RoundSettingsScreen() {
     const title = sc?.name?.length ? sc.name : round.course.name;
     return (
       <div className="flex items-center gap-4">
-        <div className="w-7 h-7 rounded-full border" style={{ backgroundColor: badgeColor }} />
+        <div className="w-7 h-7 rounded-full border-2 border-black" style={{ backgroundColor: badgeColor }} />
         <div className="flex-1 min-w-0">
           <div className="text-sm">{title}</div>
           <div className="text-xs text-muted-foreground">{names} • {details}</div>
@@ -317,9 +318,7 @@ export default function RoundSettingsScreen() {
                 onClick={() => setShowTeeboxSelector(true)}
                 className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-muted hover:bg-accent/20 text-sm"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5h2M4 7h16M4 12h16M4 17h16" />
-                </svg>
+                <FontAwesomeIcon icon={faPenToSquare} className="w-4 h-4" />
                 {t('edit')}
               </button>
             </div>
