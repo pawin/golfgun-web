@@ -32,6 +32,12 @@ export default function AddPlayerMenu({
   const locale = useLocale();
 
   const isMember = roundIsMember(round, currentUserId);
+  const isEnded = !!round.endedAt;
+
+  // If round is ended, hide join/invite actions
+  if (isEnded) {
+    return null;
+  }
 
   const handleJoinRound = async () => {
     if (isJoining) return;
@@ -123,7 +129,7 @@ export default function AddPlayerMenu({
         {isJoining ? (
           <div className="w-4 h-4 border-2 border-muted-foreground border-t-foreground rounded-full animate-spin" />
         ) : (
-          <FontAwesomeIcon icon={faUserCheck} />
+          <FontAwesomeIcon icon={faUserPlus} />
         )}
       </Button>
     );

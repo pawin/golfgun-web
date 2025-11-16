@@ -10,6 +10,7 @@ import { userService } from '@/lib/services/userService';
 import { useLocale } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import Image from 'next/image';
 
 export default function AuthScreen() {
   const t = useTranslations();
@@ -146,9 +147,14 @@ export default function AuthScreen() {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Logo */}
           <div className="flex justify-center mb-6">
-            <div className="w-40 h-40 bg-primary rounded-full flex items-center justify-center">
-              <span className="text-primary-foreground text-4xl font-bold">GG</span>
-            </div>
+            <Image
+              src="/golfgun.png"
+              alt="Golfgun"
+              width={160}
+              height={160}
+              priority
+              className="rounded-full"
+            />
           </div>
 
           {/* Title */}

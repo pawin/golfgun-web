@@ -10,6 +10,7 @@ import { auth, db } from '@/lib/firebase/config';
 import { sanitizeUsername } from '@/lib/utils/validator';
 import { useLocale } from 'next-intl';
 import { userService } from '@/lib/services/userService';
+import Image from 'next/image';
 
 export default function UsernameScreen() {
   const t = useTranslations();
@@ -121,9 +122,14 @@ export default function UsernameScreen() {
       <div className="max-w-md w-full space-y-8">
         {/* Logo */}
         <div className="flex justify-center">
-          <div className="w-40 h-40 bg-primary rounded-full flex items-center justify-center">
-            <span className="text-primary-foreground text-4xl font-bold">GG</span>
-          </div>
+          <Image
+            src="/golfgun.png"
+            alt="Golfgun"
+            width={160}
+            height={160}
+            priority
+            className="rounded-full"
+          />
         </div>
 
         {/* Title */}
