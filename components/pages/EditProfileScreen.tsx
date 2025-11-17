@@ -33,8 +33,10 @@ export default function EditProfileScreen() {
     if (!user) return;
     try {
       const userData = await userService.getUserById(user.uid);
-      setAppUser(userData);
-      setName(userData.name);
+      if (userData !== null && userData !== undefined) {
+        setAppUser(userData);
+        setName(userData.name);
+      }
     } catch (e) {
       console.error('Failed to load user:', e);
     }
@@ -98,7 +100,10 @@ export default function EditProfileScreen() {
   }
 
   const displayImage = imageBytes
-    ? URL.createObjectURL(new Blob([imageBytes], { type: 'image/jpeg' }))
+    ? URL.createObjectURL(
+        // @ts-ignore - Uint8Array works with Blob constructor (same pattern used in image_helper.ts)
+        new Blob([imageBytes], { type: 'image/jpeg' })
+      )
     : appUser.pictureUrl;
 
   return (
