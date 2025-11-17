@@ -35,15 +35,43 @@ export function handleRoute(
   slug: string[],
   searchParams: Record<string, string | string[] | undefined> = {}
 ): RouteHandler {
+  let effectiveSlug = slug;
+
+  const liffStateParam = searchParams['liff.state'];
+  
+  const liffState = Array.isArray(liffStateParam)
+    ? liffStateParam[0]
+    : liffStateParam;
+
+  if (liffState) {
+    try {
+      const decodedState = decodeURIComponent(liffState);
+      const normalizedState = decodedState.startsWith('/')
+        ? decodedState.slice(1)
+        : decodedState;
+      const liffSlug = normalizedState.split('/').filter(Boolean);
+
+      if (liffSlug.length > 0) {
+        effectiveSlug = liffSlug;
+      }
+      console.log('effectiveSlug', effectiveSlug);
+    } catch (error) {
+      console.warn('Failed to parse liff.state parameter', error);
+    }
+  }
+
   // Handle root path
-  if (slug.length === 0 || (slug.length === 1 && slug[0] === '')) {
+  if (
+    effectiveSlug.length === 0 ||
+    (effectiveSlug.length === 1 && effectiveSlug[0] === '')
+  ) {
     return {
       component: <HomePage />,
       params: {},
     };
   }
 
-  const [first, second, third, ...rest] = slug;
+  const [first, second, third, ...rest] = effectiveSlug;
 
   // Handle /rounds
   if (first === 'rounds' && !second) {
