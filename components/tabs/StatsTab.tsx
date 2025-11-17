@@ -133,26 +133,26 @@ function SummarySection({ stats }: { stats: RoundStatistics }) {
     <div className="bg-white border border-gray-200 rounded-lg p-4">
       <h2 className="text-lg font-bold mb-4">{t('summary')}</h2>
       <div className="space-y-3">
-        <StatRow icon={faGolfBall} label={t('totalRounds')} value={stats.totalRounds.toString()} iconColorClass="text-green-600" />
+        <StatRow icon={faGolfBall} label={t('totalRounds')} value={stats.totalRounds.toString()} iconColorClass="text-[color:var(--rough)]" />
         {stats.totalRounds > 0 && (
           <>
             <StatRow
               icon={faChartLine}
               label={t('averageScore')}
               value={stats.averageScore > 0 ? stats.averageScore.toFixed(1) : t('dash')}
-              iconColorClass="text-green-600"
+              iconColorClass="text-[color:var(--rough)]"
             />
             {stats.bestScore !== 0 && (
               <StatRow
                 icon={faTrophy}
                 label={t('bestScore')}
                 value={formatBestScore(stats.bestTotalScore, stats.bestScore)}
-                iconColorClass="text-green-600"
+                iconColorClass="text-[color:var(--rough)]"
               />
             )}
-            <StatRow icon={faCalendar} label={t('thisMonth')} value={stats.roundsThisMonth.toString()} iconColorClass="text-green-600" />
+            <StatRow icon={faCalendar} label={t('thisMonth')} value={stats.roundsThisMonth.toString()} iconColorClass="text-[color:var(--rough)]" />
             {stats.mostPlayedCourse && (
-              <StatRow icon={faMapMarkerAlt} label={t('courses')} value={stats.mostPlayedCourse} iconColorClass="text-green-600" />
+              <StatRow icon={faMapMarkerAlt} label={t('courses')} value={stats.mostPlayedCourse} iconColorClass="text-[color:var(--rough)]" />
             )}
           </>
         )}

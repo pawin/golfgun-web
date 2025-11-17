@@ -11,7 +11,7 @@ import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase/config';
 import { userService } from '@/lib/services/userService';
 import { AppUser } from '@/lib/models/appUser';
-import { getInitials } from '@/lib/utils/validator';
+import { getInitials, colorFromName } from '@/lib/utils/validator';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { AppIconHomeLink } from '@/components/ui/AppIconHomeLink';
 
@@ -127,7 +127,7 @@ export default function MoreTab() {
             >
               <Avatar className="w-16 h-16 flex-shrink-0">
                 {appUser.pictureUrl ? <AvatarImage src={appUser.pictureUrl} alt={appUser.name} /> : null}
-                <AvatarFallback className="text-white font-bold text-lg" style={{ backgroundColor: 'var(--color-chart-1)' }}>
+                <AvatarFallback className="text-white font-bold text-lg" style={{ backgroundColor: colorFromName(appUser.name) }}>
                   {getInitials(appUser.name)}
                 </AvatarFallback>
               </Avatar>

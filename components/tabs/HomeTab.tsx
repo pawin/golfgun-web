@@ -131,10 +131,6 @@ export default function HomeTab() {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      <div className="sticky top-0 bg-background border-b border-border px-4 py-3 flex items-center gap-3 z-10">
-        <AppIconHomeLink />
-        <h1 className="text-xl font-semibold">{t('home')}</h1>
-      </div>
       <div className="p-4 space-y-6">
         {/* Welcome Section */}
         <div>
@@ -201,13 +197,13 @@ function ActiveRoundsSection({
 
   return (
     <div className="space-y-3">
-      <Card>
+      <Card className="bg-[color:var(--rough)] text-[color:var(--fairway-foreground)] border-none shadow-md">
         <CardContent className="p-4">
           <div className="flex items-center gap-3">
-            <FontAwesomeIcon icon={faPlay} className="text-2xl text-primary" />
+            <FontAwesomeIcon icon={faPlay} className="text-2xl text-[color:var(--fairway-foreground)]" />
             <div className="flex-1">
-              <h2 className="text-lg font-bold text-primary">{t('activeRounds')}</h2>
-              <p className="text-sm text-muted-foreground">
+              <h2 className="text-lg font-bold text-[color:var(--fairway-foreground)]">{t('activeRounds')}</h2>
+              <p className="text-sm text-[color:var(--fairway-foreground)] opacity-80">
                 {t('roundsInProgress', { count: rounds.length })}
               </p>
             </div>
