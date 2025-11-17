@@ -415,7 +415,7 @@ function SpinnerModal({
                   const bgColor = colorFromName(displayName);
                   const timestamp = entry.createdAt;
                   const subtitle = timestamp
-                    ? `${entry.userName} · ${DateFormatter.format(timestamp, AppDateFormatStyle.short, intlLocale)} ${DateFormatter.format(timestamp, AppDateFormatStyle.time, intlLocale)}`
+                    ? ""//`${entry.userName} · ${DateFormatter.format(timestamp, AppDateFormatStyle.short, intlLocale)} ${DateFormatter.format(timestamp, AppDateFormatStyle.time, intlLocale)}`
                     : entry.userName;
                   const opacity = index === 0 ? 1.0 : 0.5;
 
