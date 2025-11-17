@@ -224,9 +224,9 @@ export default function ScorecardTable({
 
   return (
     <>
-      <div className="relative">
+      <div className="relative px-[6px]">
         {/* Shared vertical scroll container to keep left and right tables aligned */}
-        <div className="flex overflow-y-auto">
+        <div className="flex overflow-y-auto overscroll-none" style={{ WebkitOverflowScrolling: 'auto' }}>
           {/* Left table: labels + player names */}
           <div className="shrink-0">
             <table className="table-fixed divide-y divide-border">
@@ -270,7 +270,7 @@ export default function ScorecardTable({
           </div>
 
           {/* Right table: scrollable horizontally */}
-          <div className="overflow-x-auto border-r border-border">
+          <div className="overflow-x-auto overscroll-none border-r border-border" style={{ WebkitOverflowScrolling: 'auto' }}>
             <table className="table-fixed divide-y divide-border">
               <thead>
                 {/* Header row (Holes) */}
