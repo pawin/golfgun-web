@@ -49,16 +49,28 @@ export class RoundService {
     return rounds;
   }
 
-  watchRound(roundId: string, callback: (round: Round) => void): () => void {
+  watchRound(
+    roundId: string,
+    callback: (round: Round) => void,
+    onError?: (error: Error) => void
+  ): () => void {
     const docRef = doc(db, 'rounds', roundId);
     
     return onSnapshot(docRef, async (snapshot) => {
       if (!snapshot.exists()) {
-        throw new Error('Round not found');
+        const error = new Error('Round not found');
+        onError?.(error);
+        return;
       }
 
       const data = snapshot.data();
       const round = roundFromFirestore(data, snapshot.id);
+
+      if (round.deletedAt) {
+        const error = new Error('Round not found');
+        onError?.(error);
+        return;
+      }
 
       // Prefetch users in background (non-blocking)
       const allUserIds = [...round.memberIds, round.adminId];
@@ -68,7 +80,8 @@ export class RoundService {
 
       callback(round);
     }, (error) => {
-      throw error;
+      const err = error instanceof Error ? error : new Error(String(error));
+      onError?.(err);
     });
   }
 

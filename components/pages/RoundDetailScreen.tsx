@@ -45,34 +45,45 @@ export default function RoundDetailScreen() {
   useEffect(() => {
     if (!roundId) return;
 
-    const unsubscribe = roundService.watchRound(roundId, (updatedRound) => {
-      setRound(updatedRound);
-      setLoadingRound(false);
-      setError(null);
+    setLoadingRound(true);
+    setError(null);
 
-      // Fetch users
-      const allUserIds = new Set<string>();
-      allUserIds.add(updatedRound.adminId);
-      updatedRound.memberIds.forEach((id) => allUserIds.add(id));
+    const unsubscribe = roundService.watchRound(
+      roundId,
+      (updatedRound) => {
+        setRound(updatedRound);
+        setLoadingRound(false);
+        setError(null);
 
-      if (allUserIds.size > 0) {
-        userService.getUsersByIds(Array.from(allUserIds)).then((fetchedUsers) => {
-          setUsers(fetchedUsers);
-        });
+        // Fetch users
+        const allUserIds = new Set<string>();
+        allUserIds.add(updatedRound.adminId);
+        updatedRound.memberIds.forEach((id) => allUserIds.add(id));
+
+        if (allUserIds.size > 0) {
+          userService.getUsersByIds(Array.from(allUserIds)).then((fetchedUsers) => {
+            setUsers(fetchedUsers);
+          });
+        }
+
+        // Check if teebox dialog should be shown
+        if (
+          updatedRound.version === '2' &&
+          !teeboxDialogShown &&
+          user?.uid &&
+          updatedRound.memberIds.includes(user.uid) &&
+          (!updatedRound.userTeeboxes[user.uid] || updatedRound.userTeeboxes[user.uid].length === 0)
+        ) {
+          setShowTeeboxDialog(true);
+          setTeeboxDialogShown(true);
+        }
+      },
+      (err) => {
+        setRound(null);
+        setLoadingRound(false);
+        setError(t('roundNotFound'));
       }
-
-      // Check if teebox dialog should be shown
-      if (
-        updatedRound.version === '2' &&
-        !teeboxDialogShown &&
-        user?.uid &&
-        updatedRound.memberIds.includes(user.uid) &&
-        (!updatedRound.userTeeboxes[user.uid] || updatedRound.userTeeboxes[user.uid].length === 0)
-      ) {
-        setShowTeeboxDialog(true);
-        setTeeboxDialogShown(true);
-      }
-    });
+    );
 
     return () => unsubscribe();
   }, [roundId, user?.uid, teeboxDialogShown]);
@@ -105,8 +116,9 @@ export default function RoundDetailScreen() {
         <div className="sticky top-0 bg-background border-b border-border px-4 py-3">
           <h1 className="text-xl font-semibold">{t('round')}</h1>
         </div>
-        <div className="flex items-center justify-center py-20">
-          <p className="text-destructive">{error || t('roundNotFound')}</p>
+        <div className="flex flex-col items-center justify-center gap-4 py-20">
+          <p className="text-destructive text-center">{error || t('roundNotFound')}</p>
+          <Button onClick={() => router.push(`/${locale}`)}>{t('backToHome')}</Button>
         </div>
       </div>
     );

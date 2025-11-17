@@ -43,22 +43,29 @@ export default function RoundSettingsScreen() {
   useEffect(() => {
     if (!roundId || !user) return;
 
-    const unsubscribe = roundService.watchRound(roundId, async (updatedRound) => {
-      setRound(updatedRound);
+    const unsubscribe = roundService.watchRound(
+      roundId,
+      async (updatedRound) => {
+        setRound(updatedRound);
 
-      // Fetch users
-      const allUserIds = new Set<string>();
-      allUserIds.add(updatedRound.adminId);
-      updatedRound.memberIds.forEach((id) => allUserIds.add(id));
+        // Fetch users
+        const allUserIds = new Set<string>();
+        allUserIds.add(updatedRound.adminId);
+        updatedRound.memberIds.forEach((id) => allUserIds.add(id));
 
-      if (allUserIds.size > 0) {
-        const fetchedUsers = await userService.getUsersByIds(Array.from(allUserIds));
-        setUsers(fetchedUsers);
+        if (allUserIds.size > 0) {
+          const fetchedUsers = await userService.getUsersByIds(Array.from(allUserIds));
+          setUsers(fetchedUsers);
+        }
+      },
+      (err) => {
+        // Navigate back if round not found
+        router.replace(`/${locale}`);
       }
-    });
+    );
 
     return () => unsubscribe();
-  }, [roundId, user]);
+  }, [roundId, user, router, locale]);
 
   const handleRemoveMember = async (memberId: string) => {
     if (!roundId || !round) return;
