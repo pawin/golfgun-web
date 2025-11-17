@@ -232,18 +232,18 @@ export default function ScorecardTable({
             <table className="table-fixed divide-y divide-border">
               <thead>
                 <tr className="bg-accent text-accent-foreground">
-                  <th className="w-[80px] min-w-[80px] max-w-[80px] h-[40px] px-2 py-2 text-xs font-bold bg-accent border border-border text-center">
-                    {t('hole')}
+                  <th className="w-[80px] min-w-[80px] max-w-[80px] h-[40px] px-2 py-2 text-base font-bold bg-accent border border-border text-center">
+                    Hole
                   </th>
                 </tr>
                 <tr className="bg-muted">
-                  <th className="w-[80px] min-w-[80px] max-w-[80px] h-[40px] px-2 py-2 text-xs font-bold bg-muted border border-border text-center">
-                    {t('handicapShort') || 'HDCP'}
+                  <th className="w-[80px] min-w-[80px] max-w-[80px] h-[40px] px-2 py-2 text-base font-bold bg-muted border border-border text-center">
+                    HDCP
                   </th>
                 </tr>
                 <tr className="bg-accent text-accent-foreground">
-                  <th className="w-[80px] min-w-[80px] max-w-[80px] h-[40px] px-2 py-2 text-xs font-bold bg-accent border border-border text-center">
-                    {t('par')}
+                  <th className="w-[80px] min-w-[80px] max-w-[80px] h-[40px] px-2 py-2 text-base font-bold bg-accent border border-border text-center">
+                    Par
                   </th>
                 </tr>
               </thead>
@@ -255,7 +255,7 @@ export default function ScorecardTable({
                     <tr key={memberId} className="hover:bg-accent/20">
                       <td
                         onClick={(e) => handleNameClick(memberId, e)}
-                        className="w-[80px] min-w-[80px] max-w-[80px] h-[40px] px-2 py-2 text-xs font-semibold bg-card border border-border text-center cursor-pointer hover:underline"
+                        className="w-[80px] min-w-[80px] max-w-[80px] h-[40px] px-2 py-2 text-base font-bold bg-card border border-border text-center cursor-pointer hover:underline"
                         style={{ color: roundColorForPlayer(round, memberId) }}
                       >
                         <span className="block truncate whitespace-nowrap overflow-hidden" title={member.name}>
@@ -281,7 +281,7 @@ export default function ScorecardTable({
                     return (
                       <th
                         key={idx}
-                        className={`h-[40px] px-2 py-2 text-xs font-bold text-center border border-border ${idx === 0 ? 'border-l-0' : ''} ${idx === holes.length - 1 ? 'border-r-0' : ''} ${
+                        className={`h-[40px] px-2 py-2 text-base font-bold text-center border border-border ${idx === 0 ? 'border-l-0' : ''} ${idx === holes.length - 1 ? 'border-r-0' : ''} ${
                           isSummary ? 'w-[50px] min-w-[60px] max-w-[60px] bg-accent/80' : 'w-[40px] min-w-[40px] max-w-[40px]'
                         }`}
                       >
@@ -298,7 +298,7 @@ export default function ScorecardTable({
                     return (
                       <td
                         key={idx}
-                        className={`h-[40px] px-2 py-2 text-xs font-bold text-center border border-border ${idx === 0 ? 'border-l-0' : ''} ${idx === handicaps.length - 1 ? 'border-r-0' : ''} ${
+                        className={`h-[40px] px-2 py-2 text-base font-bold text-center border border-border ${idx === 0 ? 'border-l-0' : ''} ${idx === handicaps.length - 1 ? 'border-r-0' : ''} ${
                           isSummary ? 'w-[60px] min-w-[60px] max-w-[60px]' : 'w-[40px] min-w-[40px] max-w-[40px]'
                         }`}
                       >
@@ -316,7 +316,7 @@ export default function ScorecardTable({
                     return (
                       <td
                         key={idx}
-                        className={`h-[40px] px-2 py-2 text-xs font-bold text-center border border-border ${idx === 0 ? 'border-l-0' : ''} ${idx === holes.length - 1 ? 'border-r-0' : ''} ${
+                        className={`h-[40px] px-2 py-2 text-base font-bold text-center border border-border ${idx === 0 ? 'border-l-0' : ''} ${idx === holes.length - 1 ? 'border-r-0' : ''} ${
                           isSummary ? 'w-[60px] min-w-[60px] max-w-[60px] bg-accent/80' : 'w-[40px] min-w-[40px] max-w-[40px]'
                         }`}
                       >
@@ -358,7 +358,7 @@ export default function ScorecardTable({
                           return (
                             <td
                               key={idx}
-                              className={`w-[60px] min-w-[60px] max-w-[60px] h-[40px] px-2 py-2 text-sm font-bold text-center bg-muted border border-border ${idx === 0 ? 'border-l-0' : ''} ${idx === holes.length - 1 ? 'border-r-0' : ''}`}
+                              className={`w-[60px] min-w-[60px] max-w-[60px] h-[40px] px-2 py-2 text-base font-bold text-center bg-muted border border-border ${idx === 0 ? 'border-l-0' : ''} ${idx === holes.length - 1 ? 'border-r-0' : ''}`}
                             >
                               {displayValue}
                             </td>
@@ -400,7 +400,7 @@ export default function ScorecardTable({
                             onClick={() =>
                               canEditThis && handleScoreClick(memberId, holeKey, rawScore)
                             }
-                                className={`w-[40px] min-w-[40px] max-w-[40px] h-[40px] px-2 py-2 text-sm font-bold text-center relative border border-border ${idx === 0 ? 'border-l-0' : ''} ${idx === holes.length - 1 ? 'border-r-0' : ''} ${
+                                className={`w-[40px] min-w-[40px] max-w-[40px] h-[40px] px-2 py-2 text-base font-bold text-center relative border border-border ${idx === 0 ? 'border-l-0' : ''} ${idx === holes.length - 1 ? 'border-r-0' : ''} ${
                               canEditThis
                                 ? 'cursor-pointer hover:opacity-80'
                                 : 'cursor-default'
