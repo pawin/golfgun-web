@@ -49,7 +49,7 @@ export class LocaleStore {
   async getLanguage(userId: string): Promise<string> {
     try {
       const user = await userService.getUserById(userId);
-      return user.language || 'th';
+      return user?.language || 'th';
     } catch (error) {
       console.error('Error getting user language:', error);
       return 'th'; // Default to Thai

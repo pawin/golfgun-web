@@ -432,7 +432,7 @@ export default function GameSettingsScreen({
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
         <h1 className="text-lg font-semibold">{t('gameSettings')}</h1>
-        <button
+        {/* <button
           onClick={() => {
             if (onClose) {
               onClose();
@@ -445,7 +445,7 @@ export default function GameSettingsScreen({
           title={t('close')}
         >
           <FontAwesomeIcon icon={faXmark} className="w-5 h-5" />
-        </button>
+        </button> */}
       </div>
 
       {/* Content */}

@@ -109,7 +109,7 @@ export default function StartRoundScreen() {
         scorecards
       );
 
-      router.push(`/rounds/${round.id}`);
+      router.replace(`/rounds/${round.id}`);
     } catch (e) {
       setError((e as Error).message);
       setIsStarting(false);

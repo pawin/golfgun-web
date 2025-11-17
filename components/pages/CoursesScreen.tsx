@@ -86,7 +86,7 @@ export default function CoursesScreen() {
   }
 
   const handleCourseClick = (course: Course) => {
-    router.push(`/start-round?courseId=${course.id}`);
+    router.replace(`/start-round?courseId=${course.id}`);
   };
 
   return (
