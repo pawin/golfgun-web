@@ -34,7 +34,8 @@ export class LocaleStore {
       });
       
       // Update the user profile cache if available
-      await userService.getUserById(userId, true); // Force refresh
+      userService.invalidateUserCache(userId); // Force refresh by invalidating cache
+      await userService.getUserById(userId);
     } catch (error) {
       console.error('Error updating user language:', error);
       throw error;

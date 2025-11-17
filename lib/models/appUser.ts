@@ -19,9 +19,9 @@ export function appUserFromFirestore(data: any, id: string): AppUser {
     email: (data.email ?? '').toString(),
     name: (data.name ?? '').toString(),
     pictureUrl: data.pictureUrl?.toString(),
-    createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : null,
-    lastLoginAt: data.lastLoginAt instanceof Timestamp ? data.lastLoginAt.toDate() : null,
-    updatedAt: data.updatedAt instanceof Timestamp ? data.updatedAt.toDate() : null,
+    createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : undefined,
+    lastLoginAt: data.lastLoginAt instanceof Timestamp ? data.lastLoginAt.toDate() : undefined,
+    updatedAt: data.updatedAt instanceof Timestamp ? data.updatedAt.toDate() : undefined,
     registered: data.registered ?? false,
     role: data.role?.toString(),
     language: (data.language ?? 'th').toString(),
@@ -73,13 +73,13 @@ export function appUserToFirestore(user: AppUser): any {
   };
 }
 
-function toDate(v: any): Date | null {
+function toDate(v: any): Date | undefined {
   if (v instanceof Timestamp) return v.toDate();
   if (typeof v === 'string') {
     const parsed = new Date(v);
-    return isNaN(parsed.getTime()) ? null : parsed;
+    return isNaN(parsed.getTime()) ? undefined : parsed;
   }
-  return null;
+  return undefined;
 }
 
 export function emptyAppUser(): AppUser {

@@ -44,9 +44,9 @@ export function friendshipFromFirestore(docSnap: { id: string; data(): any; exis
     userIds: rawUserIds,
     initiatorId: (data.initiatorId ?? '').toString(),
     status,
-    createdAt: toDate(data.createdAt) || undefined,
-    updatedAt: toDate(data.updatedAt) || undefined,
-    acceptedAt: toDate(data.acceptedAt) || undefined,
+    createdAt: toDate(data.createdAt),
+    updatedAt: toDate(data.updatedAt),
+    acceptedAt: toDate(data.acceptedAt),
     get isPending() {
       return this.status === FriendshipStatus.pending;
     },
@@ -68,12 +68,12 @@ export function friendshipFromFirestore(docSnap: { id: string; data(): any; exis
   return friendship;
 }
 
-function toDate(value: any): Date | null {
+function toDate(value: any): Date | undefined {
   if (value instanceof Timestamp) return value.toDate();
   if (typeof value === 'string') {
     const parsed = new Date(value);
-    return isNaN(parsed.getTime()) ? null : parsed;
+    return isNaN(parsed.getTime()) ? undefined : parsed;
   }
-  return null;
+  return undefined;
 }
 

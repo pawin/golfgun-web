@@ -98,14 +98,14 @@ export interface Round {
 }
 
 // Helper functions
-function toTimestamp(v: any): Date | null {
-  if (!v) return null;
+function toTimestamp(v: any): Date | undefined {
+  if (!v) return undefined;
   if (v instanceof Timestamp) return v.toDate();
   if (typeof v === 'string') {
     const parsed = new Date(v);
-    return isNaN(parsed.getTime()) ? null : parsed;
+    return isNaN(parsed.getTime()) ? undefined : parsed;
   }
-  return null;
+  return undefined;
 }
 
 function asMap(v: any): any {
@@ -264,8 +264,8 @@ export function roundFromFirestore(m: any, id: string): Round {
     course: courseFromMap(asMap(m?.course)),
     adminId: (m?.adminId ?? '').toString(),
     createdAt,
-    endedAt: endedAt || undefined,
-    deletedAt: toTimestamp(m?.deletedAt) || undefined,
+    endedAt,
+    deletedAt: toTimestamp(m?.deletedAt),
     memberIds,
     games: asListOfMap(m?.games).map(roundGameFromMap),
     score: parsedScore,

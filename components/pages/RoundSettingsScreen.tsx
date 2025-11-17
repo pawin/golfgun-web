@@ -349,7 +349,7 @@ export default function RoundSettingsScreen() {
         )}
 
         {/* Party Game Toggle */}
-        <div className="bg-card border border-border rounded-lg p-4">
+        {/* <div className="bg-card border border-border rounded-lg p-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium">{t('partyGameToggleTitle')}</p>
@@ -369,7 +369,7 @@ export default function RoundSettingsScreen() {
               </label>
             )}
           </div>
-        </div>
+        </div> */}
 
         {/* Members Section */}
         <div>

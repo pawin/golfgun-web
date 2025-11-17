@@ -27,13 +27,13 @@ export function spinnerEntryToMap(entry: SpinnerEntry): any {
   };
 }
 
-function toTimestamp(value: any): Date | null {
+function toTimestamp(value: any): Date | undefined {
   if (value instanceof Timestamp) return value.toDate();
   if (value instanceof Date) return value;
   if (typeof value === 'string') {
     const parsed = new Date(value);
-    return isNaN(parsed.getTime()) ? null : parsed;
+    return isNaN(parsed.getTime()) ? undefined : parsed;
   }
-  return null;
+  return undefined;
 }
 

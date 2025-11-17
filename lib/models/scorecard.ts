@@ -62,14 +62,14 @@ function numOrNull(v: any): number | null {
   return null;
 }
 
-function toDate(v: any): Date | null {
-  if (!v) return null;
+function toDate(v: any): Date | undefined {
+  if (!v) return undefined;
   if (v instanceof Timestamp) return v.toDate();
   if (typeof v === 'string') {
     const parsed = new Date(v);
-    return isNaN(parsed.getTime()) ? null : parsed;
+    return isNaN(parsed.getTime()) ? undefined : parsed;
   }
-  return null;
+  return undefined;
 }
 
 function asMap(v: any): any {

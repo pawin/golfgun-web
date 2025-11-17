@@ -220,11 +220,11 @@ export default function RoundDetailScreen() {
         />
 
         {/* Party Game Section */}
-        {round.partyGameEnabled && (
+        {/* {round.partyGameEnabled && (
           <div className="mt-4">
             <PartyGameSection round={round} currentUserId={user?.uid || ''} />
           </div>
-        )}
+        )} */}
 
         {/* Games Section */}
         <div className="mt-4">

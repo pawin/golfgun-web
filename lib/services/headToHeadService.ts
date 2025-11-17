@@ -6,6 +6,7 @@ import {
   RoundGameType,
   GameTeamSide,
   HorseOutcome,
+  HorseSegmentScore,
 } from './gameStatsService';
 
 export interface HeadToHeadStats {
@@ -170,8 +171,8 @@ export class HeadToHeadService {
             let myWins = 0;
             let otherWins = 0;
             function evaluateSegment(
-              mySegment: typeof myStats.front | undefined,
-              otherSegment: typeof otherStats.front | undefined
+              mySegment: HorseSegmentScore | undefined,
+              otherSegment: HorseSegmentScore | undefined
             ) {
               const bothEligible = segmentCounts(mySegment) && segmentCounts(otherSegment);
               if (!bothEligible) return;

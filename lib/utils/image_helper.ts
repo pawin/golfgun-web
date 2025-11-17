@@ -9,7 +9,7 @@ export async function resizeImageBytes(
   const { width = 2048, height = 2048 } = options;
 
   return new Promise((resolve, reject) => {
-    const blob = new Blob([imageBytes], { type: 'image/jpeg' });
+    const blob = new Blob([imageBytes as BlobPart], { type: 'image/jpeg' });
     const url = URL.createObjectURL(blob);
     const img = new Image();
 
@@ -62,7 +62,7 @@ export async function resizeAndCropImageBytes(
   const { size = 2048 } = options;
 
   return new Promise((resolve, reject) => {
-    const blob = new Blob([imageBytes], { type: 'image/jpeg' });
+    const blob = new Blob([imageBytes as BlobPart], { type: 'image/jpeg' });
     const url = URL.createObjectURL(blob);
     const img = new Image();
 
