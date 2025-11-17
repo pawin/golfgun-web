@@ -255,7 +255,7 @@ export default function ScorecardTable({
                     <tr key={memberId} className="hover:bg-accent/20">
                       <td
                         onClick={(e) => handleNameClick(memberId, e)}
-                        className="w-[80px] min-w-[80px] max-w-[80px] h-[40px] px-2 py-2 text-base font-bold bg-card border border-border text-center cursor-pointer hover:underline"
+                        className="w-[80px] min-w-[80px] max-w-[80px] h-[40px] px-2 py-2 text-sm font-bold bg-card border border-border text-center cursor-pointer hover:underline"
                         style={{ color: roundColorForPlayer(round, memberId) }}
                       >
                         <span className="block truncate whitespace-nowrap overflow-hidden" title={member.name}>
@@ -358,7 +358,7 @@ export default function ScorecardTable({
                           return (
                             <td
                               key={idx}
-                              className={`w-[60px] min-w-[60px] max-w-[60px] h-[40px] px-2 py-2 text-base font-bold text-center bg-muted border border-border ${idx === 0 ? 'border-l-0' : ''} ${idx === holes.length - 1 ? 'border-r-0' : ''}`}
+                              className={`w-[60px] min-w-[60px] max-w-[60px] h-[40px] px-2 py-2 text-sm font-bold text-center bg-muted border border-border ${idx === 0 ? 'border-l-0' : ''} ${idx === holes.length - 1 ? 'border-r-0' : ''}`}
                             >
                               {displayValue}
                             </td>
