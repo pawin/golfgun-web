@@ -311,7 +311,7 @@ export default function RoundSettingsScreen() {
       <div className="sticky top-0 bg-background border-b border-border px-4 py-3">
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-semibold">{t('roundSettings')}</h1>
-          {/* <button
+          <button
             aria-label="Close"
             onClick={() => {
               if (roundId) {
@@ -323,7 +323,7 @@ export default function RoundSettingsScreen() {
             className="inline-flex items-center justify-center w-9 h-9 rounded-md hover:bg-accent/20"
           >
             <FontAwesomeIcon icon={faXmark} className="w-5 h-5" />
-          </button> */}
+          </button>
         </div>
       </div>
 
