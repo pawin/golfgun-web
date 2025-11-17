@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter, useParams, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -18,12 +18,13 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { defaultWheelOptionsTh } from '@/lib/utils/party_game_defaults';
 import GameSettingsScreen from './GameSettingsScreen';
 import TeeboxSelector from '@/components/widgets/TeeboxSelector';
+import { useRouteParams } from '@/lib/contexts/RouteParamsContext';
 
 export default function RoundSettingsScreen() {
   const t = useTranslations();
   const router = useRouter();
   const locale = useLocale();
-  const params = useParams();
+  const routeParams = useRouteParams<{ id?: string }>();
   const searchParams = useSearchParams();
   const [user, loading] = useAuthState(auth);
   const [round, setRound] = useState<Round | null>(null);
@@ -36,12 +37,8 @@ export default function RoundSettingsScreen() {
   const gameId = searchParams?.get('gameId');
 
   useEffect(() => {
-    (async () => {
-      const resolvedParams = await params;
-      const id = resolvedParams?.id as string;
-      setRoundId(id);
-    })();
-  }, [params]);
+    setRoundId(routeParams.id ?? null);
+  }, [routeParams.id]);
 
   useEffect(() => {
     if (!roundId || !user) return;

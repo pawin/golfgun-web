@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -17,11 +16,12 @@ import { Friendship, FriendshipStatus } from '@/lib/models/friendship';
 import { getInitials } from '@/lib/utils/validator';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import RoundCardView from '@/components/widgets/RoundCardView';
+import { useRouteParams } from '@/lib/contexts/RouteParamsContext';
 
 export default function ProfileScreen() {
   const t = useTranslations();
   const locale = useLocale();
-  const params = useParams();
+  const routeParams = useRouteParams<{ userId?: string }>();
   const [user, loading] = useAuthState(auth);
   const [profileUser, setProfileUser] = useState<AppUser | null>(null);
   const [rounds, setRounds] = useState<Round[]>([]);
@@ -33,12 +33,8 @@ export default function ProfileScreen() {
   const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    (async () => {
-      const resolvedParams = await params;
-      const id = resolvedParams?.userId as string;
-      setUserId(id);
-    })();
-  }, [params]);
+    setUserId(routeParams.userId ?? null);
+  }, [routeParams.userId]);
 
   useEffect(() => {
     if (userId && user && !loading) {

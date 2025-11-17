@@ -2,6 +2,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { locales } from '@/i18n';
+import UsernameGate from '@/components/guards/UsernameGate';
 import '../globals.css';
 
 export function generateStaticParams() {
@@ -25,7 +26,7 @@ export default async function LocaleLayout({
 
   return (
     <NextIntlClientProvider messages={messages}>
-      {children}
+      <UsernameGate>{children}</UsernameGate>
     </NextIntlClientProvider>
   );
 }

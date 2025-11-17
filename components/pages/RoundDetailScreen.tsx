@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -20,12 +20,13 @@ import TeeboxSelector from '@/components/widgets/TeeboxSelector';
 import { useLocale } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import type { TeeboxRow } from '@/lib/models/scorecard';
+import { useRouteParams } from '@/lib/contexts/RouteParamsContext';
 
 export default function RoundDetailScreen() {
   const t = useTranslations();
   const router = useRouter();
   const locale = useLocale(); // Must be called at top level, before any conditional returns
-  const params = useParams();
+  const routeParams = useRouteParams<{ id?: string }>();
   const [user, loading] = useAuthState(auth);
   const [round, setRound] = useState<Round | null>(null);
   const [users, setUsers] = useState<Record<string, AppUser>>({});
@@ -38,16 +39,8 @@ export default function RoundDetailScreen() {
   const [roundId, setRoundId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (typeof params === 'object' && params !== null && 'id' in params) {
-      setRoundId(params.id as string);
-    } else {
-      // Handle async params
-      (async () => {
-        const resolvedParams = await params;
-        setRoundId(resolvedParams?.id as string);
-      })();
-    }
-  }, [params]);
+    setRoundId(routeParams.id ?? null);
+  }, [routeParams.id]);
 
   useEffect(() => {
     if (!roundId) return;
@@ -222,9 +215,6 @@ export default function RoundDetailScreen() {
             round={round}
             users={users}
             currentUserId={user?.uid || ''}
-            onAddGame={() => {
-              router.push(`/${locale}/rounds/${round.id}/settings`);
-            }}
             onGameTap={(game) => {
               router.push(`/${locale}/rounds/${round.id}/settings?gameId=${game.id}`);
             }}
@@ -243,5 +233,3 @@ export default function RoundDetailScreen() {
     </div>
   );
 }
-
-
