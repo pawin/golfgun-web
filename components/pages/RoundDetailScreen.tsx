@@ -21,6 +21,7 @@ import { useLocale } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import type { TeeboxRow } from '@/lib/models/scorecard';
 import { useRouteParams } from '@/lib/contexts/RouteParamsContext';
+import { AppIconHomeLink } from '@/components/ui/AppIconHomeLink';
 
 export default function RoundDetailScreen() {
   const t = useTranslations();
@@ -113,7 +114,8 @@ export default function RoundDetailScreen() {
   if (error || !round) {
     return (
       <div className="min-h-screen bg-background">
-        <div className="sticky top-0 bg-background border-b border-border px-4 py-3">
+        <div className="sticky top-0 bg-background border-b border-border px-4 py-3 flex items-center gap-3">
+          <AppIconHomeLink />
           <h1 className="text-xl font-semibold">{t('round')}</h1>
         </div>
         <div className="flex flex-col items-center justify-center gap-4 py-20">
@@ -163,7 +165,10 @@ export default function RoundDetailScreen() {
   return (
     <div className="min-h-screen bg-background">
       <div className="sticky top-0 bg-background border-b border-border px-4 py-3 flex items-center justify-between z-10">
-        <h1 className="text-lg font-semibold">{t('round')}</h1>
+        <div className="flex items-center gap-3 min-w-0">
+          <AppIconHomeLink />
+          <h1 className="text-lg font-semibold">{t('round')}</h1>
+        </div>
         <div className="flex items-center gap-2">
           <AddPlayerMenu
             roundId={round.id}

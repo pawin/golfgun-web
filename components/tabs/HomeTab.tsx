@@ -15,6 +15,7 @@ import RoundCardView from '@/components/widgets/RoundCardView';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AppIconHomeLink } from '@/components/ui/AppIconHomeLink';
 
 interface RoundStatistics {
   totalRounds: number;
@@ -130,6 +131,10 @@ export default function HomeTab() {
 
   return (
     <div className="min-h-screen bg-background pb-20">
+      <div className="sticky top-0 bg-background border-b border-border px-4 py-3 flex items-center gap-3 z-10">
+        <AppIconHomeLink />
+        <h1 className="text-xl font-semibold">{t('home')}</h1>
+      </div>
       <div className="p-4 space-y-6">
         {/* Welcome Section */}
         <div>

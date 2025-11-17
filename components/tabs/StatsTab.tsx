@@ -9,6 +9,7 @@ import { auth } from '@/lib/firebase/config';
 import { roundService } from '@/lib/services/roundService';
 import { Round, calculateGir, roundScorecardBridge, roundIsFinished } from '@/lib/models/round';
 import { HoleStats } from '@/lib/models/round';
+import { AppIconHomeLink } from '@/components/ui/AppIconHomeLink';
 
 interface RoundStatistics {
   totalRounds: number;
@@ -96,7 +97,8 @@ export default function StatsTab() {
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
-      <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+      <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3">
+        <AppIconHomeLink />
         <h1 className="text-xl font-semibold">{t('statisticsTitle')}</h1>
       </div>
 

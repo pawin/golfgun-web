@@ -201,6 +201,7 @@
   "matchplay": "Matchplay",
   "error": "Error",
   "failedToProcessImage": "Failed to process image: {error}",
+  "profile": "Profile",
   "editProfile": "Edit Profile",
   "saveProfile": "Save Profile",
   "tapToChangePhoto": "Tap to change photo",

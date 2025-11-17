@@ -13,6 +13,7 @@ import { userService } from '@/lib/services/userService';
 import { AppUser } from '@/lib/models/appUser';
 import { getInitials } from '@/lib/utils/validator';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { AppIconHomeLink } from '@/components/ui/AppIconHomeLink';
 
 export default function MoreTab() {
   const t = useTranslations();
@@ -111,7 +112,8 @@ export default function MoreTab() {
 
   return (
     <div className="min-h-screen bg-subtle pb-20">
-      <div className="sticky top-0 bg-background border-b border-border px-4 py-3">
+      <div className="sticky top-0 bg-background border-b border-border px-4 py-3 flex items-center gap-3 z-100">
+        <AppIconHomeLink />
         <h1 className="text-xl font-semibold">{t('more')}</h1>
       </div>
 
@@ -156,18 +158,6 @@ export default function MoreTab() {
             )}
           </>
         )}
-
-        {/* Courses */}
-        <div
-          onClick={() => router.push(`/${locale}/courses`)}
-          className="bg-card border border-border rounded-lg p-4 flex items-center justify-between cursor-pointer hover:bg-muted"
-        >
-          <div className="flex items-center gap-3">
-            <FontAwesomeIcon icon={faMap} className="text-xl" />
-            <span className="font-medium">{t('courses')}</span>
-          </div>
-          <FontAwesomeIcon icon={faChevronRight} className="text-muted-foreground" />
-        </div>
 
         {/* Admin Section */}
         {isAdmin && (

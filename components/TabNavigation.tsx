@@ -29,7 +29,7 @@ export default function TabNavigation() {
       <main className="flex-1 overflow-y-auto" key={currentIndex}>
         {tabs[currentIndex].component}
       </main>
-      <nav className="border-t border-border bg-background">
+      <nav className="border-t border-border bg-background relative z-50">
         <div className="flex justify-around">
           {tabs.map((tab, index) => (
             <button

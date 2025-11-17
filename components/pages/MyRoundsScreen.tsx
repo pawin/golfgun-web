@@ -9,6 +9,7 @@ import { userService } from '@/lib/services/userService';
 import { Round, roundIsFinished } from '@/lib/models/round';
 import { AppUser } from '@/lib/models/appUser';
 import RoundCardView from '@/components/widgets/RoundCardView';
+import { AppIconHomeLink } from '@/components/ui/AppIconHomeLink';
 
 export default function MyRoundsScreen() {
   const t = useTranslations();
@@ -77,7 +78,8 @@ export default function MyRoundsScreen() {
   if (error) {
     return (
       <div className="min-h-screen bg-background">
-        <div className="sticky top-0 bg-background border-b border-border px-4 py-3">
+        <div className="sticky top-0 bg-background border-b border-border px-4 py-3 flex items-center gap-3">
+          <AppIconHomeLink />
           <h1 className="text-xl font-semibold">{t('rounds')}</h1>
         </div>
         <div className="flex items-center justify-center py-20">
@@ -99,7 +101,8 @@ export default function MyRoundsScreen() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="sticky top-0 bg-background border-b border-border px-4 py-3">
+      <div className="sticky top-0 bg-background border-b border-border px-4 py-3 flex items-center gap-3 z-20">
+        <AppIconHomeLink />
         <h1 className="text-xl font-semibold">{t('rounds')}</h1>
       </div>
 
@@ -122,4 +125,3 @@ export default function MyRoundsScreen() {
     </div>
   );
 }
-

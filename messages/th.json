@@ -201,6 +201,7 @@
   "matchplay": "แมตช์เพลย์",
   "error": "ข้อผิดพลาด",
   "failedToProcessImage": "ประมวลผลรูปภาพไม่สำเร็จ: {error}",
+  "profile": "โปรไฟล์",
   "editProfile": "แก้ไขโปรไฟล์",
   "saveProfile": "บันทึกโปรไฟล์",
   "tapToChangePhoto": "แตะเพื่อเปลี่ยนรูปภาพ",

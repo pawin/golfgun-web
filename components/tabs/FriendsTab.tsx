@@ -12,6 +12,7 @@ import { AppUser } from '@/lib/models/appUser';
 import { colorFromName, getInitials } from '@/lib/utils/validator';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useLocale } from 'next-intl';
+import { AppIconHomeLink } from '@/components/ui/AppIconHomeLink';
 
 type FriendRelationship = 'self' | 'friend' | 'incoming' | 'outgoing' | 'none';
 
@@ -66,13 +67,27 @@ export default function FriendsTab() {
     }
   };
 
-  const handleSearchChange = (value: string) => {
+  const cancelPendingSearch = () => {
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
+      debounceRef.current = null;
+    }
+  };
+
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    cancelPendingSearch();
+
+    const normalized = value.trim().toLowerCase();
+
+    if (normalized.length < 3) {
+      setSearchResults([]);
+      setIsSearching(false);
+      return;
     }
 
     debounceRef.current = setTimeout(() => {
-      performSearch(value);
+      performSearch(normalized);
     }, 400);
   };
 
@@ -82,14 +97,12 @@ export default function FriendsTab() {
     const trimmed = query.trim().toLowerCase();
 
     if (trimmed.length < 3) {
-      setSearchQuery('');
       setSearchResults([]);
       setIsSearching(false);
       return;
     }
 
     setIsSearching(true);
-    setSearchQuery(trimmed);
 
     try {
       const results = await friendService.searchUsers({
@@ -223,7 +236,8 @@ export default function FriendsTab() {
   if (!user) {
     return (
       <div className="min-h-screen bg-background">
-        <div className="sticky top-0 bg-background border-b border-border px-4 py-3">
+        <div className="sticky top-0 bg-background border-b border-border px-4 py-3 flex items-center gap-3">
+          <AppIconHomeLink />
           <h1 className="text-xl font-semibold">{t('friendsTitle')}</h1>
         </div>
         <div className="flex items-center justify-center py-20">
@@ -235,24 +249,24 @@ export default function FriendsTab() {
 
   return (
     <div className="min-h-screen bg-subtle pb-20">
-      <div className="sticky top-0 bg-background border-b border-border px-4 py-3">
+      <div className="sticky top-0 bg-background border-b border-border px-4 py-3 flex items-center gap-3 z-100">
+        <AppIconHomeLink />
         <h1 className="text-xl font-semibold">{t('friendsTitle')}</h1>
       </div>
 
       <div className="p-4 space-y-5">
         {/* Search Section */}
-        <div>
+        <div className="rounded-xl border border-border bg-card p-4 space-y-3">
           <h2 className="text-md font-semibold mb-2">{t('friendsSearchLabel')}</h2>
           <div className="relative">
             <input
               type="text"
               onChange={(e) => {
-                setSearchQuery(e.target.value);
                 handleSearchChange(e.target.value);
               }}
               value={searchQuery}
               placeholder={t('friendsSearchPlaceholder')}
-              className="w-full px-4 py-2 border border-input rounded-lg pr-10 bg-input-background"
+              className="w-full px-4 py-2 h-9 border border-input rounded-md pr-10 bg-input-background transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] placeholder:text-muted-foreground"
             />
             {isSearching ? (
               <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -261,8 +275,10 @@ export default function FriendsTab() {
             ) : searchQuery ? (
               <button
                 onClick={() => {
+                  cancelPendingSearch();
                   setSearchQuery('');
-                  performSearch('');
+                  setSearchResults([]);
+                  setIsSearching(false);
                 }}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
               >

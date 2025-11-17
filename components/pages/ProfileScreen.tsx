@@ -17,6 +17,7 @@ import { getInitials } from '@/lib/utils/validator';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import RoundCardView from '@/components/widgets/RoundCardView';
 import { useRouteParams } from '@/lib/contexts/RouteParamsContext';
+import { AppIconHomeLink } from '@/components/ui/AppIconHomeLink';
 
 export default function ProfileScreen() {
   const t = useTranslations();
@@ -187,8 +188,8 @@ export default function ProfileScreen() {
 
     try {
       await friendService.removeFriend({
-        userId: user.uid,
-        otherUserId: profileUser.id,
+        userId1: user.uid,
+        userId2: profileUser.id,
       });
       await refreshFriendship();
       alert(t('friendsRemoved'));
@@ -219,8 +220,11 @@ export default function ProfileScreen() {
 
   return (
     <div className="min-h-screen bg-subtle pb-20">
-      <div className="sticky top-0 bg-background border-b border-border px-4 py-3 flex items-center justify-between">
-        <h1 className="text-xl font-semibold">{profileUser.name}</h1>
+      <div className="sticky top-0 bg-background border-b border-border px-4 py-3 flex items-center justify-between z-100">
+        <div className="flex items-center gap-3 min-w-0">
+          <AppIconHomeLink />
+          <h1 className="text-xl font-semibold truncate">{t('profile')}</h1>
+        </div>
         {!isOwnProfile && friendship && friendship.status === FriendshipStatus.accepted && (
           <button
             onClick={handleRemoveFriend}
@@ -261,7 +265,7 @@ export default function ProfileScreen() {
                 {t('friendsActionAdd')}
               </button>
             ) : friendship.status === FriendshipStatus.pending ? (
-              friendship.fromUserId === currentUserId ? (
+              friendship.initiatorId === currentUserId ? (
                 <button
                   onClick={handleCancelFriendRequest}
                   className="w-full px-4 py-2 bg-error text-error-foreground rounded-lg font-medium"
