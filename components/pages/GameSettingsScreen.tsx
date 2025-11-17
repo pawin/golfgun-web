@@ -376,7 +376,6 @@ export default function GameSettingsScreen({
 
     try {
       await roundService.deleteGame({ roundId: round.id, gameId: game.id });
-      alert(t('gameDeleted'));
       if (onClose) {
         onClose();
       } else {
