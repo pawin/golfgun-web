@@ -6,6 +6,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import { adminService } from '@/lib/services/adminService';
 import { Round } from '@/lib/models/round';
 import { DateFormatter, AppDateFormatStyle } from '@/lib/utils/dateFormatter';
+import { Badge } from '@/components/ui/badge';
 
 export default function AdminRoundsScreen() {
   const t = useTranslations();
@@ -89,9 +90,14 @@ export default function AdminRoundsScreen() {
                     {courseInitial}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold truncate">
-                      {courseName || t('adminUnknownCourse')}
-                    </h3>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-semibold truncate">
+                        {courseName || t('adminUnknownCourse')}
+                      </h3>
+                      {round.deletedAt && (
+                        <Badge variant="destructive">{t('roundDeleted')}</Badge>
+                      )}
+                    </div>
                     <p className="text-sm text-muted-foreground">{memberCount} {t('adminPlayers')}</p>
                     <p className="text-sm text-muted-foreground">
                       {DateFormatter.format(round.createdAt, AppDateFormatStyle.medium, intlLocale)}
