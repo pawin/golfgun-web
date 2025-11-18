@@ -3,7 +3,7 @@ import { Athiti } from "next/font/google";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-	title: "Golfgun",
+	title: "GolfGun!",
 	description: "Golfgun web app",
 	icons: {
 		icon: [{ url: "/golfgun-32.png", type: "image/png" }],

@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
+import { faUserXmark, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { auth } from '@/lib/firebase/config';
 import { userService } from '@/lib/services/userService';
 import { roundService } from '@/lib/services/roundService';
@@ -22,6 +23,7 @@ import { AppIconHomeLink } from '@/components/ui/AppIconHomeLink';
 export default function ProfileScreen() {
   const t = useTranslations();
   const locale = useLocale();
+  const router = useRouter();
   const routeParams = useRouteParams<{ userId?: string }>();
   const [user, loading] = useAuthState(auth);
   const [profileUser, setProfileUser] = useState<AppUser | null>(null);
@@ -225,15 +227,14 @@ export default function ProfileScreen() {
           <AppIconHomeLink />
           <h1 className="text-xl font-semibold truncate">{t('profile')}</h1>
         </div>
-        {!isOwnProfile && friendship && friendship.status === FriendshipStatus.accepted && (
-          <button
-            onClick={handleRemoveFriend}
-            className="text-muted-foreground text-sm"
-            title={t('friendsActionRemove')}
-          >
-            <FontAwesomeIcon icon={faEllipsisVertical} />
-          </button>
-        )}
+        <button
+          onClick={() => router.back()}
+          className="inline-flex items-center justify-center w-9 h-9 rounded-md hover:bg-accent/20"
+          aria-label="close"
+          title={t('close')}
+        >
+          <FontAwesomeIcon icon={faXmark} className="w-5 h-5" />
+        </button>
       </div>
 
       <div className="p-4 space-y-4">
@@ -248,6 +249,15 @@ export default function ProfileScreen() {
           <div className="flex-1 min-w-0">
             <p className="font-semibold text-xl truncate">{profileUser.name}</p>
           </div>
+          {!isOwnProfile && friendship && friendship.status === FriendshipStatus.accepted && (
+            <button
+              onClick={handleRemoveFriend}
+              className="text-muted-foreground text-sm flex-shrink-0"
+              title={t('friendsActionRemove')}
+            >
+              <FontAwesomeIcon icon={faUserXmark} />
+            </button>
+          )}
         </div>
 
         {/* Friend Action Button */}
