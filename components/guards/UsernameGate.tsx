@@ -48,17 +48,21 @@ export default function UsernameGate({ children }: UsernameGateProps) {
       try {
         userService.invalidateUserCache(user.uid);
         const appUser = await userService.getUserById(user.uid);
-        const hasName =
-          !!appUser && !!String(appUser.name ?? '').trim();
+        const name = (appUser?.name ?? '').trim();
 
-        if (!hasName) {
+        if (name.length == 0) {
           router.replace(`/${locale}/username`);
           return;
         }
-      } finally {
+
+        // Only set checking to false if username is valid
         if (active) {
           setChecking(false);
         }
+      } catch (error) {
+        console.error('Error checking username:', error);
+        // On error, redirect to username screen to be safe
+        router.replace(`/${locale}/username`);
       }
     };
 
