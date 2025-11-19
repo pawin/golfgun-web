@@ -18,17 +18,30 @@ Next.js web application for GolfGun - a social golf scoring app.
 npm install
 ```
 
-2. Run development server:
+2. Configure environment variables:
+   - Create a `.env.local` file in the root directory
+   - Add your LINE LIFF ID:
+   ```
+   NEXT_PUBLIC_LIFF_ID=your-liff-id-here
+   ```
+   - To get your LIFF ID:
+     1. Go to [LINE Developers Console](https://developers.line.biz/console/)
+     2. Select your channel
+     3. Go to the "LIFF" tab
+     4. Create a new LIFF app or use an existing one
+     5. Copy the LIFF ID and paste it in `.env.local`
+
+3. Run development server:
 ```bash
 npm run dev
 ```
 
-3. Build for production:
+4. Build for production:
 ```bash
 npm run build
 ```
 
-4. Deploy to Firebase Hosting:
+5. Deploy to Firebase Hosting:
 ```bash
 npm run build
 firebase deploy --only hosting

@@ -142,7 +142,7 @@ export class UserMigrationService {
 
     // Log migration if there are partial failures
     let logId: string | undefined;
-    if (migratedRoundIds.length > 0 && Object.keys(failedRounds).length > 0) {
+    //if (migratedRoundIds.length > 0 && Object.keys(failedRounds).length > 0) {
       const logRef = doc(this.migrationLogsCollection);
       await setDoc(logRef, {
         oldUserId,
@@ -153,7 +153,7 @@ export class UserMigrationService {
         createdAt: serverTimestamp(),
       });
       logId = logRef.id;
-    }
+    //}
 
     return {
       oldUserId,

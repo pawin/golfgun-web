@@ -4,13 +4,13 @@ import { getFirestore, Firestore } from 'firebase/firestore';
 import { getStorage, FirebaseStorage } from 'firebase/storage';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyAODrdizLuvn9pgz9JQiIyzTxkrzddfTHU',
-  appId: '1:945398676274:web:ae6e27efd0c8da4095752b',
-  messagingSenderId: '945398676274',
-  projectId: 'golfgun',
-  authDomain: 'golfgun-69870.firebaseapp.com',
-  databaseURL: 'https://golfgun-default-rtdb.asia-southeast1.firebasedatabase.app',
-  storageBucket: 'golfgun.appspot.com',
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || '',
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '',
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '',
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || '',
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || '',
+  databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL || '',
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || '',
 };
 
 // Initialize Firebase

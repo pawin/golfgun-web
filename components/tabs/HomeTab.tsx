@@ -9,13 +9,16 @@ import { faPlay, faGolfBall, faChartLine, faTrophy, faCalendar, faMapMarkerAlt, 
 import { auth } from '@/lib/firebase/config';
 import { roundService } from '@/lib/services/roundService';
 import { userService } from '@/lib/services/userService';
+import { userMigrationService } from '@/lib/services/userMigrationService';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase/config';
 import { Round, roundIsFinished } from '@/lib/models/round';
 import { AppUser } from '@/lib/models/appUser';
 import RoundCardView from '@/components/widgets/RoundCardView';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AppIconHomeLink } from '@/components/ui/AppIconHomeLink';
+import liff from '@line/liff';
 
 interface RoundStatistics {
   totalRounds: number;
@@ -43,6 +46,39 @@ export default function HomeTab() {
     if (user && !loading) {
       loadRounds();
       loadStatistics();
+    }
+  }, [user, loading]);
+
+  // Check LINE LIFF and perform migration if needed
+  useEffect(() => {
+    const checkLineLiff = async () => {
+      const liffId = process.env.NEXT_PUBLIC_LIFF_ID;
+      if (!liffId || typeof window === 'undefined') return;
+
+      try {
+        // Initialize LIFF
+        await liff.init({ liffId: liffId });
+        //if (liff.isInClient()) {
+          if (liff.isLoggedIn()) {
+            const profile = await liff.getProfile();
+            const lineUserId = profile.userId;
+            if (lineUserId && user?.uid) {
+              await userMigrationService.migrateIfOldUserExistsAndLink(
+                lineUserId,
+                user.uid
+              );
+            }
+          } else {
+            liff.login();
+          }
+        //}
+      } catch (error) {
+        console.error('LINE LIFF check error:', error);
+      }
+    };
+
+    if (user && !loading) {
+      checkLineLiff();
     }
   }, [user, loading]);
 
