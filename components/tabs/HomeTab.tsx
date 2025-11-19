@@ -68,7 +68,7 @@ export default function HomeTab() {
                 user.uid
               );
             }
-          }
+          } else { liff.login(); }
         //}
       } catch (error) {
         console.error('LINE LIFF check error:', error);
