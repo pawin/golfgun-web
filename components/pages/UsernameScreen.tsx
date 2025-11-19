@@ -19,12 +19,13 @@ export default function UsernameScreen() {
   const [user, loading] = useAuthState(auth);
   const [username, setUsername] = useState('');
   const [saving, setSaving] = useState(false);
-  const [signingIn, setSigningIn] = useState(true);
   const [selectedLanguage, setSelectedLanguage] = useState('th');
 
   useEffect(() => {
     const checkAndMaybeRedirect = async () => {
-      if (user && !loading) {
+      if (loading) return;
+
+      if (user) {
         // If already signed in, fetch latest user and redirect if a name exists
         try {
           userService.invalidateUserCache(user.uid);
@@ -36,20 +37,9 @@ export default function UsernameScreen() {
           }
         } catch {
           // ignore and allow form to show
-        } finally {
-          setSigningIn(false);
         }
-      } else if (!loading && !user) {
-        // Attempt anonymous sign-in and update state on both success and error
-        signInAnonymously(auth)
-          .then(() => {
-            setSigningIn(false);
-          })
-          .catch((error) => {
-            console.error('Anonymous sign in error:', error);
-            setSigningIn(false);
-          });
       }
+      // If no user, just show the form - we'll sign in anonymously on save
     };
     checkAndMaybeRedirect();
   }, [user, loading, router, locale]);
@@ -63,16 +53,17 @@ export default function UsernameScreen() {
       return;
     }
 
-    const currentUser = auth.currentUser;
-    if (!currentUser) {
-      alert(t('notSignedIn'));
-      return;
-    }
-
-    const usernameLower = username.trim().toLowerCase();
     setSaving(true);
 
     try {
+      // Sign in anonymously if not already signed in
+      let currentUser = auth.currentUser;
+      if (!currentUser) {
+        const userCredential = await signInAnonymously(auth);
+        currentUser = userCredential.user;
+      }
+
+      const usernameLower = username.trim().toLowerCase();
       const unameRef = doc(db, 'usernames', usernameLower);
       const userRef = doc(db, 'users', currentUser.uid);
 
@@ -107,7 +98,7 @@ export default function UsernameScreen() {
     }
   };
 
-  if (signingIn || loading) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
