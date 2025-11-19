@@ -41,6 +41,9 @@ export default function UsernameGate({ children }: UsernameGateProps) {
       if (loading) return;
 
       if (!user) {
+        if (active) {
+          setChecking(false);
+        }
         router.replace(`/${locale}/username`);
         return;
       }
@@ -51,6 +54,9 @@ export default function UsernameGate({ children }: UsernameGateProps) {
         const name = (appUser?.name ?? '').trim();
 
         if (name.length == 0) {
+          if (active) {
+            setChecking(false);
+          }
           router.replace(`/${locale}/username`);
           return;
         }
@@ -62,6 +68,9 @@ export default function UsernameGate({ children }: UsernameGateProps) {
       } catch (error) {
         console.error('Error checking username:', error);
         // On error, redirect to username screen to be safe
+        if (active) {
+          setChecking(false);
+        }
         router.replace(`/${locale}/username`);
       }
     };
@@ -79,9 +88,8 @@ export default function UsernameGate({ children }: UsernameGateProps) {
 
   if (loading || checking) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen gap-4">
+      <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-        <p className="text-muted-foreground">Username Gate</p>
       </div>
     );
   }
