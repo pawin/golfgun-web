@@ -58,7 +58,7 @@ export default function HomeTab() {
       try {
         // Initialize LIFF
         await liff.init({ liffId: liffId });
-        //if (liff.isInClient()) {
+        if (liff.isInClient()) {
           if (liff.isLoggedIn()) {
             const profile = await liff.getProfile();
             const lineUserId = profile.userId;
@@ -68,10 +68,8 @@ export default function HomeTab() {
                 user.uid
               );
             }
-          } else {
-            liff.login();
           }
-        //}
+        }
       } catch (error) {
         console.error('LINE LIFF check error:', error);
       }
