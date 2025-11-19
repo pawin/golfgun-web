@@ -200,6 +200,10 @@ export class UserService {
         },
         { merge: true }
       );
+
+      // Invalidate and refresh the user cache to reflect the updated username
+      this.invalidateUserCache(user.uid);
+      await this.getUserById(user.uid);
     } catch (e) {
       throw e;
     }

@@ -83,7 +83,7 @@ export default function EditProfileScreen() {
         imageBytes: imageBytes || undefined,
       });
 
-      router.push(`/${locale}`);
+      router.back();
     } catch (e) {
       alert(t('failedToUpdate', { error: (e as Error).toString() }));
     } finally {

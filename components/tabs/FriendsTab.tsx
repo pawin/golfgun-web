@@ -160,7 +160,6 @@ export default function FriendsTab() {
         toUserId: target.id,
       });
       await loadOverview();
-      showMessage(t('friendsRequestSent'));
     } catch (e) {
       showError((e as Error).toString());
     }
@@ -175,7 +174,6 @@ export default function FriendsTab() {
         otherUserId: entry.otherUser.id,
       });
       await loadOverview();
-      showMessage(t('friendsRequestAccepted'));
     } catch (e) {
       showError((e as Error).toString());
     }
@@ -190,7 +188,6 @@ export default function FriendsTab() {
         otherUserId: entry.otherUser.id,
       });
       await loadOverview();
-      showMessage(t('friendsRequestDeclined'));
     } catch (e) {
       showError((e as Error).toString());
     }
@@ -205,7 +202,6 @@ export default function FriendsTab() {
         toUserId: entry.otherUser.id,
       });
       await loadOverview();
-      showMessage(t('friendsRequestCancelled'));
     } catch (e) {
       showError((e as Error).toString());
     }
@@ -213,11 +209,6 @@ export default function FriendsTab() {
 
   const openProfile = (targetUser: AppUser) => {
     router.push(`/${locale}/profile/${targetUser.id}`);
-  };
-
-  const showMessage = (message: string) => {
-    // Could use a toast library here
-    alert(message);
   };
 
   const showError = (error: string) => {
