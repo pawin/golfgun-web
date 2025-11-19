@@ -145,8 +145,9 @@ export default function HomeTab() {
 
   if (loading || loadingRounds) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex flex-col items-center justify-center min-h-screen gap-4">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        <p className="text-muted-foreground">Home Screen</p>
       </div>
     );
   }
@@ -206,8 +207,9 @@ export default function HomeTab() {
 
         {/* Statistics Dashboard */}
         {loadingStats ? (
-          <div className="flex justify-center py-8">
+          <div className="flex flex-col items-center justify-center py-8 gap-3">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <p className="text-sm text-muted-foreground">Loading Statistics</p>
           </div>
         ) : stats ? (
           <StatisticsSection stats={stats} />
