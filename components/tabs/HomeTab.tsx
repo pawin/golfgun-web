@@ -18,7 +18,7 @@ import RoundCardView from '@/components/widgets/RoundCardView';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import liff from '@line/liff';
+//import liff from '@line/liff';
 
 interface RoundStatistics {
   totalRounds: number;
@@ -49,37 +49,36 @@ export default function HomeTab() {
     }
   }, [user, loading]);
 
-  // Check LINE LIFF and perform migration if needed
-  useEffect(() => {
-    const checkLineLiff = async () => {
-      const liffId = process.env.NEXT_PUBLIC_LIFF_ID;
-      if (!liffId || typeof window === 'undefined') return;
+  // // Check LINE LIFF and perform migration if needed
+  // useEffect(() => {
+  //   const checkLineLiff = async () => {
+  //     const liffId = process.env.NEXT_PUBLIC_LIFF_ID;
+  //     if (!liffId || typeof window === 'undefined') return;
 
-      try {
-        // Initialize LIFF
-        await liff.init({ liffId: liffId });
-        //if (liff.isInClient()) {
-          if (liff.isLoggedIn()) {
-            const profile = await liff.getProfile();
-            const lineUserId = profile.userId;
-            if (lineUserId && user?.uid) {
-              await userMigrationService.migrateIfOldUserExistsAndLink(
-                lineUserId,
-                user.uid
-              );
-            }
-          } else { liff.login(); }
-        //}
-      } catch (error) {
-        console.error('LINE LIFF check error:', error);
-      }
-    };
+  //     try {
+  //       // Initialize LIFF
+  //       await liff.init({ liffId: liffId });
+  //       //if (liff.isInClient()) {
+  //         if (liff.isLoggedIn()) {
+  //           const profile = await liff.getProfile();
+  //           const lineUserId = profile.userId;
+  //           if (lineUserId && user?.uid) {
+  //             await userMigrationService.migrateIfOldUserExistsAndLink(
+  //               lineUserId,
+  //               user.uid
+  //             );
+  //           }
+  //         } else { liff.login(); }
+  //       //}
+  //     } catch (error) {
+  //       console.error('LINE LIFF check error:', error);
+  //     }
+  //   };
 
-    if (user && !loading) {
-      checkLineLiff();
-    }
-  }, [user, loading]);
-
+  //   if (user && !loading) {
+  //     checkLineLiff();
+  //   }
+  // }, [user, loading]);
 
   const loadRounds = async () => {
     if (!user) return;
