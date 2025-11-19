@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { signInAnonymously } from 'firebase/auth';
@@ -15,11 +15,12 @@ import Image from 'next/image';
 export default function UsernameScreen() {
   const t = useTranslations();
   const router = useRouter();
+  const pathname = usePathname();
   const locale = useLocale();
   const [user, loading] = useAuthState(auth);
   const [username, setUsername] = useState('');
   const [saving, setSaving] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState('th');
+  const [selectedLanguage, setSelectedLanguage] = useState('en');
 
   useEffect(() => {
     const checkAndMaybeRedirect = async () => {
@@ -43,6 +44,19 @@ export default function UsernameScreen() {
     };
     checkAndMaybeRedirect();
   }, [user, loading, router, locale]);
+
+  // Sync selectedLanguage with current locale
+  useEffect(() => {
+    setSelectedLanguage(locale);
+  }, [locale]);
+
+  const handleLanguageChange = (newLanguage: string) => {
+    setSelectedLanguage(newLanguage);
+    // Navigate to the same page with the new locale
+    const currentPath = pathname || '/username';
+    const pathWithoutLocale = currentPath.replace(/^\/(en|th)/, '');
+    router.push(`/${newLanguage}${pathWithoutLocale}`);
+  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -151,7 +165,7 @@ export default function UsernameScreen() {
             </label>
             <select
               value={selectedLanguage}
-              onChange={(e) => setSelectedLanguage(e.target.value)}
+              onChange={(e) => handleLanguageChange(e.target.value)}
               className="w-full px-4 py-2 border border-input bg-input-background rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               disabled={saving}
             >

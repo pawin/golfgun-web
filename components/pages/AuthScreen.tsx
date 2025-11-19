@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { sendPasswordResetEmail } from 'firebase/auth';
@@ -15,6 +15,8 @@ import Image from 'next/image';
 export default function AuthScreen() {
   const t = useTranslations();
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const locale = useLocale();
   const [user, loading] = useAuthState(auth);
   const [isLogin, setIsLogin] = useState(true);
@@ -23,7 +25,7 @@ export default function AuthScreen() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [selectedLanguage, setSelectedLanguage] = useState('th');
+  const [selectedLanguage, setSelectedLanguage] = useState('en');
 
   useEffect(() => {
     let isMounted = true;
@@ -46,6 +48,26 @@ export default function AuthScreen() {
       isMounted = false;
     };
   }, [user, loading, router, locale]);
+
+  // Sync selectedLanguage with current locale
+  useEffect(() => {
+    setSelectedLanguage(locale);
+  }, [locale]);
+
+  // Sync isLogin state with URL parameter
+  useEffect(() => {
+    const mode = searchParams.get('mode');
+    setIsLogin(mode !== 'signup');
+  }, [searchParams]);
+
+  const handleLanguageChange = (newLanguage: string) => {
+    setSelectedLanguage(newLanguage);
+    // Navigate to the same page with the new locale, preserving the current view mode
+    const currentPath = pathname || '/auth';
+    const pathWithoutLocale = currentPath.replace(/^\/(en|th)/, '');
+    const mode = isLogin ? '' : '?mode=signup';
+    router.push(`/${newLanguage}${pathWithoutLocale}${mode}`);
+  };
 
   const getErrorMessage = (code: string): string => {
     switch (code) {
@@ -92,7 +114,7 @@ export default function AuthScreen() {
         email: email.trim(),
         password,
         isLogin,
-        language: isLogin ? 'th' : selectedLanguage,
+        language: isLogin ? 'en' : selectedLanguage,
       });
       // After auth, ensure fresh user state then route appropriately
       const current = auth.currentUser;
@@ -213,7 +235,7 @@ export default function AuthScreen() {
               </label>
               <select
                 value={selectedLanguage}
-                onChange={(e) => setSelectedLanguage(e.target.value)}
+                onChange={(e) => handleLanguageChange(e.target.value)}
                 className="w-full px-4 py-2 border border-input bg-input-background rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 disabled={isLoading}
               >
@@ -265,8 +287,13 @@ export default function AuthScreen() {
             <button
               type="button"
               onClick={() => {
-                setIsLogin(!isLogin);
+                const newIsLogin = !isLogin;
+                setIsLogin(newIsLogin);
                 setErrorMessage(null);
+                // Update URL to reflect the new mode
+                const currentPath = pathname || `/${locale}/auth`;
+                const mode = newIsLogin ? '' : '?mode=signup';
+                router.replace(`${currentPath}${mode}`);
               }}
               disabled={isLoading}
               className="text-primary font-semibold hover:underline"
