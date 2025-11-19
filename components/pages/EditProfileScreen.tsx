@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { auth } from '@/lib/firebase/config';
 import { userService } from '@/lib/services/userService';
 import { AppUser } from '@/lib/models/appUser';
@@ -109,7 +111,16 @@ export default function EditProfileScreen() {
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       <div className="sticky top-0 bg-white border-b border-gray-200 px-4 py-3">
-        <h1 className="text-xl font-semibold">{t('editProfile')}</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-xl font-semibold">{t('editProfile')}</h1>
+          <button
+            aria-label="Close"
+            onClick={() => router.back()}
+            className="inline-flex items-center justify-center w-9 h-9 rounded-md hover:bg-accent/20"
+          >
+            <FontAwesomeIcon icon={faXmark} className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
       <div className="p-6 space-y-6">
