@@ -55,7 +55,7 @@ export class UserService {
         const aUser: AppUser = {
           id: userCredential.user.uid,
           email: userCredential.user.email || '',
-          name: this.generateFallbackName(userCredential.user.uid),
+          name: this.generateFallbackName(userCredential.user.email || ''),
           language,
           registered: false,
         };
@@ -127,21 +127,13 @@ export class UserService {
     await setDoc(doc(db, 'users', userId), { lastLoginAt: serverTimestamp() }, { merge: true });
   }
 
-  private generateFallbackName(uid: string): string {
-    const random = Math.floor(Math.random() * 900) + 100;
-    const suffix = uid.substring(0, 3).toLowerCase() + random.toString();
-    const baseNames = [
-      'mulligan', 'shankapotamus', 'chili_dip', 'worm_burner', 'duck_hook', 'snap_hook',
-      'slicezilla', 'snowman', 'lipout', 'duff', 'air_shot', 'skulled', 'fat_shot',
-      'thin_shot', 'hosel_rocket', 'banana_ball', 'texas_wedge', 'sand_save',
-      'fried_egg', 'beach_party', 'tin_cup', 'breakfast_ball', 'bogey_monster',
-      'par_ty_time', 'sliceageddon', 'fore_play', 'clubzilla', 'putterface',
-      'range_hero', 'cart_ninja', 'rough_rider', 'birdie_machine', 'flag_whisperer',
-      'fairway_finder', 'ball_magnet', 'triple_boogie', 'hack_attack', 'divot_king',
-      'tee_rex', 'green_sitter', 'sand_samurai', 'hole_whisperer', 'fade_king',
-    ];
-    const base = baseNames[Math.floor(Math.random() * baseNames.length)];
-    return `${base}_${suffix}`;
+  private generateFallbackName(email: string): string {
+    // Extract the local part of the email (before @)
+    const localPart = email.split('@')[0].toLowerCase();
+    // Generate a random 2-digit number from 00 to 99
+    const random = Math.floor(Math.random() * 100);
+    const suffix = random.toString().padStart(2, '0');
+    return `${localPart}_${suffix}`;
   }
 
   async updateProfile({
