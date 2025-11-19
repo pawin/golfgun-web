@@ -9,6 +9,7 @@ import RoundsTab from './tabs/RoundsTab';
 import StatsTab from './tabs/StatsTab';
 import FriendsTab from './tabs/FriendsTab';
 import MoreTab from './tabs/MoreTab';
+import { TabBadgeProvider, useTabBadge } from '@/lib/contexts/TabBadgeContext';
 
 // Map hash values to tab indices
 const hashToIndex: Record<string, number> = {
@@ -28,8 +29,9 @@ const indexToHash: Record<number, string> = {
   4: 'more',
 };
 
-export default function TabNavigation() {
+function TabNavigationContent() {
   const t = useTranslations();
+  const { badges } = useTabBadge();
   
   // Initialize state from hash or default to 0
   const getInitialIndex = () => {
@@ -85,12 +87,12 @@ export default function TabNavigation() {
   // Memoize tab components with key to force remount when tab changes
   // This ensures useEffect hooks run when switching tabs
   const tabs = useMemo(() => [
-    { component: <HomeTab key="home" />, icon: faHome, label: t('home') },
-    { component: <RoundsTab key="rounds" />, icon: faClipboardList, label: t('rounds') },
-    { component: <StatsTab key="stats" />, icon: faChartBar, label: t('stats') },
-    { component: <FriendsTab key="friends" />, icon: faUsers, label: t('friends') },
-    { component: <MoreTab key="more" />, icon: faEllipsisVertical, label: t('more') },
-  ], [t]);
+    { component: <HomeTab key="home" />, icon: faHome, label: t('home'), showBadge: false },
+    { component: <RoundsTab key="rounds" />, icon: faClipboardList, label: t('rounds'), showBadge: false },
+    { component: <StatsTab key="stats" />, icon: faChartBar, label: t('stats'), showBadge: false },
+    { component: <FriendsTab key="friends" />, icon: faUsers, label: t('friends'), showBadge: badges.friends },
+    { component: <MoreTab key="more" />, icon: faEllipsisVertical, label: t('more'), showBadge: badges.more },
+  ], [t, badges]);
 
   return (
     <div className="flex flex-col h-screen">
@@ -103,14 +105,17 @@ export default function TabNavigation() {
             <button
               key={index}
               onClick={() => handleTabClick(index)}
-              className={`flex flex-col items-center justify-center px-4 py-2 flex-1 ${
+              className={`flex flex-col items-center justify-center px-4 py-2 flex-1 relative border-t-2 ${
                 currentIndex === index
-                  ? 'text-primary border-t-2 border-primary'
-                  : 'text-muted-foreground'
+                  ? 'text-primary border-primary'
+                  : 'text-muted-foreground border-transparent'
               }`}
             >
               <FontAwesomeIcon icon={tab.icon} className="text-xl" />
               <span className="text-xs mt-1">{tab.label}</span>
+              {tab.showBadge && (
+                <span className="absolute top-1.5 right-1/2 translate-x-3 w-2 h-2 bg-destructive rounded-full" />
+              )}
             </button>
           ))}
         </div>
@@ -119,3 +124,10 @@ export default function TabNavigation() {
   );
 }
 
+export default function TabNavigation() {
+  return (
+    <TabBadgeProvider>
+      <TabNavigationContent />
+    </TabBadgeProvider>
+  );
+}

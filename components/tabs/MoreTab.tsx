@@ -14,6 +14,7 @@ import { AppUser } from '@/lib/models/appUser';
 import { getInitials, colorFromName } from '@/lib/utils/validator';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { AppIconHomeLink } from '@/components/ui/AppIconHomeLink';
+import { useTabBadge } from '@/lib/contexts/TabBadgeContext';
 
 export default function MoreTab() {
   const t = useTranslations();
@@ -27,12 +28,23 @@ export default function MoreTab() {
   const [obscurePassword, setObscurePassword] = useState(true);
   const [isLinking, setIsLinking] = useState(false);
   const [showSignOutDialog, setShowSignOutDialog] = useState(false);
+  const { setMoreBadge } = useTabBadge();
 
   useEffect(() => {
     if (user) {
       loadUser();
     }
   }, [user]);
+
+  // Update badge when user data changes (only when we have data)
+  useEffect(() => {
+    if (appUser) {
+      // Show badge if user role is not 'member' (temporary user)
+      const hasTemporaryRole = appUser.role !== 'member';
+      setMoreBadge(hasTemporaryRole);
+    }
+    // Don't set to false when appUser is null - keep existing badge state during loading
+  }, [appUser, setMoreBadge]);
 
   const loadUser = async () => {
     if (!user) return;

@@ -13,6 +13,7 @@ import { colorFromName, getInitials } from '@/lib/utils/validator';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useLocale } from 'next-intl';
 import { AppIconHomeLink } from '@/components/ui/AppIconHomeLink';
+import { useTabBadge } from '@/lib/contexts/TabBadgeContext';
 
 type FriendRelationship = 'self' | 'friend' | 'incoming' | 'outgoing' | 'none';
 
@@ -33,12 +34,23 @@ export default function FriendsTab() {
   const [searchResults, setSearchResults] = useState<SearchResultEntry[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const { setFriendsBadge } = useTabBadge();
 
   useEffect(() => {
     if (user && !loading) {
       loadOverview();
     }
   }, [user, loading]);
+
+  // Update badge when overview changes (only when we have data)
+  useEffect(() => {
+    if (overview) {
+      // Show badge if there are incoming friend requests
+      const hasIncomingRequests = overview.incomingRequests.length > 0;
+      setFriendsBadge(hasIncomingRequests);
+    }
+    // Don't set to false when overview is null - keep existing badge state during loading
+  }, [overview, setFriendsBadge]);
 
   const loadOverview = async () => {
     if (!user) {
