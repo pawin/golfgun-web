@@ -1,9 +1,9 @@
 'use client';
 
-import { ReactNode, useEffect, useMemo, useState } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
-import { useLocale } from 'next-intl';
+import { ReactNode, useEffect, useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { useLocale } from 'next-intl';
 import { auth } from '@/lib/firebase/config';
 import { userService } from '@/lib/services/userService';
 
@@ -12,80 +12,54 @@ interface UsernameGateProps {
 }
 
 export default function UsernameGate({ children }: UsernameGateProps) {
-  const [user, loading] = useAuthState(auth);
   const router = useRouter();
-  const locale = useLocale();
   const pathname = usePathname();
+  const locale = useLocale();
+  const [user, loading] = useAuthState(auth);
   const [checking, setChecking] = useState(true);
 
-  const normalizedPath = useMemo(
-    () => normalizePath(pathname, locale),
-    [pathname, locale]
-  );
-
-  const shouldGuard =
-    normalizedPath !== '/username' && !normalizedPath.startsWith('/auth');
-
   useEffect(() => {
-    let active = true;
-
-    if (!shouldGuard) {
-      setChecking(false);
-      return;
-    }
-
-    // Whenever we enter a guarded route, start in checking mode
-    setChecking(true);
-
-    const ensureUsername = async () => {
+    const checkUser = async () => {
       if (loading) return;
 
+      // Allow access to username and auth pages without checks
+      if (pathname.endsWith('/username') || pathname.endsWith('/auth')) {
+        setChecking(false);
+        return;
+      }
+
       if (!user) {
-        if (active) {
-          setChecking(false);
-        }
+        // If no Firebase user is logged in, redirect to username screen
         router.replace(`/${locale}/username`);
         return;
       }
 
+      // If we have a Firebase user, fetch the app user
       try {
         userService.invalidateUserCache(user.uid);
         const appUser = await userService.getUserById(user.uid);
-        const name = (appUser?.name ?? '').trim();
-
-        if (name.length == 0) {
-          if (active) {
-            setChecking(false);
-          }
+        
+        // Check if appUser.name is empty
+        const hasName = !!appUser && !!String(appUser.name ?? '').trim();
+        
+        if (!hasName) {
+          // If name is empty, redirect to username screen
           router.replace(`/${locale}/username`);
-          return;
-        }
-
-        // Only set checking to false if username is valid
-        if (active) {
+        } else {
+          // User has a name, allow access
           setChecking(false);
         }
       } catch (error) {
-        console.error('Error checking username:', error);
-        // On error, redirect to username screen to be safe
-        if (active) {
-          setChecking(false);
-        }
+        // On error, redirect to username screen
+        console.error('Error checking user:', error);
         router.replace(`/${locale}/username`);
       }
     };
 
-    ensureUsername();
+    checkUser();
+  }, [user, loading, pathname, router, locale]);
 
-    return () => {
-      active = false;
-    };
-  }, [shouldGuard, user, loading, router, locale]);
-
-  if (!shouldGuard) {
-    return <>{children}</>;
-  }
-
+  // Show loading spinner while checking auth state
   if (loading || checking) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -94,22 +68,6 @@ export default function UsernameGate({ children }: UsernameGateProps) {
     );
   }
 
+  // Render children once checks are complete
   return <>{children}</>;
 }
-
-function normalizePath(pathname: string | null, locale: string): string {
-  if (!pathname) return '/';
-  const localePrefix = `/${locale}`;
-
-  if (pathname === localePrefix) {
-    return '/';
-  }
-
-  if (pathname.startsWith(`${localePrefix}/`)) {
-    const remainder = pathname.slice(localePrefix.length);
-    return remainder.startsWith('/') ? remainder : `/${remainder}`;
-  }
-
-  return pathname;
-}
-
