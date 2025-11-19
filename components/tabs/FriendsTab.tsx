@@ -42,13 +42,14 @@ export default function FriendsTab() {
 
   const loadOverview = async () => {
     if (!user) {
-      setOverview({
+      const emptyOverview = {
         friends: [],
         incomingRequests: [],
         outgoingRequests: [],
-      });
+      };
+      setOverview(emptyOverview);
       setIsLoading(false);
-      refreshSearchRelationships();
+      refreshSearchRelationshipsWithData(emptyOverview);
       return;
     }
 
@@ -58,10 +59,9 @@ export default function FriendsTab() {
       const data = await friendService.loadOverview(user.uid);
       setOverview(data);
       setErrorMessage(null);
-      refreshSearchRelationships();
+      refreshSearchRelationshipsWithData(data);
     } catch (e) {
       setErrorMessage((e as Error).toString());
-      refreshSearchRelationships();
     } finally {
       setIsLoading(false);
     }
@@ -123,17 +123,18 @@ export default function FriendsTab() {
     }
   };
 
-  const relationshipForUser = (targetUser: AppUser): FriendRelationship => {
+  const relationshipForUser = (targetUser: AppUser, overviewData?: FriendOverview): FriendRelationship => {
     if (!user || targetUser.id === user.uid) return 'self';
-    if (!overview) return 'none';
+    const data = overviewData || overview;
+    if (!data) return 'none';
 
-    if (overview.friends.some((entry) => entry.otherUser.id === targetUser.id)) {
+    if (data.friends.some((entry) => entry.otherUser.id === targetUser.id)) {
       return 'friend';
     }
-    if (overview.outgoingRequests.some((entry) => entry.otherUser.id === targetUser.id)) {
+    if (data.outgoingRequests.some((entry) => entry.otherUser.id === targetUser.id)) {
       return 'outgoing';
     }
-    if (overview.incomingRequests.some((entry) => entry.otherUser.id === targetUser.id)) {
+    if (data.incomingRequests.some((entry) => entry.otherUser.id === targetUser.id)) {
       return 'incoming';
     }
     return 'none';
@@ -144,6 +145,15 @@ export default function FriendsTab() {
     const updated = searchResults.map((entry) => ({
       ...entry,
       relationship: relationshipForUser(entry.user),
+    }));
+    setSearchResults(updated);
+  };
+
+  const refreshSearchRelationshipsWithData = (overviewData: FriendOverview) => {
+    if (searchResults.length === 0) return;
+    const updated = searchResults.map((entry) => ({
+      ...entry,
+      relationship: relationshipForUser(entry.user, overviewData),
     }));
     setSearchResults(updated);
   };
@@ -160,7 +170,6 @@ export default function FriendsTab() {
         toUserId: target.id,
       });
       await loadOverview();
-      showMessage(t('friendsRequestSent'));
     } catch (e) {
       showError((e as Error).toString());
     }
@@ -175,7 +184,6 @@ export default function FriendsTab() {
         otherUserId: entry.otherUser.id,
       });
       await loadOverview();
-      showMessage(t('friendsRequestAccepted'));
     } catch (e) {
       showError((e as Error).toString());
     }
@@ -190,7 +198,6 @@ export default function FriendsTab() {
         otherUserId: entry.otherUser.id,
       });
       await loadOverview();
-      showMessage(t('friendsRequestDeclined'));
     } catch (e) {
       showError((e as Error).toString());
     }
@@ -205,7 +212,6 @@ export default function FriendsTab() {
         toUserId: entry.otherUser.id,
       });
       await loadOverview();
-      showMessage(t('friendsRequestCancelled'));
     } catch (e) {
       showError((e as Error).toString());
     }
@@ -213,11 +219,6 @@ export default function FriendsTab() {
 
   const openProfile = (targetUser: AppUser) => {
     router.push(`/${locale}/profile/${targetUser.id}`);
-  };
-
-  const showMessage = (message: string) => {
-    // Could use a toast library here
-    alert(message);
   };
 
   const showError = (error: string) => {

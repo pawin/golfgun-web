@@ -69,7 +69,7 @@ export default function MoreTab() {
       setLinkEmail('');
       setLinkPassword('');
       await loadUser();
-      alert(t('linkAccountSuccess'));
+      window.location.reload();
     } catch (e: any) {
       let message = t('failedToLinkAccount');
       if (e.code === 'email-already-in-use') {

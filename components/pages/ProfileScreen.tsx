@@ -136,7 +136,6 @@ export default function ProfileScreen() {
         toUserId: profileUser.id,
       });
       await refreshFriendship();
-      alert(t('friendsRequestSent'));
     } catch (e) {
       alert((e as Error).toString());
     }
@@ -150,7 +149,6 @@ export default function ProfileScreen() {
         otherUserId: profileUser.id,
       });
       await refreshFriendship();
-      alert(t('friendsRequestAccepted'));
     } catch (e) {
       alert((e as Error).toString());
     }
@@ -164,7 +162,6 @@ export default function ProfileScreen() {
         otherUserId: profileUser.id,
       });
       await refreshFriendship();
-      alert(t('friendsRequestDeclined'));
     } catch (e) {
       alert((e as Error).toString());
     }
@@ -178,7 +175,6 @@ export default function ProfileScreen() {
         toUserId: profileUser.id,
       });
       await refreshFriendship();
-      alert(t('friendsRequestCancelled'));
     } catch (e) {
       alert((e as Error).toString());
     }
@@ -194,7 +190,6 @@ export default function ProfileScreen() {
         userId2: profileUser.id,
       });
       await refreshFriendship();
-      alert(t('friendsRemoved'));
     } catch (e) {
       alert((e as Error).toString());
     }
