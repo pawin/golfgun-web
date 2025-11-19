@@ -34,7 +34,7 @@
   "startRound": "Start Round",
   "roundsInProgress": "{count} {count, plural, one {round} other {rounds}} in progress",
   "welcomeUser": "Welcome, {name}",
-  "welcomeTitle": "Welcome to Golf Gun!",
+  "welcomeTitle": "Welcome to GolfGun!",
   "welcomeSubtitle": "Start your first round to see your statistics here.",
   "activeRounds": "Active Rounds",
   "startNewRound": "Start New Round",
