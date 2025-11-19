@@ -40,21 +40,19 @@ export default function UsernameScreen() {
           setSigningIn(false);
         }
       } else if (!loading && !user) {
-        signInAnonymously(auth).catch((error) => {
-          console.error('Anonymous sign in error:', error);
-          setSigningIn(false);
-        });
+        // Attempt anonymous sign-in and update state on both success and error
+        signInAnonymously(auth)
+          .then(() => {
+            setSigningIn(false);
+          })
+          .catch((error) => {
+            console.error('Anonymous sign in error:', error);
+            setSigningIn(false);
+          });
       }
     };
     checkAndMaybeRedirect();
   }, [user, loading, router, locale]);
-
-  useEffect(() => {
-    // If auth state switches from null->user via anonymous sign-in, stop the spinner
-    if (user && !loading) {
-      setSigningIn(false);
-    }
-  }, [user, loading]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
