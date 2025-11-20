@@ -92,7 +92,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       // Check if we're not already on the username or auth screen to avoid infinite loops
       const authScreen = pathname?.includes('/username') || pathname?.includes('/auth');
-      if (!authScreen) {
+      if (authScreen) {
         return;
       }
 
