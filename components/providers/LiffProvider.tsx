@@ -2,6 +2,10 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import liff from '@line/liff';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from '@/lib/firebase/config';
+import { userService } from '@/lib/services/userService';
+import UsernameScreen from '@/components/pages/UsernameScreen';
 
 // Re-export liff for convenience
 export { liff };
@@ -44,6 +48,8 @@ interface LiffProviderProps {
 export default function LiffProvider({ children }: LiffProviderProps) {
   const [isReady, setIsReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [user, loading] = useAuthState(auth);
+  const [hasUsername, setHasUsername] = useState<boolean | null>(null);
 
   useEffect(() => {
     const initializeLiff = async () => {
@@ -87,6 +93,32 @@ export default function LiffProvider({ children }: LiffProviderProps) {
     initializeLiff();
   }, []);
 
+  // Check for Firebase session and username after LIFF is ready
+  useEffect(() => {
+    const checkFirebaseSession = async () => {
+      if (!isReady || loading) return;
+
+      if (!user) {
+        // No Firebase session exists
+        setHasUsername(false);
+        return;
+      }
+
+      try {
+        // Check if user has a username in Firebase
+        userService.invalidateUserCache(user.uid);
+        const appUser = await userService.getUserById(user.uid);
+        const hasName = !!appUser && !!String(appUser.name ?? '').trim();
+        setHasUsername(hasName);
+      } catch (error) {
+        console.error('Error checking user profile:', error);
+        setHasUsername(false);
+      }
+    };
+
+    checkFirebaseSession();
+  }, [isReady, user, loading]);
+
   if (error) {
     return (
       <div className="flex items-center justify-center min-h-screen p-4">
@@ -98,7 +130,7 @@ export default function LiffProvider({ children }: LiffProviderProps) {
     );
   }
 
-  if (!isReady) {
+  if (!isReady || loading || hasUsername === null) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
@@ -108,6 +140,16 @@ export default function LiffProvider({ children }: LiffProviderProps) {
     );
   }
 
+  // If no Firebase session or no username, show UsernameScreen
+  if (!hasUsername) {
+    return (
+      <LiffContext.Provider value={{ isReady, error }}>
+        <UsernameScreen />
+      </LiffContext.Provider>
+    );
+  }
+
+  // User has Firebase session and username, show children
   return (
     <LiffContext.Provider value={{ isReady, error }}>
       {children}
