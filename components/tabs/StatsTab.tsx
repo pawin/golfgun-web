@@ -2,10 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { useAuthState } from 'react-firebase-hooks/auth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGolfBall, faChartLine, faTrophy, faCalendar, faMapMarkerAlt, faBullseye, faWater, faChartBar, faFlag } from '@fortawesome/free-solid-svg-icons';
-import { auth } from '@/lib/firebase/config';
+import { useCurrentUserId } from '@/components/providers/AuthProvider';
 import { roundService } from '@/lib/services/roundService';
 import { Round, calculateGir, roundScorecardBridge, roundIsFinished } from '@/lib/models/round';
 import { HoleStats } from '@/lib/models/round';
@@ -45,33 +44,33 @@ interface ScoringBreakdownStats {
 
 export default function StatsTab() {
   const t = useTranslations();
-  const [user, loading] = useAuthState(auth);
+  const userId = useCurrentUserId();
   const [basicStats, setBasicStats] = useState<RoundStatistics | null>(null);
   const [performanceStats, setPerformanceStats] = useState<PerformanceStats | null>(null);
   const [scoringBreakdown, setScoringBreakdown] = useState<ScoringBreakdownStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (user && !loading) {
+    if (userId) {
       loadStats();
     }
-  }, [user, loading]);
+  }, [userId]);
 
   const loadStats = async () => {
-    if (!user) return;
+    if (!userId) return;
 
     setIsLoading(true);
 
     try {
-      const rounds = await roundService.getAllRounds(user.uid);
+      const rounds = await roundService.getAllRounds(userId);
       const finishedRounds = rounds.filter((r) => !r.deletedAt && roundIsFinished(r));
 
       // Filter to only include rounds where every hole has a score > 0
-      const validRounds = finishedRounds.filter((r) => isRoundCompleteWithAllScores(r, user.uid));
+      const validRounds = finishedRounds.filter((r) => isRoundCompleteWithAllScores(r, userId));
 
-      setBasicStats(calculateBasicStatistics(validRounds, user.uid));
-      setPerformanceStats(calculatePerformanceStats(validRounds, user.uid));
-      setScoringBreakdown(calculateScoringBreakdown(validRounds, user.uid));
+      setBasicStats(calculateBasicStatistics(validRounds, userId));
+      setPerformanceStats(calculatePerformanceStats(validRounds, userId));
+      setScoringBreakdown(calculateScoringBreakdown(validRounds, userId));
     } catch (e) {
       console.error('Failed to load statistics:', e);
     } finally {
@@ -79,7 +78,7 @@ export default function StatsTab() {
     }
   };
 
-  if (loading || isLoading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -87,7 +86,7 @@ export default function StatsTab() {
     );
   }
 
-  if (!user) {
+  if (!userId) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <p className="text-gray-600">{t('notSignedIn')}</p>

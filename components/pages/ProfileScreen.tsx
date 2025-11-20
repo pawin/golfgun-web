@@ -3,10 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
-import { useAuthState } from 'react-firebase-hooks/auth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserXmark, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { auth } from '@/lib/firebase/config';
+import { useCurrentUserId, useAuth } from '@/components/providers/AuthProvider';
 import { userService } from '@/lib/services/userService';
 import { roundService } from '@/lib/services/roundService';
 import { friendService, FriendshipWithUser } from '@/lib/services/friendService';
@@ -25,7 +24,8 @@ export default function ProfileScreen() {
   const locale = useLocale();
   const router = useRouter();
   const routeParams = useRouteParams<{ userId?: string }>();
-  const [user, loading] = useAuthState(auth);
+  const { loading } = useAuth();
+  const currentUserId = useCurrentUserId();
   const [profileUser, setProfileUser] = useState<AppUser | null>(null);
   const [rounds, setRounds] = useState<Round[]>([]);
   const [users, setUsers] = useState<Record<string, AppUser>>({});
@@ -33,73 +33,71 @@ export default function ProfileScreen() {
   const [headToHead, setHeadToHead] = useState<HeadToHeadStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isFriendshipLoading, setIsFriendshipLoading] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
+  const [profileUserId, setProfileUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    setUserId(routeParams.userId ?? null);
+    setProfileUserId(routeParams.userId ?? null);
   }, [routeParams.userId]);
 
   useEffect(() => {
-    if (userId && user && !loading) {
+    if (profileUserId && currentUserId && !loading) {
       loadData();
     }
-  }, [userId, user, loading]);
+  }, [profileUserId, currentUserId, loading]);
 
   const loadData = async () => {
-    if (!userId || !user) return;
+    if (!profileUserId || !currentUserId) return;
 
     setIsLoading(true);
     setIsFriendshipLoading(true);
 
     try {
-      const targetUser = await userService.getUserById(userId);
+      const targetUser = await userService.getUserById(profileUserId);
       setProfileUser(targetUser);
 
-      if (user.uid) {
-        const allRounds = await roundService.getAllRounds(user.uid);
-        const userRounds = allRounds
-          .filter(
-            (r) =>
-              !r.deletedAt &&
-              roundIsFinished(r) &&
-              (r.memberIds.includes(userId) || r.adminId === userId)
-          )
-          .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+      const allRounds = await roundService.getAllRounds(currentUserId);
+      const userRounds = allRounds
+        .filter(
+          (r) =>
+            !r.deletedAt &&
+            roundIsFinished(r) &&
+            (r.memberIds.includes(profileUserId) || r.adminId === profileUserId)
+        )
+        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
-        setRounds(userRounds);
+      setRounds(userRounds);
 
-        // Fetch all users for rounds display and head-to-head calculation
-        const allUserIds = new Set<string>();
-        allRounds.forEach((r) => {
-          allUserIds.add(r.adminId);
-          r.memberIds.forEach((id) => allUserIds.add(id));
-        });
+      // Fetch all users for rounds display and head-to-head calculation
+      const allUserIds = new Set<string>();
+      allRounds.forEach((r) => {
+        allUserIds.add(r.adminId);
+        r.memberIds.forEach((id) => allUserIds.add(id));
+      });
 
-        if (allUserIds.size > 0) {
-          const usersMap = await userService.getUsersByIds(Array.from(allUserIds));
-          setUsers(usersMap);
+      if (allUserIds.size > 0) {
+        const usersMap = await userService.getUsersByIds(Array.from(allUserIds));
+        setUsers(usersMap);
 
-          if (user.uid !== userId) {
-            const usersMapForService = new Map<string, AppUser>();
-            Object.entries(usersMap).forEach(([id, user]) => {
-              usersMapForService.set(id, user);
-            });
+        if (currentUserId !== profileUserId) {
+          const usersMapForService = new Map<string, AppUser>();
+          Object.entries(usersMap).forEach(([id, user]) => {
+            usersMapForService.set(id, user);
+          });
 
-            const stats = HeadToHeadService.calculate({
-              rounds: allRounds,
-              currentUserId: user.uid,
-              otherUserId: userId,
-              users: usersMapForService,
-            });
-            setHeadToHead(stats);
+          const stats = HeadToHeadService.calculate({
+            rounds: allRounds,
+            currentUserId: currentUserId,
+            otherUserId: profileUserId,
+            users: usersMapForService,
+          });
+          setHeadToHead(stats);
 
-            const friendshipData = await friendService.getFriendship(user.uid, userId);
-            setFriendship(friendshipData);
-          }
-        } else if (user.uid !== userId) {
-          const friendshipData = await friendService.getFriendship(user.uid, userId);
+          const friendshipData = await friendService.getFriendship(currentUserId, profileUserId);
           setFriendship(friendshipData);
         }
+      } else if (currentUserId !== profileUserId) {
+        const friendshipData = await friendService.getFriendship(currentUserId, profileUserId);
+        setFriendship(friendshipData);
       }
     } catch (e) {
       console.error('Failed to load profile:', e);
@@ -110,7 +108,7 @@ export default function ProfileScreen() {
   };
 
   const refreshFriendship = async () => {
-    if (!user || !userId || user.uid === userId) {
+    if (!currentUserId || !profileUserId || currentUserId === profileUserId) {
       setFriendship(null);
       setIsFriendshipLoading(false);
       return;
@@ -119,7 +117,7 @@ export default function ProfileScreen() {
     setIsFriendshipLoading(true);
 
     try {
-      const friendshipData = await friendService.getFriendship(user.uid, userId);
+      const friendshipData = await friendService.getFriendship(currentUserId, profileUserId);
       setFriendship(friendshipData);
     } catch (e) {
       console.error('Failed to refresh friendship:', e);
@@ -129,10 +127,10 @@ export default function ProfileScreen() {
   };
 
   const handleSendFriendRequest = async () => {
-    if (!user || !profileUser) return;
+    if (!currentUserId || !profileUser) return;
     try {
       await friendService.sendFriendRequest({
-        fromUserId: user.uid,
+        fromUserId: currentUserId,
         toUserId: profileUser.id,
       });
       await refreshFriendship();
@@ -142,10 +140,10 @@ export default function ProfileScreen() {
   };
 
   const handleAcceptFriendRequest = async () => {
-    if (!user || !profileUser) return;
+    if (!currentUserId || !profileUser) return;
     try {
       await friendService.acceptFriendRequest({
-        currentUserId: user.uid,
+        currentUserId: currentUserId,
         otherUserId: profileUser.id,
       });
       await refreshFriendship();
@@ -155,10 +153,10 @@ export default function ProfileScreen() {
   };
 
   const handleDeclineFriendRequest = async () => {
-    if (!user || !profileUser) return;
+    if (!currentUserId || !profileUser) return;
     try {
       await friendService.declineFriendRequest({
-        currentUserId: user.uid,
+        currentUserId: currentUserId,
         otherUserId: profileUser.id,
       });
       await refreshFriendship();
@@ -168,10 +166,10 @@ export default function ProfileScreen() {
   };
 
   const handleCancelFriendRequest = async () => {
-    if (!user || !profileUser) return;
+    if (!currentUserId || !profileUser) return;
     try {
       await friendService.cancelFriendRequest({
-        fromUserId: user.uid,
+        fromUserId: currentUserId,
         toUserId: profileUser.id,
       });
       await refreshFriendship();
@@ -181,12 +179,12 @@ export default function ProfileScreen() {
   };
 
   const handleRemoveFriend = async () => {
-    if (!user || !profileUser) return;
+    if (!currentUserId || !profileUser) return;
     if (!confirm(t('friendsRemoveConfirmMessage', { name: profileUser.name }))) return;
 
     try {
       await friendService.removeFriend({
-        userId1: user.uid,
+        userId1: currentUserId,
         userId2: profileUser.id,
       });
       await refreshFriendship();
@@ -211,8 +209,7 @@ export default function ProfileScreen() {
     );
   }
 
-  const currentUserId = user?.uid || '';
-  const isOwnProfile = currentUserId === userId;
+  const isOwnProfile = currentUserId === profileUserId;
   const canShowFriendActions = !isOwnProfile && currentUserId && ['member', 'temporary'].includes(profileUser.role || '');
 
   return (

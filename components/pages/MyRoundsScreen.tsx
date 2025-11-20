@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from '@/lib/firebase/config';
+import { useCurrentUserId } from '@/components/providers/AuthProvider';
 import { roundService } from '@/lib/services/roundService';
 import { userService } from '@/lib/services/userService';
 import { Round, roundIsFinished } from '@/lib/models/round';
@@ -13,26 +12,26 @@ import { AppIconHomeLink } from '@/components/ui/AppIconHomeLink';
 
 export default function MyRoundsScreen() {
   const t = useTranslations();
-  const [user, loading] = useAuthState(auth);
+  const userId = useCurrentUserId();
   const [rounds, setRounds] = useState<Round[]>([]);
   const [users, setUsers] = useState<Record<string, AppUser>>({});
   const [loadingRounds, setLoadingRounds] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    if (user && !loading) {
+    if (userId) {
       loadRounds();
     }
-  }, [user, loading]);
+  }, [userId]);
 
   const loadRounds = async () => {
-    if (!user) return;
+    if (!userId) return;
 
     setLoadingRounds(true);
     setError(null);
 
     try {
-      const allRounds = await roundService.getAllRounds(user.uid);
+      const allRounds = await roundService.getAllRounds(userId);
       
       // Filter finished rounds and sort by date
       const finishedRounds = allRounds
@@ -59,7 +58,7 @@ export default function MyRoundsScreen() {
     }
   };
 
-  if (loading || loadingRounds) {
+  if (loadingRounds) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -67,7 +66,7 @@ export default function MyRoundsScreen() {
     );
   }
 
-  if (!user) {
+  if (!userId) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <p className="text-muted-foreground">{t('notSignedIn')}</p>
@@ -116,7 +115,7 @@ export default function MyRoundsScreen() {
             <RoundCardView
               key={round.id}
               round={round}
-              currentUserId={user.uid}
+              currentUserId={userId}
               users={users}
             />
           ))}

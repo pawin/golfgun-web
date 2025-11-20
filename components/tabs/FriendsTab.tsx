@@ -3,10 +3,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { useAuthState } from 'react-firebase-hooks/auth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { auth } from '@/lib/firebase/config';
+import { useCurrentUserId } from '@/components/providers/AuthProvider';
 import { friendService, FriendOverview, FriendshipWithUser } from '@/lib/services/friendService';
 import { AppUser } from '@/lib/models/appUser';
 import { colorFromName, getInitials } from '@/lib/utils/validator';
@@ -26,7 +25,7 @@ export default function FriendsTab() {
   const t = useTranslations();
   const router = useRouter();
   const locale = useLocale();
-  const [user, loading] = useAuthState(auth);
+  const userId = useCurrentUserId();
   const [overview, setOverview] = useState<FriendOverview | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSearching, setIsSearching] = useState(false);
@@ -37,10 +36,10 @@ export default function FriendsTab() {
   const { setFriendsBadge } = useTabBadge();
 
   useEffect(() => {
-    if (user && !loading) {
+    if (userId) {
       loadOverview();
     }
-  }, [user, loading]);
+  }, [userId]);
 
   // Update badge when overview changes (only when we have data)
   useEffect(() => {
@@ -53,7 +52,7 @@ export default function FriendsTab() {
   }, [overview, setFriendsBadge]);
 
   const loadOverview = async () => {
-    if (!user) {
+    if (!userId) {
       const emptyOverview = {
         friends: [],
         incomingRequests: [],
@@ -68,7 +67,7 @@ export default function FriendsTab() {
     setIsLoading(true);
 
     try {
-      const data = await friendService.loadOverview(user.uid);
+      const data = await friendService.loadOverview(userId);
       setOverview(data);
       setErrorMessage(null);
       refreshSearchRelationshipsWithData(data);
@@ -104,7 +103,7 @@ export default function FriendsTab() {
   };
 
   const performSearch = async (query: string) => {
-    if (!user) return;
+    if (!userId) return;
 
     const trimmed = query.trim().toLowerCase();
 
@@ -119,7 +118,7 @@ export default function FriendsTab() {
     try {
       const results = await friendService.searchUsers({
         query: trimmed,
-        excludeUserId: user.uid,
+        excludeUserId: userId,
       });
 
       const entries: SearchResultEntry[] = Object.values(results).map((user) => ({
@@ -136,7 +135,7 @@ export default function FriendsTab() {
   };
 
   const relationshipForUser = (targetUser: AppUser, overviewData?: FriendOverview): FriendRelationship => {
-    if (!user || targetUser.id === user.uid) return 'self';
+    if (!userId || targetUser.id === userId) return 'self';
     const data = overviewData || overview;
     if (!data) return 'none';
 
@@ -171,14 +170,14 @@ export default function FriendsTab() {
   };
 
   const sendRequest = async (target: AppUser) => {
-    if (!user) {
+    if (!userId) {
       showError(t('notSignedIn'));
       return;
     }
 
     try {
       await friendService.sendFriendRequest({
-        fromUserId: user.uid,
+        fromUserId: userId,
         toUserId: target.id,
       });
       await loadOverview();
@@ -188,11 +187,11 @@ export default function FriendsTab() {
   };
 
   const acceptRequest = async (entry: FriendshipWithUser) => {
-    if (!user) return;
+    if (!userId) return;
 
     try {
       await friendService.acceptFriendRequest({
-        currentUserId: user.uid,
+        currentUserId: userId,
         otherUserId: entry.otherUser.id,
       });
       await loadOverview();
@@ -202,11 +201,11 @@ export default function FriendsTab() {
   };
 
   const declineRequest = async (entry: FriendshipWithUser) => {
-    if (!user) return;
+    if (!userId) return;
 
     try {
       await friendService.declineFriendRequest({
-        currentUserId: user.uid,
+        currentUserId: userId,
         otherUserId: entry.otherUser.id,
       });
       await loadOverview();
@@ -216,11 +215,11 @@ export default function FriendsTab() {
   };
 
   const cancelRequest = async (entry: FriendshipWithUser) => {
-    if (!user) return;
+    if (!userId) return;
 
     try {
       await friendService.cancelFriendRequest({
-        fromUserId: user.uid,
+        fromUserId: userId,
         toUserId: entry.otherUser.id,
       });
       await loadOverview();
@@ -238,7 +237,7 @@ export default function FriendsTab() {
     setTimeout(() => setErrorMessage(null), 5000);
   };
 
-  if (loading || isLoading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -246,7 +245,7 @@ export default function FriendsTab() {
     );
   }
 
-  if (!user) {
+  if (!userId) {
     return (
       <div className="min-h-screen bg-background">
         <div className="sticky top-0 bg-background border-b border-border px-4 py-3 flex items-center gap-3">

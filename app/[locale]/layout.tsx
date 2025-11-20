@@ -3,6 +3,7 @@ import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { locales } from '@/i18n';
 import LiffProvider from '@/components/providers/LiffProvider';
+import AuthProvider from '@/components/providers/AuthProvider';
 import '../globals.css';
 
 export function generateStaticParams() {
@@ -27,7 +28,9 @@ export default async function LocaleLayout({
   return (
     <NextIntlClientProvider messages={messages}>
       <LiffProvider>
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </LiffProvider>
     </NextIntlClientProvider>
   );

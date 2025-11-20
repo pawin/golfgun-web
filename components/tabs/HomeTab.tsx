@@ -3,10 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { useAuthState } from 'react-firebase-hooks/auth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlay, faGolfBall, faChartLine, faTrophy, faCalendar, faMapMarkerAlt, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { auth } from '@/lib/firebase/config';
+import { useCurrentUserId } from '@/components/providers/AuthProvider';
 import { roundService } from '@/lib/services/roundService';
 import { userService } from '@/lib/services/userService';
 import { userMigrationService } from '@/lib/services/userMigrationService';
@@ -34,7 +33,7 @@ interface RoundStatistics {
 export default function HomeTab() {
   const t = useTranslations();
   const router = useRouter();
-  const [user, loading] = useAuthState(auth);
+  const userId = useCurrentUserId();
   const [activeRounds, setActiveRounds] = useState<Round[]>([]);
   const [users, setUsers] = useState<Record<string, AppUser>>({});
   const [stats, setStats] = useState<RoundStatistics | null>(null);
@@ -43,11 +42,11 @@ export default function HomeTab() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (user && !loading) {
+    if (userId) {
       loadRounds();
       loadStatistics();
     }
-  }, [user, loading]);
+  }, [userId]);
 
   // // Check LINE LIFF and perform migration if needed
   // useEffect(() => {
@@ -81,18 +80,18 @@ export default function HomeTab() {
   // }, [user, loading]);
 
   const loadRounds = async () => {
-    if (!user) return;
+    if (!userId) return;
 
     setLoadingRounds(true);
     setError(null);
 
     try {
-      const allRounds = await roundService.getAllRounds(user.uid);      
+      const allRounds = await roundService.getAllRounds(userId);      
       // Filter active rounds (not finished, not deleted)
       // Include rounds where the user is a member or the admin
       const active = allRounds
         .filter((r) => {
-          const isMember = r.memberIds.includes(user.uid) || r.adminId === user.uid;
+          const isMember = r.memberIds.includes(userId) || r.adminId === userId;
           const notDeleted = !r.deletedAt;
           const notFinished = !roundIsFinished(r);
           return isMember && notDeleted && notFinished;
@@ -102,7 +101,7 @@ export default function HomeTab() {
       setActiveRounds(active);
 
       // Fetch users
-      const allUserIds = new Set<string>([user.uid]);
+      const allUserIds = new Set<string>([userId]);
       active.forEach((r) => {
         allUserIds.add(r.adminId);
         r.memberIds.forEach((id) => allUserIds.add(id));
@@ -120,18 +119,18 @@ export default function HomeTab() {
   };
 
   const loadStatistics = async () => {
-    if (!user) return;
+    if (!userId) return;
 
     setLoadingStats(true);
 
     try {
-      const allRounds = await roundService.getAllRounds(user.uid);
+      const allRounds = await roundService.getAllRounds(userId);
       const finishedRounds = allRounds.filter((r) => !r.deletedAt && roundIsFinished(r));
 
       // Filter to only include rounds where every hole has a score > 0
-      const validRounds = finishedRounds.filter((r) => isRoundCompleteWithAllScores(r, user.uid));
+      const validRounds = finishedRounds.filter((r) => isRoundCompleteWithAllScores(r, userId));
 
-      setStats(calculateStatistics(validRounds, user.uid));
+      setStats(calculateStatistics(validRounds, userId));
     } catch (e) {
       console.error('Failed to load statistics:', e);
     } finally {
@@ -143,7 +142,7 @@ export default function HomeTab() {
     router.push('/courses');
   };
 
-  if (loading || loadingRounds) {
+  if (loadingRounds) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -151,7 +150,7 @@ export default function HomeTab() {
     );
   }
 
-  if (!user) {
+  if (!userId) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <p className="text-muted-foreground">{t('notSignedIn')}</p>
@@ -159,7 +158,7 @@ export default function HomeTab() {
     );
   }
 
-  const appUser = users[user.uid];
+  const appUser = users[userId];
   const userName = appUser?.name || t('player');
 
   return (
@@ -186,7 +185,7 @@ export default function HomeTab() {
 
         {/* Active Rounds Section */}
         {activeRounds.length > 0 ? (
-          <ActiveRoundsSection rounds={activeRounds} users={users} currentUserId={user.uid} />
+          <ActiveRoundsSection rounds={activeRounds} users={users} currentUserId={userId} />
         ) : !loadingRounds && !error ? (
           <Card>
             <CardContent className="p-4 text-center">

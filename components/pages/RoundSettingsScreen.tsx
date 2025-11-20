@@ -3,10 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
-import { useAuthState } from 'react-firebase-hooks/auth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { auth } from '@/lib/firebase/config';
+import { useCurrentUserId, useAuth } from '@/components/providers/AuthProvider';
 import { roundService } from '@/lib/services/roundService';
 import { spinnerService } from '@/lib/services/spinnerService';
 import { Round, RoundGame } from '@/lib/models/round';
@@ -26,7 +25,8 @@ export default function RoundSettingsScreen() {
   const locale = useLocale();
   const routeParams = useRouteParams<{ id?: string }>();
   const searchParams = useSearchParams();
-  const [user, loading] = useAuthState(auth);
+  const { loading } = useAuth();
+  const userId = useCurrentUserId();
   const [round, setRound] = useState<Round | null>(null);
   const [users, setUsers] = useState<Record<string, AppUser>>({});
   const [roundId, setRoundId] = useState<string | null>(null);
@@ -41,7 +41,7 @@ export default function RoundSettingsScreen() {
   }, [routeParams.id]);
 
   useEffect(() => {
-    if (!roundId || !user) return;
+    if (!roundId || !userId) return;
 
     const unsubscribe = roundService.watchRound(
       roundId,
@@ -65,7 +65,7 @@ export default function RoundSettingsScreen() {
     );
 
     return () => unsubscribe();
-  }, [roundId, user, router, locale]);
+  }, [roundId, userId, router, locale]);
 
   const handleRemoveMember = async (memberId: string) => {
     if (!roundId || !round) return;
@@ -80,11 +80,11 @@ export default function RoundSettingsScreen() {
   };
 
   const handleLeaveRound = async () => {
-    if (!roundId || !user) return;
+    if (!roundId || !userId) return;
     if (!confirm(t('leaveRoundConfirm'))) return;
 
     try {
-      await roundService.leaveRound(roundId, user.uid);
+      await roundService.leaveRound(roundId, userId);
       alert(t('leftRound'));
       router.back();
     } catch (e) {
@@ -93,12 +93,12 @@ export default function RoundSettingsScreen() {
   };
 
   const handleDeleteRound = async () => {
-    if (!roundId || !user || !round) return;
+    if (!roundId || !userId || !round) return;
     if (!confirm(t('deleteRoundWarning'))) return;
 
     setIsDeleting(true);
     try {
-      await roundService.deleteRound(roundId, user.uid);
+      await roundService.deleteRound(roundId, userId);
       router.replace(`/${locale}`);
     } catch (e) {
       alert(t('failedToDeleteRound', { error: (e as Error).toString() }));
@@ -183,8 +183,8 @@ export default function RoundSettingsScreen() {
   }
 
   function renderTeeboxInfo() {
-    if (!round || !user) return null;
-    const selectedIds: string[] = Array.isArray(round.userTeeboxes[user.uid]) ? (round.userTeeboxes[user.uid] as string[]) : [];
+    if (!round || !userId) return null;
+    const selectedIds: string[] = Array.isArray(round.userTeeboxes[userId]) ? (round.userTeeboxes[userId] as string[]) : [];
     if (selectedIds.length === 0 || !Array.isArray(round.scorecards) || round.scorecards.length === 0) return null;
 
     // Multiple scorecards (front/back)
@@ -281,11 +281,11 @@ export default function RoundSettingsScreen() {
     );
   }
 
-  const isAdmin = round.adminId === user?.uid;
-  const isMember = round.memberIds.includes(user?.uid || '');
+  const isAdmin = round.adminId === userId;
+  const isMember = round.memberIds.includes(userId || '');
 
   // If gameId is provided, show GameSettingsScreen
-  if (gameId && user) {
+  if (gameId && userId) {
     const game = round.games.find((g) => g.id === gameId);
     if (game) {
       return (
@@ -293,7 +293,7 @@ export default function RoundSettingsScreen() {
           round={round}
           game={game}
           users={users}
-          currentUserId={user.uid}
+          currentUserId={userId}
           onClose={() => {
             if (roundId) {
               router.push(`/${locale}/rounds/${roundId}`);
@@ -329,7 +329,7 @@ export default function RoundSettingsScreen() {
 
       <div className="p-4 space-y-4">
         {/* Teebox Section (V2 only) */}
-        {round.version === '2' && user && (
+        {round.version === '2' && userId && (
           <div className="bg-card border border-border rounded-lg p-4">
             <div className="flex items-center justify-between">
               <p className="font-medium">{t('myTeebox')}</p>
@@ -439,10 +439,10 @@ export default function RoundSettingsScreen() {
       </div>
 
       {/* Teebox selector overlay */}
-      {showTeeboxSelector && user && round && (
+      {showTeeboxSelector && userId && round && (
         <TeeboxSelector
           round={round}
-          currentUserId={user.uid}
+          currentUserId={userId}
           onClose={() => setShowTeeboxSelector(false)}
         />
       )}

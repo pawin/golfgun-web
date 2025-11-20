@@ -2,8 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from '@/lib/firebase/config';
+import { useAuth } from '@/components/providers/AuthProvider';
 import { Round, roundIsMember } from '@/lib/models/round';
 import { SpinnerEntry } from '@/lib/models/spinnerEntry';
 import { spinnerService } from '@/lib/services/spinnerService';
@@ -21,7 +20,7 @@ export default function PartyGameSection({ round, currentUserId }: PartyGameSect
   const t = useTranslations();
   const locale = useLocale();
   const intlLocale = locale === "th" ? "th-TH" : locale === "en" ? "en-US" : undefined;
-  const [user] = useAuthState(auth);
+  const { user } = useAuth();
   const [isUpdating, setIsUpdating] = useState(false);
   const [isSpinning, setIsSpinning] = useState(false);
   const [pendingSelectedIndex, setPendingSelectedIndex] = useState<number | null>(null);

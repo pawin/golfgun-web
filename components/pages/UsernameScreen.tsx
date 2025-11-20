@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { useAuthState } from 'react-firebase-hooks/auth';
 import { signInAnonymously } from 'firebase/auth';
 import { doc, runTransaction, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase/config';
@@ -17,33 +16,9 @@ export default function UsernameScreen() {
   const router = useRouter();
   const pathname = usePathname();
   const locale = useLocale();
-  const [user, loading] = useAuthState(auth);
   const [username, setUsername] = useState('');
   const [saving, setSaving] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState('en');
-
-  useEffect(() => {
-    const checkAndMaybeRedirect = async () => {
-      if (loading) return;
-
-      if (user) {
-        // If already signed in, fetch latest user and redirect if a name exists
-        try {
-          userService.invalidateUserCache(user.uid);
-          const appUser = await userService.getUserById(user.uid);
-          const hasName = !!appUser && !!String(appUser.name ?? '').trim();
-          if (hasName) {
-            router.push(`/${locale}`);
-            return;
-          }
-        } catch {
-          // ignore and allow form to show
-        }
-      }
-      // If no user, just show the form - we'll sign in anonymously on save
-    };
-    checkAndMaybeRedirect();
-  }, [user, loading, router, locale]);
 
   // Sync selectedLanguage with current locale
   useEffect(() => {
@@ -111,14 +86,6 @@ export default function UsernameScreen() {
       setSaving(false);
     }
   };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4">

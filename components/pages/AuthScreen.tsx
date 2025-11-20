@@ -3,9 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { useAuthState } from 'react-firebase-hooks/auth';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '@/lib/firebase/config';
+import { useAuth } from '@/components/providers/AuthProvider';
 import { userService } from '@/lib/services/userService';
 import { useLocale } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -18,7 +18,7 @@ export default function AuthScreen() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const locale = useLocale();
-  const [user, loading] = useAuthState(auth);
+  const { user, loading } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [obscurePassword, setObscurePassword] = useState(true);

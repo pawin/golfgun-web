@@ -83,8 +83,12 @@ export default function LiffProvider({ children }: LiffProviderProps) {
         setError(error instanceof Error ? error.message : 'Unknown error');
       }
     };
-
-    initializeLiff();
+    
+    if (liff.isInClient()) {
+      initializeLiff();
+    } else {
+      setIsReady(true);
+    }
   }, []);
 
   if (error) {

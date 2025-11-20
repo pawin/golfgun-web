@@ -3,12 +3,12 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
-import { useAuthState } from 'react-firebase-hooks/auth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationTriangle, faLink, faMap, faCog, faGlobe, faInfoCircle, faMobileAlt, faSignOutAlt, faEye, faEyeSlash, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { linkWithCredential, EmailAuthProvider, type User } from 'firebase/auth';
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
-import { auth, db } from '@/lib/firebase/config';
+import { db } from '@/lib/firebase/config';
+import { useCurrentUserId, useAuth } from '@/components/providers/AuthProvider';
 import { userService } from '@/lib/services/userService';
 import { AppUser } from '@/lib/models/appUser';
 import { getInitials, colorFromName } from '@/lib/utils/validator';
@@ -20,7 +20,8 @@ export default function MoreTab() {
   const t = useTranslations();
   const router = useRouter();
   const locale = useLocale();
-  const [user, loading] = useAuthState(auth);
+  const { user, loading } = useAuth();
+  const userId = useCurrentUserId();
   const [appUser, setAppUser] = useState<AppUser | null>(null);
   const [showLinkDialog, setShowLinkDialog] = useState(false);
   const [linkEmail, setLinkEmail] = useState('');
@@ -31,10 +32,10 @@ export default function MoreTab() {
   const { setMoreBadge } = useTabBadge();
 
   useEffect(() => {
-    if (user) {
+    if (userId) {
       loadUser();
     }
-  }, [user]);
+  }, [userId]);
 
   // Update badge when user data changes (only when we have data)
   useEffect(() => {
@@ -47,9 +48,9 @@ export default function MoreTab() {
   }, [appUser, setMoreBadge]);
 
   const loadUser = async () => {
-    if (!user) return;
+    if (!userId) return;
     try {
-      const userData = await userService.getUserById(user.uid);
+      const userData = await userService.getUserById(userId);
       setAppUser(userData);
     } catch (e) {
       console.error('Failed to load user:', e);
@@ -57,7 +58,7 @@ export default function MoreTab() {
   };
 
   const handleLinkAccount = async () => {
-    if (!user) return;
+    if (!user || !userId) return;
 
     if (!linkEmail.trim() || !linkPassword) {
       alert(t('enterValidEmail'));
@@ -70,7 +71,7 @@ export default function MoreTab() {
       const credential = EmailAuthProvider.credential(linkEmail.trim(), linkPassword);
       await linkWithCredential(user as User, credential);
 
-      await updateDoc(doc(db, 'users', user.uid), {
+      await updateDoc(doc(db, 'users', userId), {
         email: linkEmail.trim(),
         role: 'member',
         registered: true,

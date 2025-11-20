@@ -3,10 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { useAuthState } from 'react-firebase-hooks/auth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCog } from '@fortawesome/free-solid-svg-icons';
-import { auth } from '@/lib/firebase/config';
+import { useAuth } from '@/components/providers/AuthProvider';
 import { roundService } from '@/lib/services/roundService';
 import { userService } from '@/lib/services/userService';
 import { Round, roundIsFinished } from '@/lib/models/round';
@@ -28,7 +27,7 @@ export default function RoundDetailScreen() {
   const router = useRouter();
   const locale = useLocale(); // Must be called at top level, before any conditional returns
   const routeParams = useRouteParams<{ id?: string }>();
-  const [user, loading] = useAuthState(auth);
+  const { user, loading, userId } = useAuth();
   const [round, setRound] = useState<Round | null>(null);
   const [users, setUsers] = useState<Record<string, AppUser>>({});
   const [currentUserData, setCurrentUserData] = useState<AppUser | null>(null);
@@ -71,9 +70,9 @@ export default function RoundDetailScreen() {
         if (
           updatedRound.version === '2' &&
           !teeboxDialogShown &&
-          user?.uid &&
-          updatedRound.memberIds.includes(user.uid) &&
-          (!updatedRound.userTeeboxes[user.uid] || updatedRound.userTeeboxes[user.uid].length === 0)
+          userId &&
+          updatedRound.memberIds.includes(userId) &&
+          (!updatedRound.userTeeboxes[userId] || updatedRound.userTeeboxes[userId].length === 0)
         ) {
           setShowTeeboxDialog(true);
           setTeeboxDialogShown(true);
@@ -87,21 +86,21 @@ export default function RoundDetailScreen() {
     );
 
     return () => unsubscribe();
-  }, [roundId, user?.uid, teeboxDialogShown]);
+  }, [roundId, userId, teeboxDialogShown]);
 
   // Fetch current user data
   useEffect(() => {
-    if (!user?.uid) {
+    if (!userId) {
       setCurrentUserData(null);
       return;
     }
 
-    userService.getUsersByIds([user.uid]).then((fetchedUsers) => {
-      if (fetchedUsers[user.uid]) {
-        setCurrentUserData(fetchedUsers[user.uid]);
+    userService.getUsersByIds([userId]).then((fetchedUsers) => {
+      if (fetchedUsers[userId]) {
+        setCurrentUserData(fetchedUsers[userId]);
       }
     });
-  }, [user?.uid]);
+  }, [userId]);
 
   if (loading || loadingRound) {
     return (
@@ -126,13 +125,13 @@ export default function RoundDetailScreen() {
     );
   }
 
-  const isAdmin = round.adminId === user?.uid;
-  const isMember = round.memberIds.includes(user?.uid || '');
+  const isAdmin = round.adminId === userId;
+  const isMember = round.memberIds.includes(userId || '');
 
   // Calculate teebox info if available
   const getTeeboxInfo = () => {
-    if (!user?.uid) return null;
-    const selectedIds = (round.userTeeboxes[user.uid] || []) as string[];
+    if (!userId) return null;
+    const selectedIds = (round.userTeeboxes[userId] || []) as string[];
     if (selectedIds.length === 0 || round.scorecards.length === 0) return null;
 
     const allTees: TeeboxRow[] = round.scorecards.flatMap((scorecard) => [
@@ -173,7 +172,7 @@ export default function RoundDetailScreen() {
           <AddPlayerMenu
             roundId={round.id}
             round={round}
-            currentUserId={user?.uid || ''}
+            currentUserId={userId || ''}
             onUpdate={() => {
               // Round will update automatically via watchRound
             }}
@@ -213,7 +212,7 @@ export default function RoundDetailScreen() {
         <ScorecardTable
           round={round}
           users={users}
-          currentUserId={user?.uid || ''}
+          currentUserId={userId || ''}
           currentUser={currentUserData || undefined}
           isAdmin={isAdmin}
           isMember={isMember}
@@ -231,7 +230,7 @@ export default function RoundDetailScreen() {
           <GamesView
             round={round}
             users={users}
-            currentUserId={user?.uid || ''}
+            currentUserId={userId || ''}
             onGameTap={(game) => {
               router.push(`/${locale}/rounds/${round.id}/settings?gameId=${game.id}`);
             }}
@@ -240,10 +239,10 @@ export default function RoundDetailScreen() {
       </div>
 
       {/* Teebox Selection Dialog */}
-      {showTeeboxDialog && round && user?.uid && (
+      {showTeeboxDialog && round && userId && (
         <TeeboxSelector
           round={round}
-          currentUserId={user.uid}
+          currentUserId={userId}
           onClose={() => setShowTeeboxDialog(false)}
         />
       )}

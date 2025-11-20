@@ -201,15 +201,6 @@ export class UserService {
     }
   }
 
-  async ensureAnonymousSignIn(): Promise<void> {
-    if (typeof window === 'undefined') {
-      throw new Error('UserService can only be used on the client side');
-    }
-    if (!auth.currentUser) {
-      await signInAnonymously(auth);
-    }
-  }
-
   async getUserById(userId: string): Promise<AppUser | null> {
     if (typeof window === 'undefined') {
       throw new Error('UserService can only be used on the client side');

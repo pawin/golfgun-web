@@ -3,8 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from '@/lib/firebase/config';
+import { useCurrentUserId } from '@/components/providers/AuthProvider';
 import { scorecardService } from '@/lib/services/scorecardService';
 import { courseService } from '@/lib/services/courseService';
 import { roundService } from '@/lib/services/roundService';
@@ -16,7 +15,7 @@ export default function StartRoundScreen() {
   const t = useTranslations();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [user, loading] = useAuthState(auth);
+  const userId = useCurrentUserId();
   const [course, setCourse] = useState<Course | null>(null);
   const [scorecards, setScorecards] = useState<Scorecard[]>([]);
   const [loadingScorecards, setLoadingScorecards] = useState(true);
@@ -92,7 +91,7 @@ export default function StartRoundScreen() {
   const canStart = selectedFirst != null;
 
   const handleStart = async () => {
-    if (!user || !course) return;
+    if (!userId || !course) return;
 
     const selectedIds: string[] = [];
     if (selectedFirst) selectedIds.push(selectedFirst);
@@ -103,7 +102,7 @@ export default function StartRoundScreen() {
     setIsStarting(true);
     try {
       const round = await roundService.startRound(
-        user.uid,
+        userId,
         selectedIds,
         course,
         scorecards
@@ -116,7 +115,7 @@ export default function StartRoundScreen() {
     }
   };
 
-  if (loading || loadingScorecards) {
+  if (loadingScorecards) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -124,7 +123,7 @@ export default function StartRoundScreen() {
     );
   }
 
-  if (!user) {
+  if (!userId) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <p className="text-muted-foreground">{t('notSignedIn')}</p>

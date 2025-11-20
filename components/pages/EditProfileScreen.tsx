@@ -3,10 +3,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
-import { useAuthState } from 'react-firebase-hooks/auth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
-import { auth } from '@/lib/firebase/config';
+import { useCurrentUserId } from '@/components/providers/AuthProvider';
 import { userService } from '@/lib/services/userService';
 import { AppUser } from '@/lib/models/appUser';
 import { getInitials, colorFromName, sanitizeUsername } from '@/lib/utils/validator';
@@ -17,7 +16,7 @@ export default function EditProfileScreen() {
   const t = useTranslations();
   const router = useRouter();
   const locale = useLocale();
-  const [user, loading] = useAuthState(auth);
+  const userId = useCurrentUserId();
   const [appUser, setAppUser] = useState<AppUser | null>(null);
   const [name, setName] = useState('');
   const [imageBytes, setImageBytes] = useState<Uint8Array | null>(null);
@@ -26,15 +25,15 @@ export default function EditProfileScreen() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (user && !loading) {
+    if (userId) {
       loadUser();
     }
-  }, [user, loading]);
+  }, [userId]);
 
   const loadUser = async () => {
-    if (!user) return;
+    if (!userId) return;
     try {
-      const userData = await userService.getUserById(user.uid);
+      const userData = await userService.getUserById(userId);
       if (userData !== null && userData !== undefined) {
         setAppUser(userData);
         setName(userData.name);
@@ -68,7 +67,7 @@ export default function EditProfileScreen() {
   };
 
   const handleSave = async () => {
-    if (!user || !appUser) return;
+    if (!userId || !appUser) return;
 
     const validationError = sanitizeUsername(name);
     if (validationError) {
@@ -93,7 +92,7 @@ export default function EditProfileScreen() {
     }
   };
 
-  if (loading || !appUser) {
+  if (!appUser) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
