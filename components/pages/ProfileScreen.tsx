@@ -303,7 +303,7 @@ export default function ProfileScreen() {
         )}
 
         {/* Rounds Section */}
-        {!isOwnProfile && (
+        {!isOwnProfile && currentUserId && (
           <div>
             <h2 className="text-lg font-semibold mb-3">
               {t('profileRoundsTogether')} ({rounds.length})
