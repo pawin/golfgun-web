@@ -1,10 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { useCurrentUserId } from '@/components/providers/AuthProvider';
+import { useLiff, liff } from '@/components/providers/LiffProvider';
 import { roundService } from '@/lib/services/roundService';
 import { userService } from '@/lib/services/userService';
+import { userMigrationService } from '@/lib/services/userMigrationService';
 import { Round, roundIsFinished } from '@/lib/models/round';
 import { AppUser } from '@/lib/models/appUser';
 import RoundCardView from '@/components/widgets/RoundCardView';
@@ -13,10 +15,47 @@ import { AppIconHomeLink } from '@/components/ui/AppIconHomeLink';
 export default function MyRoundsScreen() {
   const t = useTranslations();
   const userId = useCurrentUserId();
+  const { isReady: isLiffReady } = useLiff();
   const [rounds, setRounds] = useState<Round[]>([]);
   const [users, setUsers] = useState<Record<string, AppUser>>({});
   const [loadingRounds, setLoadingRounds] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const migrationAttempted = useRef(false);
+
+  // Lightweight migration effect - runs once when both LIFF and Firebase user are available
+  useEffect(() => {
+    const attemptMigration = async () => {
+      // Only attempt once
+      if (migrationAttempted.current) return;
+      
+      // Need both LIFF ready and Firebase user ID
+      if (!isLiffReady || !userId) return;
+      
+      // Only run in LINE client
+      if (!liff.isInClient()) return;
+      
+      // Check if logged in to LIFF
+      if (!liff.isLoggedIn()) return;
+
+      migrationAttempted.current = true;
+
+      try {
+        // Get LINE user ID
+        const profile = await liff.getProfile();
+        const lineUserId = profile.userId;
+
+        if (lineUserId && userId) {
+          // Attempt migration (returns null if old user doesn't exist, which is fine)
+          await userMigrationService.migrateIfOldUserExistsAndLink(lineUserId, userId);
+        }
+      } catch (error) {
+        // Silently handle errors - migration is non-blocking
+        console.debug('User migration attempt failed:', error);
+      }
+    };
+
+    attemptMigration();
+  }, [isLiffReady, userId]);
 
   useEffect(() => {
     if (userId) {

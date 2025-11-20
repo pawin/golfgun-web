@@ -175,6 +175,7 @@ export default function AuthScreen() {
               width={160}
               height={160}
               priority
+              style={{ width: '160px', height: '160px' }}
               className="rounded-full"
             />
           </div>
@@ -252,7 +253,7 @@ export default function AuthScreen() {
                 type="button"
                 onClick={handleResetPassword}
                 disabled={isLoading}
-              className="text-sm text-primary hover:underline"
+                className="text-sm text-primary hover:underline"
               >
                 {t('forgotPassword')}
               </button>

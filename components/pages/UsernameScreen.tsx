@@ -88,28 +88,28 @@ export default function UsernameScreen() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4">
-      <div className="max-w-md w-full space-y-8">
-        {/* Logo */}
-        <div className="flex justify-center">
-          <Image
-            src="/golfgun.png"
-            alt="Golfgun"
-            width={160}
-            height={160}
-            priority
-            className="rounded-full"
-          />
-        </div>
+    <div className="min-h-screen bg-background">
+      <div className="max-w-md mx-auto px-6 py-8">
+        <form onSubmit={handleSave} className="space-y-6">
+          {/* Logo */}
+          <div className="flex justify-center mb-6">
+            <Image
+              src="/golfgun.png"
+              alt="Golfgun"
+              width={160}
+              height={160}
+              priority
+              style={{ width: '160px', height: '160px' }}
+              className="rounded-full"
+            />
+          </div>
 
-        {/* Title */}
-        <div className="text-center">
-          <h1 className="text-2xl font-semibold mb-2">{t('welcomeTitle')}</h1>
-          <p className="text-muted-foreground">{t('chooseUsernameToGetStarted')}</p>
-        </div>
+          {/* Title */}
+          <h1 className="text-2xl font-bold text-center mb-2">{t('welcomeTitle')}</h1>
+          <p className="text-muted-foreground text-center text-sm mb-8">
+            {t('chooseUsernameToGetStarted')}
+          </p>
 
-        {/* Form */}
-        <form onSubmit={handleSave} className="space-y-4">
           {/* Username Field */}
           <div>
             <label className="block text-sm font-medium mb-1">
@@ -149,23 +149,25 @@ export default function UsernameScreen() {
           >
             {saving ? (
               <div className="flex items-center justify-center">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground"></div>
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary-foreground"></div>
               </div>
             ) : (
               t('continueButton')
             )}
           </button>
-        </form>
 
-        {/* Sign In Link */}
-        <div className="text-center">
-          <button
-            onClick={() => router.push(`/${locale}/auth`)}
-            className="text-sm text-primary hover:underline"
-          >
-            {t('alreadyHaveAccountSignIn')}
-          </button>
-        </div>
+          {/* Sign In Link */}
+          <div className="text-center text-sm text-muted-foreground">
+            <button
+              type="button"
+              onClick={() => router.push(`/${locale}/auth`)}
+              disabled={saving}
+              className="text-primary font-semibold hover:underline"
+            >
+              {t('alreadyHaveAccountSignIn')}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
