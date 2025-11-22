@@ -196,7 +196,7 @@ export default function ScorecardTable({
     if (!member) return;
 
     // Check if clicked user is a guest
-    const isGuest = member.role === 'guest' || member.registered === false;
+    const isGuest = member.role === 'guest';
     
     // Check if current user can replace the guest
     const currentUserNotInRound = !round.memberIds.includes(currentUserId);
