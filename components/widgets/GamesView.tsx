@@ -182,7 +182,7 @@ export default function GamesView({
             >
               <span className="inline-flex items-center gap-2">
                 <FontAwesomeIcon icon={faUsers} className="w-4 h-4 text-muted-foreground" />
-                {t('matchplay') || getGameTypeTitle('teamvs')}
+                {t('gameTypeTeamVs') || getGameTypeTitle('teamvs')}
               </span>
             </button>
             <button

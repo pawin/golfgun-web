@@ -448,7 +448,7 @@ export default function GameSettingsScreen({
       </div>
 
       {/* Content */}
-      <div className="p-3 space-y-5">
+      <div className="p-3 space-y-1">
         {/* Player/Team selection */}
         {(gameType === '1v1' || gameType === 'teamvs') ? (
           <>

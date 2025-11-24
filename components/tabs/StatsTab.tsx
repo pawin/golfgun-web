@@ -101,7 +101,7 @@ export default function StatsTab() {
         <h1 className="text-xl font-semibold">{t('statisticsTitle')}</h1>
       </div>
 
-      <div className="p-4 space-y-6">
+      <div className="p-4 space-y-1">
         {/* Summary Section */}
         {basicStats && (
           <>

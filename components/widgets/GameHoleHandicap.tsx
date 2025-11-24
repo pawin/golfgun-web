@@ -109,6 +109,56 @@ export default function GameHoleHandicap({
     return {};
   };
 
+  const formatHandicapStrokesDisplay = (holeNumber: string): React.ReactNode => {
+    const strokes = getHandicapStrokesForHole(holeNumber);
+    if (Object.keys(strokes).length === 0) return '-';
+
+    // Filter to only show players who are in the current game
+    const gameType = game.type.toLowerCase();
+    let gamePlayerIds: string[] = [];
+    if (gameType === 'skins') {
+      gamePlayerIds = currentPlayerIds;
+    } else {
+      gamePlayerIds = [...currentRedTeamIds, ...currentBlueTeamIds];
+    }
+
+    // Filter strokes to only include players in the game
+    const filteredStrokes = Object.entries(strokes).filter(([playerId]) =>
+      gamePlayerIds.includes(playerId)
+    );
+
+    if (filteredStrokes.length === 0) return '-';
+
+    // Sort by memberIds index
+    const sortedEntries = filteredStrokes.sort(([playerIdA], [playerIdB]) => {
+      const indexA = round.memberIds.indexOf(playerIdA);
+      const indexB = round.memberIds.indexOf(playerIdB);
+      // If not found in memberIds, put at the end
+      if (indexA === -1 && indexB === -1) return 0;
+      if (indexA === -1) return 1;
+      if (indexB === -1) return -1;
+      return indexA - indexB;
+    });
+
+    return (
+      <div className="flex flex-col gap-0.5 items-center">
+        {sortedEntries.map(([playerId, value]) => {
+          const player = users[playerId];
+          const playerName = player?.name || playerId;
+          const strokeValue = value >= 0 ? `+${value.toFixed(1)}` : value.toFixed(1);
+          const playerColor = roundColorForPlayer(round, playerId);
+
+          return (
+            <div key={playerId} className="text-xs leading-tight text-center">
+              <span style={{ color: playerColor }} className="font-semibold">{playerName}</span>
+              <span className="text-black"> {strokeValue}</span>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
   const handlePointChange = (holeNumber: string, par: number, newPoint: number) => {
     const newPoints = { ...points };
     newPoints[holeNumber] = { par: par.toString(), point: newPoint };
@@ -183,7 +233,7 @@ export default function GameHoleHandicap({
   return (
     <div>
       {/* Header */}
-      <div className="bg-green-50 border-b border-gray-200 grid grid-cols-[56px_56px_56px_1fr_1fr] gap-2 text-sm font-bold py-3 px-2">
+      <div className="bg-green-50 border-b border-gray-200 grid grid-cols-[10%_10%_10%_10%_60%] gap-2 text-sm font-bold py-3 px-2">
         <div className="text-center">{t('hole')}</div>
         <div className="text-center">{t('par')}</div>
         <div className="text-center">{t('hcp')}</div>
@@ -201,13 +251,16 @@ export default function GameHoleHandicap({
         const strokeCount = getHandicapStrokeCountForHole(holeNumber);
 
         return (
-          <div key={holeNumber} className="border-b border-gray-100 grid grid-cols-[56px_56px_56px_1fr_1fr] gap-2 py-4 px-2">
-            <div className="text-center text-sm">{holeNumber}</div>
-            <div className="text-center text-sm">{par}</div>
-            <div className="text-center text-sm">{handicap}</div>
+          <div key={holeNumber} className="border-b border-gray-100 grid grid-cols-[10%_10%_10%_10%_60%] gap-2 py-4 px-2 items-center">
+            <div className="text-center text-sm flex items-center justify-center">{holeNumber}</div>
+            <div className="text-center text-sm flex items-center justify-center">{par}</div>
+            <div className="text-center text-sm flex items-center justify-center">{handicap}</div>
             <button
               onClick={() => setShowPointDialog({ holeNumber, par, currentPoint: point })}
-              className="text-center text-sm font-semibold text-green-600 hover:text-green-700 flex items-center justify-center gap-1"
+              className={`text-center text-sm font-semibold flex items-center justify-center gap-1 ${point === 1
+                  ? 'text-green-600 hover:text-green-700'
+                  : 'text-red-600 hover:text-red-700'
+                }`}
             >
               {point}
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -216,12 +269,16 @@ export default function GameHoleHandicap({
             </button>
             <button
               onClick={() => setShowHandicapDialog({ holeNumber, par })}
-              className="text-center text-sm font-semibold text-green-600 hover:text-green-700 flex items-center justify-center gap-1"
+              className="text-center text-sm font-semibold text-green-600 hover:text-green-700 flex items-center gap-2 px-2 w-full min-w-0"
             >
-              {strokeCount > 0 ? strokeCount : '-'}
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-              </svg>
+              <div className="flex-1 flex justify-center items-center min-w-0 overflow-hidden">
+                {formatHandicapStrokesDisplay(holeNumber)}
+                <div className="pl-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                </div>
+              </div>
             </button>
           </div>
         );
@@ -415,9 +472,8 @@ function HandicapStrokeDialog({
         </div>
         <div className="flex items-center gap-2">
           <div
-            className={`px-3 py-1 rounded-full text-sm font-bold ${
-              currentStroke === 0.0 ? 'bg-gray-100 text-gray-600' : 'bg-green-50 text-green-600'
-            }`}
+            className={`px-3 py-1 rounded-full text-sm font-bold ${currentStroke === 0.0 ? 'bg-gray-100 text-gray-600' : 'bg-green-50 text-green-600'
+              }`}
           >
             {currentStroke >= 0 ? `+${currentStroke.toFixed(1)}` : currentStroke.toFixed(1)}
           </div>
@@ -501,11 +557,11 @@ function HandicapStrokeDialog({
             {players.map((player) => {
               const gameType = game.type.toLowerCase();
               const color =
-                gameType === '1v1'
+                gameType === '1v1' || gameType === 'skins'
                   ? roundColorForPlayer(round, player.id)
                   : redTeamIds.includes(player.id)
-                  ? roundColorForTeam(0)
-                  : roundColorForTeam(1);
+                    ? roundColorForTeam(0)
+                    : roundColorForTeam(1);
               return buildPlayerStrokeControl(player.id, player.name, color);
             })}
           </div>
@@ -547,11 +603,10 @@ function HandicapStrokeDialog({
                         updateStroke(showStrokePicker.playerId, stroke);
                         setShowStrokePicker(null);
                       }}
-                      className={`w-full flex items-center gap-3 p-3 rounded-lg border-2 ${
-                        isSelected
+                      className={`w-full flex items-center gap-3 p-3 rounded-lg border-2 ${isSelected
                           ? 'border-green-600 bg-green-50'
                           : 'border-gray-200 hover:bg-gray-50'
-                      }`}
+                        }`}
                     >
                       {isSelected ? (
                         <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
