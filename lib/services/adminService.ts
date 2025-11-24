@@ -3,6 +3,7 @@ import { db } from '../firebase/config';
 import { Course } from '../models/course';
 import { Round, roundFromFirestore } from '../models/round';
 import { Scorecard } from '../models/scorecard';
+import { AppUser, appUserFromFirestore } from '../models/appUser';
 import { courseService } from './courseService';
 import { scorecardService, TeeboxUpdatePayload } from './scorecardService';
 
@@ -84,6 +85,23 @@ export class AdminService {
       rounds.push(round);
     }
     return rounds;
+  }
+
+  async getAllUsers(): Promise<AppUser[]> {
+    if (typeof window === 'undefined') {
+      throw new Error('AdminService can only be used on the client side');
+    }
+    const col = collection(db, 'users');
+    const q = query(col, orderBy('name'));
+    const querySnapshot = await getDocs(q);
+
+    const users: AppUser[] = [];
+    for (const docSnap of querySnapshot.docs) {
+      const data = docSnap.data();
+      const user = appUserFromFirestore(data, docSnap.id);
+      users.push(user);
+    }
+    return users;
   }
 }
 

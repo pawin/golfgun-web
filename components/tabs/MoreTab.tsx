@@ -40,8 +40,8 @@ export default function MoreTab() {
   // Update badge when user data changes (only when we have data)
   useEffect(() => {
     if (appUser) {
-      // Show badge if user role is not 'member' (temporary user)
-      const hasTemporaryRole = appUser.role !== 'member';
+      // Show badge if user role is not 'member' and not 'admin' (temporary/guest user)
+      const hasTemporaryRole = appUser.role !== 'member' && appUser.role !== 'admin';
       setMoreBadge(hasTemporaryRole);
     }
     // Don't set to false when appUser is null - keep existing badge state during loading
@@ -113,7 +113,7 @@ export default function MoreTab() {
 
   const isRegistered = appUser?.registered ?? false;
   const userEmail = appUser?.email ?? '';
-  const isAdmin = userEmail.trim().toLowerCase() === 'pt.pawin@gmail.com';
+  const isAdmin = appUser?.role === 'admin';
 
   if (loading) {
     return (
@@ -174,10 +174,10 @@ export default function MoreTab() {
 
         {/* Admin Section */}
         {isAdmin && (
-          <>
+          <div className="bg-card border border-border rounded-lg divide-y">
             <div
               onClick={() => router.push(`/${locale}/admin/courses`)}
-              className="bg-card border border-border rounded-lg p-4 flex items-center justify-between cursor-pointer hover:bg-muted"
+              className="p-4 flex items-center justify-between cursor-pointer hover:bg-muted"
             >
               <div className="flex items-center gap-3">
                 <FontAwesomeIcon icon={faCog} className="text-xl" />
@@ -187,7 +187,7 @@ export default function MoreTab() {
             </div>
             <div
               onClick={() => router.push(`/${locale}/admin/rounds`)}
-              className="bg-card border border-border rounded-lg p-4 flex items-center justify-between cursor-pointer hover:bg-muted"
+              className="p-4 flex items-center justify-between cursor-pointer hover:bg-muted"
             >
               <div className="flex items-center gap-3">
                 <FontAwesomeIcon icon={faCog} className="text-xl" />
@@ -195,7 +195,17 @@ export default function MoreTab() {
               </div>
               <FontAwesomeIcon icon={faChevronRight} className="text-muted-foreground" />
             </div>
-          </>
+            <div
+              onClick={() => router.push(`/${locale}/admin/users`)}
+              className="p-4 flex items-center justify-between cursor-pointer hover:bg-muted"
+            >
+              <div className="flex items-center gap-3">
+                <FontAwesomeIcon icon={faCog} className="text-xl" />
+                <span className="font-medium">Admin • Users</span>
+              </div>
+              <FontAwesomeIcon icon={faChevronRight} className="text-muted-foreground" />
+            </div>
+          </div>
         )}
 
         {/* Language */}

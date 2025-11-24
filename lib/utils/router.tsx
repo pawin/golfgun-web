@@ -11,6 +11,7 @@ import StartRoundScreen from '@/components/pages/StartRoundScreen';
 import UsernameScreen from '@/components/pages/UsernameScreen';
 import AdminCoursesScreen from '@/components/pages/AdminCoursesScreen';
 import AdminRoundsScreen from '@/components/pages/AdminRoundsScreen';
+import AdminUsersScreen from '@/components/pages/AdminUsersScreen';
 import { DesignSystemShowcase } from '@/components/pages/DesignSystemShowcase';
 import { notFound } from 'next/navigation';
 
@@ -157,6 +158,14 @@ export function handleRoute(
   if (first === 'admin' && second === 'rounds' && !third) {
     return {
       component: <AdminRoundsScreen />,
+      params: {},
+    };
+  }
+
+  // Handle /admin/users
+  if (first === 'admin' && second === 'users' && !third) {
+    return {
+      component: <AdminUsersScreen />,
       params: {},
     };
   }

@@ -44,7 +44,7 @@ export function TabBadgeProvider({ children }: { children: ReactNode }) {
       try {
         // Check user role for More tab badge
         const userData = await userService.getUserById(userId);
-        const hasTemporaryRole = userData?.role !== 'member';
+        const hasTemporaryRole = userData?.role !== 'member' && userData?.role !== 'admin';
         setMoreBadge(hasTemporaryRole);
 
         // Check friend requests for Friends tab badge

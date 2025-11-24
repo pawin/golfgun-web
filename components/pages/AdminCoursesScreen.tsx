@@ -1,20 +1,23 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
+import { useCurrentUserId, useAuth } from '@/components/providers/AuthProvider';
+import { userService } from '@/lib/services/userService';
 import { adminService, AdminCourseBundle } from '@/lib/services/adminService';
 import { Scorecard } from '@/lib/models/scorecard';
 
 export default function AdminCoursesScreen() {
   const t = useTranslations();
   const locale = useLocale();
+  const router = useRouter();
+  const { loading: authLoading } = useAuth();
+  const userId = useCurrentUserId();
   const [bundles, setBundles] = useState<AdminCourseBundle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    loadCourses();
-  }, []);
+  const [isCheckingAdmin, setIsCheckingAdmin] = useState(true);
 
   const loadCourses = async () => {
     setIsLoading(true);
@@ -29,7 +32,34 @@ export default function AdminCoursesScreen() {
     }
   };
 
-  if (isLoading) {
+  const checkAdminAndLoad = async () => {
+    if (authLoading) return;
+
+    if (!userId) {
+      router.push(`/${locale}/`);
+      return;
+    }
+
+    try {
+      const appUser = await userService.getUserById(userId);
+      if (appUser?.role !== 'admin') {
+        router.push(`/${locale}/`);
+        return;
+      }
+      setIsCheckingAdmin(false);
+      loadCourses();
+    } catch (e) {
+      console.error('Failed to check admin status:', e);
+      router.push(`/${locale}/`);
+    }
+  };
+
+  useEffect(() => {
+    checkAdminAndLoad();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId, authLoading]);
+
+  if (authLoading || isCheckingAdmin || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>

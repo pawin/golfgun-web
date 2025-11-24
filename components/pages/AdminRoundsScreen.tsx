@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
+import { useCurrentUserId, useAuth } from '@/components/providers/AuthProvider';
+import { userService } from '@/lib/services/userService';
 import { adminService } from '@/lib/services/adminService';
 import { Round } from '@/lib/models/round';
 import { DateFormatter, AppDateFormatStyle } from '@/lib/utils/dateFormatter';
@@ -12,13 +14,12 @@ export default function AdminRoundsScreen() {
   const t = useTranslations();
   const router = useRouter();
   const locale = useLocale();
+  const { loading: authLoading } = useAuth();
+  const userId = useCurrentUserId();
   const [rounds, setRounds] = useState<Round[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    loadRounds();
-  }, []);
+  const [isCheckingAdmin, setIsCheckingAdmin] = useState(true);
 
   const loadRounds = async () => {
     setIsLoading(true);
@@ -33,7 +34,34 @@ export default function AdminRoundsScreen() {
     }
   };
 
-  if (isLoading) {
+  const checkAdminAndLoad = async () => {
+    if (authLoading) return;
+
+    if (!userId) {
+      router.push(`/${locale}/`);
+      return;
+    }
+
+    try {
+      const appUser = await userService.getUserById(userId);
+      if (appUser?.role !== 'admin') {
+        router.push(`/${locale}/`);
+        return;
+      }
+      setIsCheckingAdmin(false);
+      loadRounds();
+    } catch (e) {
+      console.error('Failed to check admin status:', e);
+      router.push(`/${locale}/`);
+    }
+  };
+
+  useEffect(() => {
+    checkAdminAndLoad();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId, authLoading]);
+
+  if (authLoading || isCheckingAdmin || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -100,7 +128,7 @@ export default function AdminRoundsScreen() {
                     </div>
                     <p className="text-sm text-muted-foreground">{memberCount} {t('adminPlayers')}</p>
                     <p className="text-sm text-muted-foreground">
-                      {DateFormatter.format(round.createdAt, AppDateFormatStyle.medium, intlLocale)}
+                      {DateFormatter.format(round.createdAt, AppDateFormatStyle.dateTime, intlLocale)}
                     </p>
                     <div className="mt-2 space-y-1">
                       <p className="text-xs text-muted-foreground">{t('adminRoundId')}: {round.id}</p>
