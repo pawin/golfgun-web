@@ -90,9 +90,6 @@ export default function AuthProvider({ children }: AuthProviderProps) {
   // Derive userId from user object
   const userId = user?.uid ?? null;
 
-  // Combined loading state: Firebase auth loading OR Firebase not ready
-  const isLoading = user?.uid != null && !loading;
-
   // Poll for Firebase initialization until it's ready
   useEffect(() => {
     // Check immediately
@@ -131,7 +128,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     if (isAuthenticating) {
       return;
     }
-    
+
     setIsAuthenticating(true);
     // Check if we're not already on the username or auth screen to avoid infinite loops
     const authScreen = pathname?.includes('/username') || pathname?.includes('/auth');
@@ -152,15 +149,6 @@ export default function AuthProvider({ children }: AuthProviderProps) {
       router.replace(`/${locale}/username`);
     }
   }, [firebaseReady, loading, userId, router, pathname, locale, userService]);
-
-  // Show loading state while Firebase is initializing or auth is loading
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
 
   return (
     <AuthContext.Provider value={{ user, loading, error, userId }}>
