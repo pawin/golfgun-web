@@ -19,6 +19,7 @@ let auth: Auth;
 let db: Firestore;
 let storage: FirebaseStorage;
 
+// Initialize on client side only
 if (typeof window !== 'undefined') {
   if (getApps().length === 0) {
     app = initializeApp(firebaseConfig);
@@ -33,6 +34,29 @@ if (typeof window !== 'undefined') {
   auth = {} as Auth;
   db = {} as Firestore;
   storage = {} as FirebaseStorage;
+}
+
+/**
+ * Check if Firebase is initialized on the client side
+ * @returns true if Firebase is properly initialized, false otherwise
+ */
+export function isFirebaseInitialized(): boolean {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+  // Check if auth has the onAuthStateChanged method, which indicates it's a real Auth instance
+  return !!auth && typeof auth.onAuthStateChanged === 'function';
+}
+
+/**
+ * Get the auth instance, ensuring it's initialized
+ * @returns Auth instance if initialized, throws error otherwise
+ */
+export function getAuthInstance(): Auth {
+  if (!isFirebaseInitialized()) {
+    throw new Error('Firebase Auth is not initialized. Make sure you are on the client side.');
+  }
+  return auth;
 }
 
 export { app, auth, db, storage };

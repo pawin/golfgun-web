@@ -1,11 +1,11 @@
 'use client';
 
-import { createContext, useContext, ReactNode, useEffect } from 'react';
+import { createContext, useContext, ReactNode, useEffect, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { User as FirebaseUser, onAuthStateChanged } from 'firebase/auth';
 import { useRouter, usePathname } from 'next/navigation';
 import { useLocale } from 'next-intl';
-import { auth } from '@/lib/firebase/config';
+import { auth, isFirebaseInitialized } from '@/lib/firebase/config';
 import { UserService } from '@/lib/services/userService';
 
 interface AuthContextType {
@@ -83,12 +83,46 @@ export default function AuthProvider({ children }: AuthProviderProps) {
   const pathname = usePathname();
   const locale = useLocale();
   const userService = new UserService();
+  const [firebaseReady, setFirebaseReady] = useState(false);
 
   // Derive userId from user object
   const userId = user?.uid ?? null;
 
+  // Poll for Firebase initialization until it's ready
+  useEffect(() => {
+    // Check immediately
+    if (isFirebaseInitialized()) {
+      setFirebaseReady(true);
+      return;
+    }
+
+    // If not ready, poll every 100ms until it's ready (max 10 seconds)
+    const maxAttempts = 100; // 50 * 100ms = 5 seconds
+    let attempts = 0;
+    
+    const checkInterval = setInterval(() => {
+      attempts++;
+      
+      if (isFirebaseInitialized()) {
+        setFirebaseReady(true);
+        clearInterval(checkInterval);
+      } else if (attempts >= maxAttempts) {
+        // Stop polling after max attempts to avoid infinite loops
+        console.warn('Firebase initialization check timed out after 5 seconds');
+        clearInterval(checkInterval);
+      }
+    }, 100);
+
+    return () => clearInterval(checkInterval);
+  }, []); // Only run once on mount
+
   // Navigate to username screen if Firebase user doesn't exist
   useEffect(() => {
+    // Wait until Firebase is ready before setting up auth state listener
+    if (!firebaseReady || !isFirebaseInitialized() || !auth) {
+      return;
+    }
+
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       // Check if we're not already on the username or auth screen to avoid infinite loops
       const authScreen = pathname?.includes('/username') || pathname?.includes('/auth');
@@ -111,7 +145,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 
     // Cleanup listener on unmount
     return () => unsubscribe();
-  }, [router, pathname, locale]);
+  }, [firebaseReady, router, pathname, locale]);
 
   return (
     <AuthContext.Provider value={{ user, loading, error, userId }}>
