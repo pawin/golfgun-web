@@ -70,7 +70,10 @@ export default function AuthScreen() {
   };
 
   const getErrorMessage = (code: string): string => {
-    switch (code) {
+    // Normalize Firebase error codes by removing 'auth/' prefix if present
+    const normalizedCode = code.replace(/^auth\//, '').toLowerCase();
+    
+    switch (normalizedCode) {
       case 'weak-password':
         return t('passwordTooWeak');
       case 'email-already-in-use':
@@ -127,7 +130,10 @@ export default function AuthScreen() {
         router.push(`/${locale}`);
       }
     } catch (error: any) {
+      // Firebase errors have a 'code' property (e.g., 'auth/email-already-in-use')
+      // Extract the error code, falling back to message if code doesn't exist
       const code = error?.code || error?.message || 'unknown';
+      console.error('Authentication error:', error); // Debug log
       setErrorMessage(getErrorMessage(code));
     } finally {
       setIsLoading(false);
@@ -148,7 +154,9 @@ export default function AuthScreen() {
       setErrorMessage(null);
       alert(t('passwordResetEmailSent'));
     } catch (error: any) {
-      const code = error?.code || 'unknown';
+      // Firebase errors have a 'code' property (e.g., 'auth/email-already-in-use')
+      const code = error?.code || error?.message || 'unknown';
+      console.error('Password reset error:', error); // Debug log
       setErrorMessage(getErrorMessage(code));
     } finally {
       setIsLoading(false);
