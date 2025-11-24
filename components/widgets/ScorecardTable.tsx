@@ -224,7 +224,7 @@ export default function ScorecardTable({
 
   return (
     <>
-      <div className="relative px-[6px]">
+      <div className="relative">
         {/* Shared vertical scroll container to keep left and right tables aligned */}
         <div className="flex overflow-y-auto overscroll-none" style={{ WebkitOverflowScrolling: 'auto' }}>
           {/* Left table: labels + player names */}

@@ -11,6 +11,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -137,6 +138,9 @@ export default function AddPlayersDialog({
       >
         <DialogHeader className="p-4 border-b">
           <DialogTitle>{t('invite') || 'Invite'}</DialogTitle>
+          <DialogDescription>
+            {t('searchAndInvitePlayers') || 'Search for players to invite to this round'}
+          </DialogDescription>
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto p-4">

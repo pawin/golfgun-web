@@ -161,7 +161,7 @@
   "inviting": "Inviting...",
   "failedToInvite": "Failed to invite",
   "noAvailablePlayers": "No players found",
-  "selectGameType": "Select Game Type",
+  "selectGameTypeToStart": "Select Game Type",
   "gameType1v1": "1v1",
   "gameTypeTeamVs": "Team",
   "gameTypeHorse": "Horse",

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { sanitizeUsername } from '@/lib/utils/validator';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
@@ -47,6 +47,9 @@ export default function GuestNameDialog({
       <DialogContent overlayClassName="bg-black/80" className="top-4 sm:top-6 left-1/2 -translate-x-1/2 translate-y-0 max-w-md w-[calc(100%-2rem)] p-0">
         <DialogHeader className="p-4 border-b">
           <DialogTitle>{t('addGuest') || 'Add Guest'}</DialogTitle>
+          <DialogDescription>
+            {t('enterGuestName') || 'Enter a name for the guest player'}
+          </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="p-4">

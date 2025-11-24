@@ -209,14 +209,16 @@ export default function RoundDetailScreen() {
         </div>
 
         {/* Scorecard Table */}
-        <ScorecardTable
-          round={round}
-          users={users}
-          currentUserId={userId || ''}
-          currentUser={currentUserData || undefined}
-          isAdmin={isAdmin}
-          isMember={isMember}
-        />
+        <div className="-mx-4">
+          <ScorecardTable
+            round={round}
+            users={users}
+            currentUserId={userId || ''}
+            currentUser={currentUserData || undefined}
+            isAdmin={isAdmin}
+            isMember={isMember}
+          />
+        </div>
 
         {/* Party Game Section */}
         {/* {round.partyGameEnabled && (

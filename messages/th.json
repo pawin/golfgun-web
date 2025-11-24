@@ -161,7 +161,7 @@
   "inviting": "กำลังเชิญ...",
   "failedToInvite": "เชิญไม่สำเร็จ",
   "noAvailablePlayers": "ไม่พบผู้เล่น",
-  "selectGameType": "เลือกประเภทเกม",
+  "selectGameTypeToStart": "เลือกประเภทเกม",
   "gameType1v1": "1 ต่อ 1",
   "gameTypeTeamVs": "ทีม",
   "gameTypeHorse": "ม้า",

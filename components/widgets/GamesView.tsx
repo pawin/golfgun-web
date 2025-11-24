@@ -4,9 +4,9 @@ import * as React from 'react';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsis, faCheck, faTimes, faPlus, faChevronRight, faUser, faUsers, faCoins, faMedal, faHorse } from '@fortawesome/free-solid-svg-icons';
-import { Round, RoundGame, roundIsMember, roundColorForPlayer, roundColorForTeam } from '@/lib/models/round';
+import { Round, RoundGame, roundIsMember, roundColorForPlayer, roundColorForTeam, roundScorecardBridge } from '@/lib/models/round';
 import { AppUser } from '@/lib/models/appUser';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { roundService } from '@/lib/services/roundService';
 import {
   GameStatsService,
@@ -78,12 +78,38 @@ export default function GamesView({
 
   const usersMap = new Map(Object.entries(users));
 
+  // Helper function to get par value for a specific hole number
+  const getParForHole = (holeNumber: number): number => {
+    if (!round) return 4; // default fallback
+    const scorecard = roundScorecardBridge(round);
+    const idx = scorecard.holes.findIndex((h: any) => {
+      const kind = h.kind?.toString().toLowerCase();
+      const val = h.value?.toString();
+      return kind === 'hole' && val === String(holeNumber);
+    });
+    if (idx < 0 || idx >= scorecard.par.length) return 4;
+    const parValue = scorecard.par[idx]?.value;
+    if (typeof parValue === 'number') return parValue;
+    return parseInt(parValue?.toString() ?? '4') || 4;
+  };
+
   const createAndOpenGame = async (type: string) => {
     if (!round || !isMember) return;
     try {
       setCreatingType(type);
       const timestamp = Date.now();
       const newGameId = `${type}:${currentUserId}:${timestamp}`;
+      
+      // Set default hole points for holes 9 and 18 to 2 points for teamvs and 1v1 games
+      const gameType = type.toLowerCase();
+      const defaultHolePoints: Record<string, any> = {};
+      if (gameType === 'teamvs' || gameType === '1v1') {
+        const par9 = getParForHole(9);
+        const par18 = getParForHole(18);
+        defaultHolePoints['9'] = { par: par9.toString(), point: 2 };
+        defaultHolePoints['18'] = { par: par18.toString(), point: 2 };
+      }
+      
       const game: RoundGame = {
         id: newGameId,
         type,
@@ -91,7 +117,7 @@ export default function GamesView({
         blueTeamIds: [],
         redTeamIds: [],
         handicapStrokes: {},
-        holePoints: {},
+        holePoints: defaultHolePoints,
         horseSettings: {},
         skinsStartingHole: 1,
       };
@@ -163,6 +189,9 @@ export default function GamesView({
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{t('startNewGame')}</DialogTitle>
+            <DialogDescription>
+              {t('selectGameTypeToStart') || 'Select a game type to start a new game'}
+            </DialogDescription>
           </DialogHeader>
           <div className="grid grid-cols-1 gap-2">
             <button
