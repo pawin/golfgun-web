@@ -1,8 +1,8 @@
 'use client';
 
-import { createContext, useContext, ReactNode, useEffect, useState } from 'react';
+import { createContext, useContext, ReactNode, useEffect, useState, useMemo } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { User as FirebaseUser, onAuthStateChanged } from 'firebase/auth';
+import { User as FirebaseUser } from 'firebase/auth';
 import { useRouter, usePathname } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import { auth, isFirebaseInitialized } from '@/lib/firebase/config';
@@ -82,11 +82,16 @@ export default function AuthProvider({ children }: AuthProviderProps) {
   const router = useRouter();
   const pathname = usePathname();
   const locale = useLocale();
-  const userService = new UserService();
+  const userService = useMemo(() => new UserService(), []);
   const [firebaseReady, setFirebaseReady] = useState(false);
+
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
 
   // Derive userId from user object
   const userId = user?.uid ?? null;
+
+  // Combined loading state: Firebase auth loading OR Firebase not ready
+  const isLoading = user?.uid != null && !loading;
 
   // Poll for Firebase initialization until it's ready
   useEffect(() => {
@@ -116,36 +121,46 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     return () => clearInterval(checkInterval);
   }, []); // Only run once on mount
 
-  // Navigate to username screen if Firebase user doesn't exist
+  // Navigate to username screen if Firebase user doesn't exist or doesn't have a name
   useEffect(() => {
-    // Wait until Firebase is ready before setting up auth state listener
-    if (!firebaseReady || !isFirebaseInitialized() || !auth) {
+    // Wait until Firebase is ready and auth state is loaded
+    if (!firebaseReady || !isFirebaseInitialized() || !auth || loading) {
       return;
     }
 
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      // Check if we're not already on the username or auth screen to avoid infinite loops
-      const authScreen = pathname?.includes('/username') || pathname?.includes('/auth');
-      if (authScreen) {
-        return;
-      }
+    if (isAuthenticating) {
+      return;
+    }
+    
+    setIsAuthenticating(true);
+    // Check if we're not already on the username or auth screen to avoid infinite loops
+    const authScreen = pathname?.includes('/username') || pathname?.includes('/auth');
+    if (authScreen) {
+      return;
+    }
 
-      const firebaseUserId = firebaseUser?.uid ?? '';
-      if (!!firebaseUserId) {
-        userService.getUserById(firebaseUser?.uid ?? '').then((appUser) => {
-          const hasName = !!String(appUser?.name ?? '').trim();
-          if (!hasName) {
-            router.replace(`/${locale}/username`);
-          }
-        });
-      } else {
-        router.replace(`/${locale}/username`);
-      }
-    });
+    // Use userId (string) instead of user (object) to avoid unnecessary re-runs
+    const firebaseUserId = userId ?? '';
+    if (!!firebaseUserId) {
+      userService.getUserById(firebaseUserId).then((appUser) => {
+        const hasName = !!String(appUser?.name ?? '').trim();
+        if (!hasName) {
+          router.replace(`/${locale}/username`);
+        }
+      });
+    } else {
+      router.replace(`/${locale}/username`);
+    }
+  }, [firebaseReady, loading, userId, router, pathname, locale, userService]);
 
-    // Cleanup listener on unmount
-    return () => unsubscribe();
-  }, [firebaseReady, router, pathname, locale]);
+  // Show loading state while Firebase is initializing or auth is loading
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <AuthContext.Provider value={{ user, loading, error, userId }}>
