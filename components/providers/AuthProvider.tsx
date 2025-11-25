@@ -58,7 +58,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     useEffect(() => {
         timeoutRef.current = setTimeout(() => {
             debugLogger.warn('AuthProvider', 'Auth check timed out, closing window');
-            liff.closeWindow();
+            //liff.closeWindow();
         }, 3000);
 
         return () => {
