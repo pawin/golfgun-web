@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { locales } from '@/i18n';
 import LiffProvider from '@/components/providers/LiffProvider';
 import AuthProvider from '@/components/providers/AuthProvider';
+import { DebugLoggerView } from '@/components/ui/DebugLoggerView';
 import '../globals.css';
 
 export function generateStaticParams() {
@@ -30,6 +31,7 @@ export default async function LocaleLayout({
       <LiffProvider>
         <AuthProvider>
           {children}
+          <DebugLoggerView />
         </AuthProvider>
       </LiffProvider>
     </NextIntlClientProvider>

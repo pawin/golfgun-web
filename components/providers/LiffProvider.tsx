@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import liff from '@line/liff';
+import { debugLogger } from '@/lib/utils/debugLogger';
 
 // Re-export liff for convenience
 export { liff };
@@ -49,37 +50,45 @@ export default function LiffProvider({ children }: LiffProviderProps) {
     const initializeLiff = async () => {
       try {
         const liffId = process.env.NEXT_PUBLIC_LIFF_ID || 'YOUR_LIFF_ID';
+        debugLogger.info('LiffProvider', `Starting LIFF initialization with ID: ${liffId}`);
 
         // Check if LIFF is already initialized (prevents re-initialization errors)
         // @ts-ignore - isInitialized() exists but may not be in type definitions
         if (typeof liff.isInitialized === 'function' && liff.isInitialized()) {
-          console.log('LIFF already initialized');
+          debugLogger.info('LiffProvider', 'LIFF already initialized');
           if (!liff.isLoggedIn()) {
-            console.log('Not logged in, redirecting to login...');
+            debugLogger.warn('LiffProvider', 'Not logged in, redirecting to login...');
             liff.login();
             return;
           }
+          debugLogger.success('LiffProvider', 'LIFF ready (already initialized)');
           setIsReady(true);
           return;
         }
 
         // Initialize LIFF
+        debugLogger.info('LiffProvider', 'Calling liff.init()...');
         await liff.init({ liffId });
 
-        console.log('LIFF initialized successfully');
-        console.log('Is logged in:', liff.isLoggedIn());
-        console.log('Is in client:', liff.isInClient());
+        const isLoggedIn = liff.isLoggedIn();
+        const isInClient = liff.isInClient();
+        
+        debugLogger.info('LiffProvider', 'LIFF initialized', {
+          isLoggedIn,
+          isInClient,
+        });
 
         // If user is not logged in, redirect them to login
-        if (!liff.isLoggedIn()) {
-          console.log('Not logged in, redirecting to login...');
+        if (!isLoggedIn) {
+          debugLogger.warn('LiffProvider', 'Not logged in, redirecting to login...');
           liff.login();
           return;
         }
 
+        debugLogger.success('LiffProvider', 'LIFF initialization complete');
         setIsReady(true);
       } catch (error) {
-        console.error('LIFF initialization failed:', error);
+        debugLogger.error('LiffProvider', 'LIFF initialization failed', error);
         setError(error instanceof Error ? error.message : 'Unknown error');
 
         // If liff error it should not affect the app
@@ -87,9 +96,13 @@ export default function LiffProvider({ children }: LiffProviderProps) {
       }
     };
 
-    if (liff.isInClient()) {
+    const isInClient = liff.isInClient();
+    debugLogger.info('LiffProvider', `useEffect triggered, isInClient: ${isInClient}`);
+
+    if (isInClient) {
       initializeLiff();
     } else {
+      debugLogger.info('LiffProvider', 'Not in LINE client, skipping LIFF initialization');
       setIsReady(true);
     }
   }, []);
