@@ -1,12 +1,13 @@
 'use client';
 
-import { createContext, useContext, ReactNode, useEffect, useState, useMemo } from 'react';
+import { createContext, useContext, ReactNode, useEffect, useState, useMemo, useRef } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { User as FirebaseUser } from 'firebase/auth';
 import { useRouter, usePathname } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import { auth, isFirebaseInitialized } from '@/lib/firebase/config';
 import { UserService } from '@/lib/services/userService';
+import liff from '@line/liff';
 import { debugLogger } from '@/lib/utils/debugLogger';
 
 interface AuthContextType {
@@ -23,26 +24,6 @@ const AuthContext = createContext<AuthContextType>({
     userId: null,
 });
 
-/**
- * Hook to access Firebase authentication state
- * @returns Object containing user, loading, error, and userId
- * 
- * @example
- * ```tsx
- * import { useAuth } from '@/components/providers/AuthProvider';
- * 
- * function MyComponent() {
- *   const { user, loading, userId } = useAuth();
- *   
- *   if (loading) return <div>Loading...</div>;
- *   if (!user) return <div>Not authenticated</div>;
- *   
- *   // Use userId directly
- *   const rounds = await roundService.getAllRounds(userId!);
- *   // ...
- * }
- * ```
- */
 export const useAuth = (): AuthContextType => {
     const context = useContext(AuthContext);
     if (context === undefined) {
@@ -51,24 +32,6 @@ export const useAuth = (): AuthContextType => {
     return context;
 };
 
-/**
- * Hook to get the current user ID (convenience hook)
- * @returns The current user's ID, or null if not authenticated
- * 
- * @example
- * ```tsx
- * import { useCurrentUserId } from '@/components/providers/AuthProvider';
- * 
- * function MyComponent() {
- *   const userId = useCurrentUserId();
- *   
- *   if (!userId) return <div>Please sign in</div>;
- *   
- *   // Use userId directly
- *   const rounds = await roundService.getAllRounds(userId);
- * }
- * ```
- */
 export const useCurrentUserId = (): string | null => {
     const { userId } = useAuth();
     return userId;
@@ -84,12 +47,25 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     const pathname = usePathname();
     const locale = useLocale();
     const userService = useMemo(() => new UserService(), []);
-    const [firebaseReady, setFirebaseReady] = useState(false);
-
-    //const [isAuthenticating, setIsAuthenticating] = useState(false);
 
     // Derive userId from user object
     const userId = user?.uid ?? null;
+
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    // Set timeout once on mount
+    useEffect(() => {
+        timeoutRef.current = setTimeout(() => {
+            debugLogger.warn('AuthProvider', 'Auth check timed out, closing window');
+            liff.closeWindow();
+        }, 3000);
+
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+        };
+    }, []);
 
     // Log auth state changes (user, loading, error)
     useEffect(() => {
@@ -97,6 +73,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
         const authScreen = pathname?.includes('/username') || pathname?.includes('/auth');
         if (authScreen) {
             debugLogger.info('AuthProvider', 'Already on auth screen, skipping redirect');
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
             return;
         }
 
@@ -127,6 +104,11 @@ export default function AuthProvider({ children }: AuthProviderProps) {
         if (loading) {
             debugLogger.info('AuthProvider', 'Still loading, skipping auth check');
             return;
+        }
+
+        // Clear timeout if we are done loading
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
         }
 
         // Use userId (string) instead of user (object) to avoid unnecessary re-runs
