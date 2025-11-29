@@ -27,7 +27,9 @@ export default function ProfileScreen() {
   const { loading } = useAuth();
   const currentUserId = useCurrentUserId();
   const [profileUser, setProfileUser] = useState<AppUser | null>(null);
+  const [currentUser, setCurrentUser] = useState<AppUser | null>(null);
   const [rounds, setRounds] = useState<Round[]>([]);
+  const [adminRounds, setAdminRounds] = useState<Round[]>([]);
   const [users, setUsers] = useState<Record<string, AppUser>>({});
   const [friendship, setFriendship] = useState<Friendship | null>(null);
   const [headToHead, setHeadToHead] = useState<HeadToHeadStats | null>(null);
@@ -52,11 +54,16 @@ export default function ProfileScreen() {
     setIsFriendshipLoading(true);
 
     try {
-      const targetUser = await userService.getUserById(profileUserId);
+      const [targetUser, viewerUser] = await Promise.all([
+        userService.getUserById(profileUserId),
+        userService.getUserById(currentUserId),
+      ]);
       setProfileUser(targetUser);
+      setCurrentUser(viewerUser);
 
-      const allRounds = await roundService.getAllRounds(currentUserId);
-      const userRounds = allRounds
+      // Fetch shared rounds (rounds where current user is involved)
+      const myRounds = await roundService.getAllRounds(currentUserId);
+      const sharedRounds = myRounds
         .filter(
           (r) =>
             !r.deletedAt &&
@@ -65,11 +72,31 @@ export default function ProfileScreen() {
         )
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
-      setRounds(userRounds);
+      setRounds(sharedRounds);
+
+      // If admin, fetch all rounds for the profile user
+      let allProfileRounds: Round[] = [];
+      if (viewerUser?.role === 'admin') {
+        const userRounds = await roundService.getAllRounds(profileUserId);
+        allProfileRounds = userRounds
+          .filter((r) => !r.deletedAt && roundIsFinished(r))
+          .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+        setAdminRounds(allProfileRounds);
+      } else {
+        setAdminRounds([]);
+      }
 
       // Fetch all users for rounds display and head-to-head calculation
       const allUserIds = new Set<string>();
-      allRounds.forEach((r) => {
+      
+      // Add users from shared rounds
+      sharedRounds.forEach((r) => {
+        allUserIds.add(r.adminId);
+        r.memberIds.forEach((id) => allUserIds.add(id));
+      });
+
+      // Add users from admin rounds
+      allProfileRounds.forEach((r) => {
         allUserIds.add(r.adminId);
         r.memberIds.forEach((id) => allUserIds.add(id));
       });
@@ -85,7 +112,7 @@ export default function ProfileScreen() {
           });
 
           const stats = HeadToHeadService.calculate({
-            rounds: allRounds,
+            rounds: myRounds, // Use myRounds (viewer's rounds) for head-to-head logic against profileUser
             currentUserId: currentUserId,
             otherUserId: profileUserId,
             users: usersMapForService,
@@ -315,6 +342,31 @@ export default function ProfileScreen() {
             ) : (
               <div className="space-y-3">
                 {rounds.map((round) => (
+                  <RoundCardView
+                    key={round.id}
+                    round={round}
+                    currentUserId={currentUserId}
+                    users={users}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Admin: All Rounds Section */}
+        {currentUser?.role === 'admin' && (
+          <div>
+            <h2 className="text-lg font-semibold mb-3">
+              {t('profileAllRounds')} ({adminRounds.length})
+            </h2>
+            {adminRounds.length === 0 ? (
+              <div className="bg-card border border-border rounded-lg p-4 text-muted-foreground">
+                {t('profileNoRounds')}
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {adminRounds.map((round) => (
                   <RoundCardView
                     key={round.id}
                     round={round}

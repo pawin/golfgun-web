@@ -136,7 +136,7 @@ export default function AdminUsersScreen() {
   if (error) {
     return (
       <div className="min-h-screen bg-background p-4">
-        <div className="sticky top-0 bg-background border-b border-border px-4 py-3">
+        <div className="sticky top-0 bg-background border-b border-border px-4 py-3 z-100">
           <h1 className="text-xl font-semibold">Admin • Users</h1>
         </div>
         <div className="p-4 text-error">
@@ -164,7 +164,7 @@ export default function AdminUsersScreen() {
 
   return (
     <div className="min-h-screen bg-subtle pb-20">
-      <div className="sticky top-0 bg-background border-b border-border px-4 py-3">
+      <div className="sticky top-0 bg-background border-b border-border px-4 py-3 z-100">
         <h1 className="text-xl font-semibold">Admin • Users</h1>
       </div>
 

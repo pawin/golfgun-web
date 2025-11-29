@@ -314,6 +314,7 @@
   "profileHeadToHeadNetScore": "{score} คะแนน",
   "profileHeadToHeadOlympic": "โอลิมปิก",
   "profileHeadToHeadHorse": "ม้า",
+  "profileAllRounds": "รอบทั้งหมด",
   "adminRecentRounds": "ผู้ดูแลระบบ • รอบล่าสุด",
   "adminFailedToLoadRounds": "โหลดรอบไม่สำเร็จ",
   "adminRetry": "ลองอีกครั้ง",
