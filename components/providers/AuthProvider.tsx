@@ -6,9 +6,8 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { User as FirebaseUser } from 'firebase/auth';
 import { useRouter, usePathname } from 'next/navigation';
 import { useLocale } from 'next-intl';
-import { auth } from '@/lib/firebase/config';
+import { auth, isFirebaseInitialized } from '@/lib/firebase/config';
 import { UserService } from '@/lib/services/userService';
-import liff from '@line/liff';
 import { debugLogger } from '@/lib/utils/debugLogger';
 
 interface AuthContextType {
@@ -42,7 +41,8 @@ interface AuthProviderProps {
     children: ReactNode;
 }
 
-export default function AuthProvider({ children }: AuthProviderProps) {
+// Inner component that uses useAuthState - only rendered when Firebase is ready
+function AuthProviderInner({ children }: AuthProviderProps) {
     const [user, loading, error] = useAuthState(auth);
     const router = useRouter();
     const pathname = usePathname();
@@ -52,29 +52,12 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     // Derive userId from user object
     const userId = user?.uid ?? null;
 
-    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-    // Set timeout once on mount
-    useEffect(() => {
-        timeoutRef.current = setTimeout(() => {
-            debugLogger.warn('AuthProvider', 'Auth check timed out, closing window');
-            //liff.closeWindow();
-        }, 3000);
-
-        return () => {
-            if (timeoutRef.current) {
-                clearTimeout(timeoutRef.current);
-            }
-        };
-    }, []);
-
     // Log auth state changes (user, loading, error)
     useEffect(() => {
         // Check if we're not already on the username or auth screen to avoid infinite loops
         const authScreen = pathname?.includes('/username') || pathname?.includes('/auth');
         if (authScreen) {
             debugLogger.info('AuthProvider', 'Already on auth screen, skipping redirect');
-            if (timeoutRef.current) clearTimeout(timeoutRef.current);
             return;
         }
 
@@ -105,11 +88,6 @@ export default function AuthProvider({ children }: AuthProviderProps) {
         if (loading) {
             debugLogger.info('AuthProvider', 'Still loading, skipping auth check');
             return;
-        }
-
-        // Clear timeout if we are done loading
-        if (timeoutRef.current) {
-            clearTimeout(timeoutRef.current);
         }
 
         // Use userId (string) instead of user (object) to avoid unnecessary re-runs
@@ -146,5 +124,37 @@ export default function AuthProvider({ children }: AuthProviderProps) {
             {children}
         </AuthContext.Provider>
     );
+}
+
+// Wrapper component that ensures Firebase is initialized before rendering AuthProviderInner
+export default function AuthProvider({ children }: AuthProviderProps) {
+    const [firebaseReady, setFirebaseReady] = useState(false);
+
+    useEffect(() => {
+        // Check if Firebase is initialized, with a small delay to ensure client-side hydration is complete
+        const checkFirebase = () => {
+            if (isFirebaseInitialized()) {
+                debugLogger.success('AuthProvider', 'Firebase initialized successfully');
+                setFirebaseReady(true);
+            } else {
+                debugLogger.warn('AuthProvider', 'Firebase not ready, retrying...');
+                // Retry after a short delay - Firebase might still be initializing
+                setTimeout(checkFirebase, 50);
+            }
+        };
+
+        checkFirebase();
+    }, []);
+
+    if (!firebaseReady) {
+        debugLogger.info('AuthProvider', 'Waiting for Firebase to initialize...');
+        return (
+            <AuthContext.Provider value={{ user: undefined, loading: true, error: undefined, userId: null }}>
+                {children}
+            </AuthContext.Provider>
+        );
+    }
+
+    return <AuthProviderInner>{children}</AuthProviderInner>;
 }
 
