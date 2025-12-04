@@ -56,7 +56,7 @@ export default function AuthScreen() {
 
   // Sync isLogin state with URL parameter
   useEffect(() => {
-    const mode = searchParams.get('mode');
+    const mode = searchParams?.get('mode');
     setIsLogin(mode !== 'signup');
   }, [searchParams]);
 
