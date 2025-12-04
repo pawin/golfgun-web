@@ -315,6 +315,8 @@
   "profileHeadToHeadOlympic": "โอลิมปิก",
   "profileHeadToHeadHorse": "ม้า",
   "profileAllRounds": "รอบทั้งหมด",
+  "profileFriendsCount": "เพื่อน {count} คน",
+  "profileRole": "บทบาท: {role}",
   "adminRecentRounds": "ผู้ดูแลระบบ • รอบล่าสุด",
   "adminFailedToLoadRounds": "โหลดรอบไม่สำเร็จ",
   "adminRetry": "ลองอีกครั้ง",

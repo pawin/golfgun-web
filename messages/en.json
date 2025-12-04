@@ -315,6 +315,8 @@
   "profileHeadToHeadOlympic": "Olympic",
   "profileHeadToHeadHorse": "Horse",
   "profileAllRounds": "All Rounds",
+  "profileFriendsCount": "{count} {count, plural, one {Friend} other {Friends}}",
+  "profileRole": "Role: {role}",
   "adminRecentRounds": "Admin • Recent Rounds",
   "adminFailedToLoadRounds": "Failed to load rounds.",
   "adminRetry": "Retry",

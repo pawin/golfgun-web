@@ -30,6 +30,7 @@ export default function ProfileScreen() {
   const [currentUser, setCurrentUser] = useState<AppUser | null>(null);
   const [rounds, setRounds] = useState<Round[]>([]);
   const [adminRounds, setAdminRounds] = useState<Round[]>([]);
+  const [friendCount, setFriendCount] = useState<number | null>(null);
   const [users, setUsers] = useState<Record<string, AppUser>>({});
   const [friendship, setFriendship] = useState<Friendship | null>(null);
   const [headToHead, setHeadToHead] = useState<HeadToHeadStats | null>(null);
@@ -61,29 +62,32 @@ export default function ProfileScreen() {
       setProfileUser(targetUser);
       setCurrentUser(viewerUser);
 
-      // Fetch shared rounds (rounds where current user is involved)
-      const myRounds = await roundService.getAllRounds(currentUserId);
-      const sharedRounds = myRounds
+      const userRounds = await roundService.getAllRounds(profileUserId);
+      const sharedRounds = userRounds
         .filter(
           (r) =>
             !r.deletedAt &&
             roundIsFinished(r) &&
-            (r.memberIds.includes(profileUserId) || r.adminId === profileUserId)
+            (r.memberIds.includes(currentUserId) || r.adminId === currentUserId)
         )
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
       setRounds(sharedRounds);
 
-      // If admin, fetch all rounds for the profile user
+      // If admin, fetch all rounds for the profile user and friend count
       let allProfileRounds: Round[] = [];
       if (viewerUser?.role === 'admin') {
-        const userRounds = await roundService.getAllRounds(profileUserId);
+        const friendships = await friendService.getFriendshipsForUser(profileUserId);
+
         allProfileRounds = userRounds
           .filter((r) => !r.deletedAt && roundIsFinished(r))
           .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
         setAdminRounds(allProfileRounds);
+        
+        setFriendCount(friendships.filter((f) => f.status === FriendshipStatus.accepted).length);
       } else {
         setAdminRounds([]);
+        setFriendCount(null);
       }
 
       // Fetch all users for rounds display and head-to-head calculation
@@ -112,7 +116,7 @@ export default function ProfileScreen() {
           });
 
           const stats = HeadToHeadService.calculate({
-            rounds: myRounds, // Use myRounds (viewer's rounds) for head-to-head logic against profileUser
+            rounds: userRounds, // Use userRounds (viewer's rounds) for head-to-head logic against profileUser
             currentUserId: currentUserId,
             otherUserId: profileUserId,
             users: usersMapForService,
@@ -267,6 +271,18 @@ export default function ProfileScreen() {
           </Avatar>
           <div className="flex-1 min-w-0">
             <p className="font-semibold text-xl truncate">{profileUser.name}</p>
+            {currentUser?.role === 'admin' && (
+              <>
+                {friendCount !== null && (
+                  <p className="text-sm text-muted-foreground">
+                    {t('profileFriendsCount', { count: friendCount })}
+                  </p>
+                )}
+                <p className="text-sm text-muted-foreground">
+                  {t('profileRole', { role: profileUser.role || 'member' })}
+                </p>
+              </>
+            )}
           </div>
           {!isOwnProfile && friendship && friendship.status === FriendshipStatus.accepted && (
             <button
@@ -355,7 +371,7 @@ export default function ProfileScreen() {
         )}
 
         {/* Admin: All Rounds Section */}
-        {currentUser?.role === 'admin' && (
+        {currentUser?.role === 'admin' && currentUserId && (
           <div>
             <h2 className="text-lg font-semibold mb-3">
               {t('profileAllRounds')} ({adminRounds.length})
