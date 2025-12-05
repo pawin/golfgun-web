@@ -25,7 +25,7 @@ export default function StartRoundScreen() {
   const [isStarting, setIsStarting] = useState(false);
 
   useEffect(() => {
-    const courseId = searchParams.get('courseId');
+    const courseId = searchParams?.get('courseId');
     if (courseId) {
       loadCourseAndScorecards(courseId);
     }
@@ -200,11 +200,10 @@ export default function StartRoundScreen() {
                       setSelectedSecond(null);
                     }
                   }}
-                  className={`w-full text-left p-4 rounded-lg border-2 transition-colors ${
-                    isSelected
+                  className={`w-full text-left p-4 rounded-lg border-2 transition-colors ${isSelected
                       ? 'border-primary bg-accent'
                       : 'border-border hover:border-border-strong'
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center justify-between">
                     <div>
@@ -246,11 +245,10 @@ export default function StartRoundScreen() {
                       onClick={() => {
                         setSelectedSecond(isSelected ? null : sc.id);
                       }}
-                      className={`w-full text-left p-4 rounded-lg border-2 transition-colors ${
-                        isSelected
+                      className={`w-full text-left p-4 rounded-lg border-2 transition-colors ${isSelected
                           ? 'border-primary bg-accent'
                           : 'border-border hover:border-border-strong'
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center justify-between">
                         <div>
