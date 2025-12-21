@@ -54,9 +54,7 @@ export default function AddPlayerMenu({
   };
 
   const handleShareUrl = async () => {
-    const url = typeof window !== 'undefined' 
-      ? `${window.location.origin}/${locale}/rounds/${roundId}`
-      : `https://golfgun.co/${locale}/rounds/${roundId}`;
+    const url = `https://liff.line.me/2001440168-5GozgrPQ/rounds/${roundId}`
     
     try {
       if (navigator.share) {
