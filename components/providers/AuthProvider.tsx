@@ -107,6 +107,10 @@ function AuthProviderInner({ children }: AuthProviderProps) {
                 });
                 if (!hasName) {
                     debugLogger.warn('AuthProvider', 'User has no name, redirecting to username screen');
+                    // Save redirect URL if not already on auth pages
+                    if (pathname && !pathname.includes('/username') && !pathname.includes('/auth')) {
+                        sessionStorage.setItem('redirect_after_login', pathname);
+                    }
                     router.replace(`/${locale}/username`);
                 } else {
                     debugLogger.success('AuthProvider', 'User authenticated with name');
@@ -114,6 +118,10 @@ function AuthProviderInner({ children }: AuthProviderProps) {
             });
         } else {
             debugLogger.warn('AuthProvider', 'No user ID, redirecting to username screen');
+            // Save redirect URL if not already on auth pages
+            if (pathname && !pathname.includes('/username') && !pathname.includes('/auth')) {
+                sessionStorage.setItem('redirect_after_login', pathname);
+            }
             router.replace(`/${locale}/username`);
         }
 

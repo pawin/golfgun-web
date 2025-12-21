@@ -38,7 +38,18 @@ export default function AuthScreen() {
         userService.invalidateUserCache(user.uid);
         const appUser = await userService.getUserById(user.uid);
         const hasName = !!appUser && !!String(appUser.name ?? '').trim();
-        router.push(hasName ? `/${locale}` : `/${locale}/username`);
+
+        if (hasName) {
+          const redirectUrl = sessionStorage.getItem('redirect_after_login');
+          if (redirectUrl) {
+            sessionStorage.removeItem('redirect_after_login');
+            router.push(redirectUrl);
+          } else {
+            router.push(`/${locale}`);
+          }
+        } else {
+          router.push(`/${locale}/username`);
+        }
       } catch {
         // ignore
       }
@@ -72,7 +83,7 @@ export default function AuthScreen() {
   const getErrorMessage = (code: string): string => {
     // Normalize Firebase error codes by removing 'auth/' prefix if present
     const normalizedCode = code.replace(/^auth\//, '').toLowerCase();
-    
+
     switch (normalizedCode) {
       case 'weak-password':
         return t('passwordTooWeak');
@@ -125,7 +136,18 @@ export default function AuthScreen() {
         userService.invalidateUserCache(current.uid);
         const appUser = await userService.getUserById(current.uid);
         const hasName = !!appUser && !!String(appUser.name ?? '').trim();
-        router.push(hasName ? `/${locale}` : `/${locale}/username`);
+
+        if (hasName) {
+          const redirectUrl = sessionStorage.getItem('redirect_after_login');
+          if (redirectUrl) {
+            sessionStorage.removeItem('redirect_after_login');
+            router.push(redirectUrl);
+          } else {
+            router.push(`/${locale}`);
+          }
+        } else {
+          router.push(`/${locale}/username`);
+        }
       } else {
         router.push(`/${locale}`);
       }

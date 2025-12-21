@@ -79,7 +79,14 @@ export default function UsernameScreen() {
       // Invalidate cached user so subsequent reads fetch the fresh profile
       userService.invalidateUserCache(currentUser.uid);
 
-      router.push(`/${locale}`);
+      // Check for redirect URL
+      const redirectUrl = sessionStorage.getItem('redirect_after_login');
+      if (redirectUrl) {
+        sessionStorage.removeItem('redirect_after_login');
+        router.push(redirectUrl);
+      } else {
+        router.push(`/${locale}`);
+      }
     } catch (error: any) {
       alert(error.message || t('errorWithMessage', { error: String(error) }));
     } finally {
