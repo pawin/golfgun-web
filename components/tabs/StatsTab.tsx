@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGolfBall, faChartLine, faTrophy, faCalendar, faMapMarkerAlt, faBullseye, faWater, faChartBar, faFlag } from '@fortawesome/free-solid-svg-icons';
+import { faGolfBall, faChartLine, faTrophy, faCalendar, faMapMarkerAlt, faBullseye, faWater, faChartBar, faFlag, faHeart } from '@fortawesome/free-solid-svg-icons';
 import { useCurrentUserId } from '@/components/providers/AuthProvider';
 import { roundService } from '@/lib/services/roundService';
 import { Round, calculateGir, roundScorecardBridge, roundIsFinished } from '@/lib/models/round';
@@ -151,7 +151,7 @@ function SummarySection({ stats }: { stats: RoundStatistics }) {
             )}
             <StatRow icon={faCalendar} label={t('thisMonth')} value={stats.roundsThisMonth.toString()} iconColorClass="text-[color:var(--rough)]" />
             {stats.mostPlayedCourse && (
-              <StatRow icon={faMapMarkerAlt} label={t('courses')} value={stats.mostPlayedCourse} iconColorClass="text-[color:var(--rough)]" />
+              <StatRow icon={faHeart} label={t('courses')} value={stats.mostPlayedCourse} iconColorClass="text-[color:var(--rough)]" />
             )}
           </>
         )}
@@ -387,15 +387,15 @@ function calculateBasicStatistics(rounds: Round[], userId: string): RoundStatist
       }
     }
 
-    if (round.endedAt && round.endedAt > thisMonthStart) {
+    if (round.createdAt && round.createdAt > thisMonthStart) {
       thisMonth++;
     }
 
     courseCounts[round.course.name] = (courseCounts[round.course.name] || 0) + 1;
 
-    if (round.endedAt) {
-      if (!lastDate || round.endedAt > lastDate) {
-        lastDate = round.endedAt;
+    if (round.createdAt) {
+      if (!lastDate || round.createdAt > lastDate) {
+        lastDate = round.createdAt;
         lastRound = round;
       }
     }

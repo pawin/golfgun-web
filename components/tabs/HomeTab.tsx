@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlay, faGolfBall, faChartLine, faTrophy, faCalendar, faMapMarkerAlt, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPlay, faGolfBall, faChartLine, faTrophy, faCalendar, faMapMarkerAlt, faPlus, faHeart } from '@fortawesome/free-solid-svg-icons';
 import { useCurrentUserId } from '@/components/providers/AuthProvider';
 import { roundService } from '@/lib/services/roundService';
 import { userService } from '@/lib/services/userService';
@@ -290,7 +290,7 @@ function QuickStatsSummary({ stats }: { stats: RoundStatistics }) {
               )}
               <StatRow icon={faCalendar} label={t('thisMonth')} value={stats.roundsThisMonth.toString()} />
               {stats.mostPlayedCourse && (
-                <StatRow icon={faMapMarkerAlt} label={t('courses')} value={stats.mostPlayedCourse} />
+                <StatRow icon={faHeart} label={t('courses')} value={stats.mostPlayedCourse} />
               )}
             </>
           )}
@@ -390,6 +390,7 @@ function calculateStatistics(rounds: Round[], userId: string): RoundStatistics {
       roundsThisMonth: 0,
     };
   }
+  console.log('rounds', rounds);
 
   const now = new Date();
   const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -419,7 +420,7 @@ function calculateStatistics(rounds: Round[], userId: string): RoundStatistics {
     }
 
     // Count rounds this month
-    if (round.endedAt && round.endedAt > thisMonthStart) {
+    if (round.createdAt && round.createdAt > thisMonthStart) {
       thisMonth++;
     }
 
@@ -427,9 +428,9 @@ function calculateStatistics(rounds: Round[], userId: string): RoundStatistics {
     courseCounts[round.course.name] = (courseCounts[round.course.name] || 0) + 1;
 
     // Track last played
-    if (round.endedAt) {
-      if (!lastDate || round.endedAt > lastDate) {
-        lastDate = round.endedAt;
+    if (round.createdAt) {
+      if (!lastDate || round.createdAt > lastDate) {
+        lastDate = round.createdAt;
         lastRound = round;
       }
     }
