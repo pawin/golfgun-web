@@ -31,7 +31,7 @@ export default async function LocaleLayout({
       <LiffProvider>
         <AuthProvider>
           {children}
-          <DebugLoggerView />
+          {/* <DebugLoggerView /> */}
         </AuthProvider>
       </LiffProvider>
     </NextIntlClientProvider>
