@@ -279,6 +279,91 @@ export default function GameSettingsScreen({
     saveGameSettings(false, { handicapStrokes: strokes });
   };
 
+  const handleAutoHandicap = () => {
+    const scorecard = roundScorecardBridge(round);
+
+    // Determine which player IDs are in this game
+    const gameType = game.type.toLowerCase();
+    let activePlayerIds: string[];
+    if (gameType === 'skins') {
+      activePlayerIds = playerIds;
+    } else {
+      activePlayerIds = [...redTeam, ...blueTeam];
+    }
+
+    if (activePlayerIds.length === 0) return;
+
+    // Find the minimum handicap among all active players to use as baseline
+    const handicaps: Record<string, number> = {};
+    for (const playerId of activePlayerIds) {
+      const user = users[playerId];
+      const hcp = typeof user?.handicap === 'number' ? user.handicap : 0;
+      handicaps[playerId] = hcp;
+    }
+
+    const minHandicap = Math.min(...Object.values(handicaps));
+
+    // Build hole-index → hole-number map and hole handicap (difficulty index) map
+    const playableHoles = scorecard.holes
+      .map((hole, index) => ({ index, hole }))
+      .filter((item) => item.hole?.kind === 'hole');
+
+    // Build a map: holeNumber → handicap difficulty index (1 = hardest)
+    const holeHandicapMap: Record<string, number> = {};
+    for (const { index, hole } of playableHoles) {
+      const holeNumber = hole.value?.toString() ?? '';
+      if (!holeNumber) continue;
+      const hdcpCell = scorecard.handicaps[index];
+      const hdcpValue =
+        typeof hdcpCell?.value === 'number'
+          ? hdcpCell.value
+          : parseInt(String(hdcpCell?.value ?? '')) || 0;
+      holeHandicapMap[holeNumber] = hdcpValue;
+    }
+
+    // Calculate relative strokes for each player vs the best player
+    const newStrokes: Record<string, any> = {};
+
+    for (const { hole } of playableHoles) {
+      const holeNumber = hole.value?.toString() ?? '';
+      if (!holeNumber) continue;
+      const holeDifficulty = holeHandicapMap[holeNumber] ?? 0;
+      if (holeDifficulty === 0) continue;
+
+      const playerStrokesForHole: Record<string, number> = {};
+
+      for (const playerId of activePlayerIds) {
+        const playerHcp = handicaps[playerId];
+        // Relative strokes compared to the lowest handicapper
+        const relativeHcp = playerHcp - minHandicap;
+        if (relativeHcp <= 0) continue;
+
+        // How many full strokes does this player get?
+        // A player gets a stroke on a hole if the hole's difficulty index <= their relative handicap
+        const fullStrokes = Math.floor(relativeHcp);
+        const fractional = relativeHcp - fullStrokes;
+
+        let stroke = 0;
+        if (holeDifficulty <= fullStrokes) {
+          stroke = 1;
+        } else if (holeDifficulty === fullStrokes + 1 && fractional >= 0.5) {
+          stroke = 0.5;
+        }
+
+        if (stroke !== 0) {
+          playerStrokesForHole[playerId] = stroke;
+        }
+      }
+
+      if (Object.keys(playerStrokesForHole).length > 0) {
+        newStrokes[holeNumber] = playerStrokesForHole;
+      }
+    }
+
+    setHandicapStrokes(newStrokes);
+    saveGameSettings(false, { handicapStrokes: newStrokes });
+  };
+
   const handleScoreMultipliersChanged = ({
     birdie,
     eagle,
@@ -599,7 +684,15 @@ export default function GameSettingsScreen({
         {gameType !== 'olympic' && gameType !== 'horse' && (
           <>
             <div>
-              <h2 className="text-lg font-semibold mb-1">{t('holeSettings')}</h2>
+              <div className="flex items-center justify-between mb-1">
+                <h2 className="text-lg font-semibold">{t('holeSettings')}</h2>
+                <button
+                  onClick={handleAutoHandicap}
+                  className="px-3 py-1.5 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 active:bg-green-800 transition-colors"
+                >
+                  Auto Handicap
+                </button>
+              </div>
               <p className="text-xs text-gray-600 mb-2">{t('holeSettingsDescription')}</p>
               <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
                 <GameHoleHandicap
