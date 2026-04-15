@@ -345,9 +345,9 @@ export default function GameSettingsScreen({
 
         let stroke = 0;
         if (holeDifficulty <= fullStrokes) {
-          stroke = 1;
+          stroke = -1;
         } else if (holeDifficulty === fullStrokes + 1 && fractional >= 0.5) {
-          stroke = 0.5;
+          stroke = -0.5;
         }
 
         if (stroke !== 0) {
