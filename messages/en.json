@@ -84,6 +84,7 @@
   "games": "Games",
   "saveFailed": "Save failed: {error}",
   "handicapShort": "HDCP",
+  "handicap": "Handicap",
   "player": "Player",
   "summary": "Summary",
   "statistics": "Statistics",

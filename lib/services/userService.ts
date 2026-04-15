@@ -220,6 +220,20 @@ export class UserService {
     return user;
   }
 
+  async setUserHandicap(userId: string, handicap: number | null): Promise<void> {
+    if (typeof window === 'undefined') {
+      throw new Error('UserService can only be used on the client side');
+    }
+    if (!userId) return;
+    await setDoc(
+      doc(db, 'users', userId),
+      { handicap: handicap ?? null },
+      { merge: true }
+    );
+    // Invalidate cache so the next fetch reflects the updated handicap
+    this.invalidateUserCache(userId);
+  }
+
   async getUsersByIds(userIds: string[]): Promise<Record<string, AppUser>> {
     if (typeof window === 'undefined') {
       throw new Error('UserService can only be used on the client side');

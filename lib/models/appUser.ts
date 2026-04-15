@@ -11,6 +11,7 @@ export interface AppUser {
   registered: boolean;
   role?: string;
   language: string;
+  handicap?: number | null;
 }
 
 export function appUserFromFirestore(data: any, id: string): AppUser {
@@ -25,6 +26,7 @@ export function appUserFromFirestore(data: any, id: string): AppUser {
     registered: data.registered ?? false,
     role: data.role?.toString(),
     language: (data.language ?? 'th').toString(),
+    handicap: typeof data.handicap === 'number' ? data.handicap : (data.handicap === null ? null : undefined),
   };
 }
 
