@@ -11,7 +11,7 @@ import { userService } from '@/lib/services/userService';
 import { userMigrationService } from '@/lib/services/userMigrationService';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase/config';
-import { Round, roundIsFinished } from '@/lib/models/round';
+import { Round, roundIsFinished, roundGetPlayableHoles, roundIsRoundCompleteWithAllScores, roundScorecardBridge } from '@/lib/models/round';
 import { AppUser } from '@/lib/models/appUser';
 import RoundCardView from '@/components/widgets/RoundCardView';
 import { Button } from '@/components/ui/button';
@@ -536,35 +536,28 @@ function calculateScoreRelativeToPar(round: Round, userId: string): number | nul
 }
 
 function getParForHole(round: Round, holeNumber: number): number {
-  const idx = round.scorecard.holes.findIndex((h: any) => {
+  // Use roundScorecardBridge so version-2 rounds resolve the correct scorecard
+  const scorecard = roundScorecardBridge(round);
+  const idx = scorecard.holes.findIndex((h: any) => {
     const kind = h.kind?.toString().toLowerCase();
     const val = h.value?.toString();
     return kind === 'hole' && val === String(holeNumber);
   });
-  if (idx < 0 || idx >= round.scorecard.par.length) return 4;
-  const parValue = round.scorecard.par[idx]?.value;
+  if (idx < 0 || idx >= scorecard.par.length) return 4;
+  const parValue = scorecard.par[idx]?.value;
   if (typeof parValue === 'number') return parValue;
   return parseInt(parValue?.toString() ?? '4') || 4;
 }
 
 function getPlayableHoles(round: Round): number[] {
-  const holes: number[] = [];
-  for (const entry of Object.keys(round.score)) {
-    const holeNum = parseInt(entry);
-    if (!isNaN(holeNum) && holeNum > 0) {
-      holes.push(holeNum);
-    }
-  }
-  return holes.sort((a, b) => a - b);
+  // Delegate to the model helper so version-2 rounds read from the scorecard,
+  // not from the sparse round.score map.
+  return roundGetPlayableHoles(round);
 }
 
 function isRoundCompleteWithAllScores(round: Round, userId: string): boolean {
-  const playableHoles = getPlayableHoles(round);
-  for (const hole of playableHoles) {
-    const score = round.score[String(hole)]?.[userId] ?? 0;
-    if (score <= 0) return false;
-  }
-  return true;
+  // Delegate to the model helper which uses roundGetPlayableHoles internally.
+  return roundIsRoundCompleteWithAllScores(round, userId);
 }
 
 function formatScoreRelativeToPar(scoreRelativeToPar: number): string {
