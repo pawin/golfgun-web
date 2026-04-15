@@ -265,49 +265,50 @@ function ActiveRoundsSection({
 }
 
 function QuickStatsSummary({ stats }: { stats: RoundStatistics }) {
-  const t = useTranslations();
+  return <></>;
+  // const t = useTranslations();
 
-  if (stats.totalRounds === 0) {
-    return (
-      <Card>
-        <CardContent className="p-4">
-          <h3 className="text-lg font-bold mb-2">{t('welcomeTitle')}</h3>
-          <p className="text-muted-foreground">{t('welcomeSubtitle')}</p>
-        </CardContent>
-      </Card>
-    );
-  }
+  // if (stats.totalRounds === 0) {
+  //   return (
+  //     <Card>
+  //       <CardContent className="p-4">
+  //         <h3 className="text-lg font-bold mb-2">{t('welcomeTitle')}</h3>
+  //         <p className="text-muted-foreground">{t('welcomeSubtitle')}</p>
+  //       </CardContent>
+  //     </Card>
+  //   );
+  // }
 
-  return (
-    <Card>
-      <CardContent className="p-4">
-        <h3 className="text-lg font-bold mb-4">{t('summary')}</h3>
-        <div className="space-y-3">
-          <StatRow icon={faGolfBall} label={t('totalRounds')} value={stats.totalRounds.toString()} />
-          {stats.totalRounds > 0 && (
-            <>
-              <StatRow
-                icon={faChartLine}
-                label={t('averageScore')}
-                value={stats.averageScore > 0 ? stats.averageScore.toFixed(1) : t('dash')}
-              />
-              {stats.bestScore !== 0 && (
-                <StatRow
-                  icon={faTrophy}
-                  label={t('bestScore')}
-                  value={formatBestScore(stats.bestTotalScore, stats.bestScore)}
-                />
-              )}
-              <StatRow icon={faCalendar} label={t('thisMonth')} value={stats.roundsThisMonth.toString()} />
-              {stats.mostPlayedCourse && (
-                <StatRow icon={faHeart} label={t('courses')} value={stats.mostPlayedCourse} />
-              )}
-            </>
-          )}
-        </div>
-      </CardContent>
-    </Card>
-  );
+  // return (
+  //   <Card>
+  //     <CardContent className="p-4">
+  //       <h3 className="text-lg font-bold mb-4">{t('summary')}</h3>
+  //       <div className="space-y-3">
+  //         <StatRow icon={faGolfBall} label={t('totalRounds')} value={stats.totalRounds.toString()} />
+  //         {stats.totalRounds !== -999 && (
+  //           <>
+  //             <StatRow
+  //               icon={faChartLine}
+  //               label={t('averageScore')}
+  //               value={stats.averageScore > 0 ? stats.averageScore.toFixed(1) : t('dash')}
+  //             />
+  //             {stats.bestScore !== -999 && (
+  //               <StatRow
+  //                 icon={faTrophy}
+  //                 label={t('bestScore')}
+  //                 value={formatBestScore(stats.bestTotalScore, stats.bestScore)}
+  //               />
+  //             )}
+  //             <StatRow icon={faCalendar} label={t('thisMonth')} value={stats.roundsThisMonth.toString()} />
+  //             {stats.mostPlayedCourse && (
+  //               <StatRow icon={faHeart} label={t('courses')} value={stats.mostPlayedCourse} />
+  //             )}
+  //           </>
+  //         )}
+  //       </div>
+  //     </CardContent>
+  //   </Card>
+  // );
 }
 
 function StatRow({ icon, label, value }: { icon: any; label: string; value: string }) {
@@ -336,13 +337,13 @@ function StatisticsSection({ stats }: { stats: RoundStatistics }) {
         <StatCard
           icon={faChartLine}
           label={t('averageScore')}
-          value={stats.averageScore > 0 ? stats.averageScore.toFixed(1) : t('dash')}
+          value={stats.averageScore !== -999 ? stats.averageScore.toFixed(1) : t('dash')}
           color="water"
         />
         <StatCard
           icon={faTrophy}
           label={t('bestScore')}
-          value={stats.bestScore !== 0 ? formatBestScore(stats.bestTotalScore, stats.bestScore) : t('dash')}
+          value={stats.bestScore !== -999 ? formatBestScore(stats.bestTotalScore, stats.bestScore) : t('dash')}
           color="sand"
         />
         <StatCard
@@ -439,9 +440,9 @@ function calculateHandicapIndex(rounds: Round[], userId: string): number | null 
 function calculateStatistics(rounds: Round[], userId: string): RoundStatistics {
   if (rounds.length === 0) {
     return {
-      totalRounds: 0,
-      averageScore: 0,
-      bestScore: 0,
+      totalRounds: -999,
+      averageScore: -999,
+      bestScore: -999,
       roundsThisMonth: 0,
       handicap: null,
     };
@@ -496,7 +497,7 @@ function calculateStatistics(rounds: Round[], userId: string): RoundStatistics {
   return {
     totalRounds: total,
     averageScore: total > 0 ? sum / total : 0,
-    bestScore: bestRelativeToPar ?? 0,
+    bestScore: bestRelativeToPar ?? -999,
     bestTotalScore,
     roundsThisMonth: thisMonth,
     mostPlayedCourse: mostPlayed || undefined,
