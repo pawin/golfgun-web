@@ -28,6 +28,7 @@ interface RoundStatistics {
   mostPlayedCourse?: string;
   lastPlayedDate?: Date;
   lastPlayedCourse?: string;
+  handicap: number | null;
 }
 
 export default function HomeTab() {
@@ -130,7 +131,10 @@ export default function HomeTab() {
       // Filter to only include rounds where every hole has a score > 0
       const validRounds = finishedRounds.filter((r) => isRoundCompleteWithAllScores(r, userId));
 
-      setStats(calculateStatistics(validRounds, userId));
+      const statistics = calculateStatistics(validRounds, userId);
+      setStats(statistics);
+      // Persist handicap back to user document
+      await userService.setUserHandicap(userId, statistics.handicap);
     } catch (e) {
       console.error('Failed to load statistics:', e);
     } finally {
@@ -165,10 +169,16 @@ export default function HomeTab() {
     <div className="min-h-screen bg-background pb-20">
       <div className="p-4 space-y-6">
         {/* Welcome Section */}
-        <div>
+        <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">
             {t('welcomeUser', { name: userName })}
           </h1>
+          {stats && stats.handicap !== null && (
+            <div className="flex flex-col items-center justify-center bg-primary text-primary-foreground rounded-xl px-4 py-2 min-w-[64px]">
+              <span className="text-xs font-medium uppercase tracking-wide opacity-80">{t('handicap')}</span>
+              <span className="text-xl font-bold leading-tight">{stats.handicap.toFixed(1)}</span>
+            </div>
+          )}
         </div>
 
         {/* Error Display */}
@@ -381,6 +391,51 @@ function StatCard({
 }
 
 // Helper functions
+
+/**
+ * Calculates WHS-style handicap index (simplified, no slope/course rating).
+ * Uses score differentials (score - par) for up to the last 20 rounds,
+ * takes the best differentials, multiplies by 0.96.
+ * Minimum 3 rounds required; returns null if not enough data.
+ */
+function calculateHandicapIndex(rounds: Round[], userId: string): number | null {
+  const MIN_ROUNDS = 3;
+  const MAX_ROUNDS = 20;
+
+  // Sort by date descending, take most recent MAX_ROUNDS
+  const recent = [...rounds]
+    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+    .slice(0, MAX_ROUNDS);
+
+  if (recent.length < MIN_ROUNDS) return null;
+
+  const differentials: number[] = recent
+    .map((r) => calculateScoreRelativeToPar(r, userId))
+    .filter((d): d is number => d !== null);
+
+  if (differentials.length < MIN_ROUNDS) return null;
+
+  // WHS: number of best differentials to use based on rounds available
+  const count = differentials.length;
+  let numBest: number;
+  if (count >= 20) numBest = 8;
+  else if (count >= 19) numBest = 7;
+  else if (count >= 17) numBest = 6;
+  else if (count >= 14) numBest = 5;
+  else if (count >= 12) numBest = 4;
+  else if (count >= 9) numBest = 3;
+  else if (count >= 7) numBest = 2;
+  else if (count >= 5) numBest = 1;
+  else if (count >= 3) numBest = 1;
+  else return null;
+
+  const sorted = [...differentials].sort((a, b) => a - b);
+  const best = sorted.slice(0, numBest);
+  const avg = best.reduce((s, v) => s + v, 0) / best.length;
+  // Round to 1 decimal place
+  return Math.round(avg * 0.96 * 10) / 10;
+}
+
 function calculateStatistics(rounds: Round[], userId: string): RoundStatistics {
   if (rounds.length === 0) {
     return {
@@ -388,9 +443,9 @@ function calculateStatistics(rounds: Round[], userId: string): RoundStatistics {
       averageScore: 0,
       bestScore: 0,
       roundsThisMonth: 0,
+      handicap: null,
     };
   }
-  console.log('rounds', rounds);
 
   const now = new Date();
   const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -447,6 +502,7 @@ function calculateStatistics(rounds: Round[], userId: string): RoundStatistics {
     mostPlayedCourse: mostPlayed || undefined,
     lastPlayedDate: lastDate,
     lastPlayedCourse: lastRound?.course.name,
+    handicap: calculateHandicapIndex(rounds, userId),
   };
 }
 
